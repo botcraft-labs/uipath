@@ -1,10 +1,81 @@
-body { padding-top: 70px; font-family: "Segoe UI", sans-serif; }
+body {
+  padding-top: 70px;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f9f9f9;
+}
+
+/* Hero */
 .hero {
-  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-              url("https://source.unsplash.com/1600x900/?robot,automation") center/cover no-repeat;
+  background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)),
+              url("https://source.unsplash.com/1600x900/?technology,automation") center/cover no-repeat;
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+}
+.hero h1 {
+  font-size: 3.5rem;
+  font-weight: bold;
+  animation: fadeInDown 1.2s ease;
+}
+.hero p {
+  font-size: 1.3rem;
+  animation: fadeInUp 1.2s ease;
+}
+.btn-primary {
+  border-radius: 25px;
+  padding: 10px 24px;
+}
+
+/* Sections */
+section {
+  background: white;
+  padding: 60px 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.section-title {
+  text-align: center;
+  margin-bottom: 40px;
+  font-weight: 700;
+  color: #343a40;
+}
+
+/* Profile Image */
+.profile-pic {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 5px solid #007bff;
+  object-fit: cover;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+/* Navbar */
+.navbar {
+  background: #212529 !important;
+}
+.nav-link {
+  transition: 0.3s;
+}
+.nav-link:hover {
+  color: #0d6efd !important;
+}
+
+/* Footer */
+footer {
+  background: #212529;
+  color: #aaa;
+  padding: 20px;
+  text-align: center;
+}
+footer a {
+  color: #0d6efd;
+  text-decoration: none;
+}
+footer a:hover {
+  text-decoration: underline;
 }
