@@ -57,16 +57,19 @@
 
     Papa.parse(sheetUrl, {
       download: true,
-      header: true,          // Treat first row as column names
-      skipEmptyLines: true,  // Skip empty rows
-      newline: "",           // Do not split by newline inside quotes
+      header: true,
+      skipEmptyLines: true,
       complete: function(results) {
         const tbody = document.querySelector('#linkedin-table tbody');
+
         results.data.forEach(row => {
+          const question = row['Question'] || '';
+          const answer = row['Answer'] || '';
+
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td>${row.Question}</td>
-            <td>${row.Answer}</td>
+            <td style="white-space: pre-wrap;">${question}</td>
+            <td style="white-space: pre-wrap;">${answer}</td>
           `;
           tbody.appendChild(tr);
         });
