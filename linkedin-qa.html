@@ -39,8 +39,7 @@
             <th>Answer</th>
           </tr>
         </thead>
-        <tbody>
-        </tbody>
+        <tbody></tbody>
       </table>
     </div>
   </section>
@@ -53,20 +52,20 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script>
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/<sheet-id>/pub?output=csv';
+    // Replace this with your actual published CSV URL
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTZj1dR1Xbvj1XUH1LOeDP3yX-m-5bFHnd1UlqWDoo8_ErPwakEyAxhnlDxJo1GPXp1OSr9UQPhUVK1/pub?output=csv';
 
     Papa.parse(sheetUrl, {
       download: true,
-      header: true,          // Treat first row as column names
-      skipEmptyLines: true,  // Skip empty rows
-      newline: "",           // Do not split by newline inside quotes
+      header: true,          // First row as column names
+      skipEmptyLines: true,  
       complete: function(results) {
         const tbody = document.querySelector('#linkedin-table tbody');
         results.data.forEach(row => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td>${row.Question}</td>
-            <td>${row.Answer}</td>
+            <td style="white-space: pre-wrap;">${row.Question || ''}</td>
+            <td style="white-space: pre-wrap;">${row.Answer || ''}</td>
           `;
           tbody.appendChild(tr);
         });
