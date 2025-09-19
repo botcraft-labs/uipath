@@ -51,33 +51,32 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script>
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTZj1dR1Xbvj1XUH1LOeDP3yX-m-5bFHnd1UlqWDoo8_ErPwakEyAxhnlDxJo1GPXp1OSr9UQPhUVK1/pub?output=csv';
+    // Replace <file-id> with your Google Drive Excel file ID
+    const excelUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZj1dR1Xbvj1XUH1LOeDP3yX-m-5bFHnd1UlqWDoo8_ErPwakEyAxhnlDxJo1GPXp1OSr9UQPhUVK1/pub?output=xlsx";
 
-    Papa.parse(sheetUrl, {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      complete: function(results) {
+    fetch(excelUrl)
+      .then(response => response.arrayBuffer())
+      .then(data => {
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0]; // Use first sheet
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
         const tbody = document.querySelector('#linkedin-table tbody');
-
-        results.data.forEach(row => {
-          const question = row['Question'] || '';
-          const answer = row['Answer'] || '';
-
+        jsonData.forEach(row => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td style="white-space: pre-wrap;">${question}</td>
-            <td style="white-space: pre-wrap;">${answer}</td>
+            <td style="white-space: pre-wrap;">${row.Question || ''}</td>
+            <td style="white-space: pre-wrap;">${row.Answer || ''}</td>
           `;
           tbody.appendChild(tr);
         });
-      },
-      error: function(err) {
-        console.error('Error loading CSV:', err);
-      }
-    });
+      })
+      .catch(error => {
+        console.error("Error loading Excel file:", error);
+      });
   </script>
 </body>
 </html>
