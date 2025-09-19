@@ -186,8 +186,8 @@
         results.data.slice(0,5).forEach(row => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td style="white-space: pre-wrap;">${row.Question || ''}</td>
-            <td style="white-space: pre-wrap;">${row.Answer || ''}</td>
+            <td style="white-space: pre-wrap;">${row.Post || ''}</td>
+            <td style="white-space: pre-wrap;">${row.Comment || ''}</td>
           `;
           tbody.appendChild(tr);
         });
