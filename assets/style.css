@@ -183,3 +183,35 @@ footer a {
 footer a:hover {
   text-decoration: underline;
 }
+/* Certifications Grid */
+.cert-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+}
+.cert-card {
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+.cert-card:hover {
+  background: #0d6efd;
+  color: #fff;
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+.cert-card h5 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.cert-card p {
+  margin: 4px 0;
+  font-size: 0.95rem;
+}
+.cert-card img {
+  display: block;
+}
+
