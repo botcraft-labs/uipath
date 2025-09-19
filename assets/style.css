@@ -1,47 +1,74 @@
+/* General */
 body {
   padding-top: 70px;
   font-family: "Segoe UI", sans-serif;
   background-color: #f9f9f9;
+  color: #333;
 }
-
-/* Hero */
-.hero {
-  background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)),
-              url("https://source.unsplash.com/1600x900/?technology,automation") center/cover no-repeat;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
-}
-.hero h1 {
-  font-size: 3.5rem;
-  font-weight: bold;
-  animation: fadeInDown 1.2s ease;
-}
-.hero p {
-  font-size: 1.3rem;
-  animation: fadeInUp 1.2s ease;
-}
-.btn-primary {
-  border-radius: 25px;
-  padding: 10px 24px;
-}
-
-/* Sections */
 section {
-  background: white;
-  padding: 60px 20px;
-  margin-bottom: 20px;
+  background: #fff;
+  padding: 60px 25px;
+  margin: 40px auto;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  max-width: 1100px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
 }
 .section-title {
   text-align: center;
   margin-bottom: 40px;
   font-weight: 700;
-  color: #343a40;
+  color: #212529;
+  position: relative;
+}
+.section-title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: #0d6efd;
+  margin: 12px auto 0;
+  border-radius: 2px;
+}
+
+/* Navbar */
+.navbar {
+  background: #212529 !important;
+}
+.navbar-brand {
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+.nav-link {
+  transition: 0.3s;
+}
+.nav-link:hover {
+  color: #0d6efd !important;
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)),
+              url("https://source.unsplash.com/1600x900/?robot,automation") center/cover no-repeat;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+}
+.hero h1 {
+  font-size: 3.5rem;
+  font-weight: bold;
+}
+.hero p {
+  font-size: 1.2rem;
+  margin-top: 15px;
+}
+.hero .btn {
+  border-radius: 25px;
+  padding: 10px 24px;
+  margin-top: 20px;
 }
 
 /* Profile Image */
@@ -54,15 +81,90 @@ section {
   box-shadow: 0 6px 12px rgba(0,0,0,0.2);
 }
 
-/* Navbar */
-.navbar {
-  background: #212529 !important;
+/* Skills Badges */
+.badge {
+  font-size: 0.95rem;
+  padding: 10px 14px;
+  border-radius: 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
-.nav-link {
+.badge:hover {
+  transform: scale(1.05);
+  cursor: default;
+}
+
+/* Experience Timeline */
+.timeline {
+  position: relative;
+  margin: 40px 0;
+  padding-left: 40px;
+  border-left: 3px solid #0d6efd;
+}
+.timeline-item {
+  margin-bottom: 30px;
+  position: relative;
+}
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -11px;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  background: #0d6efd;
+  border-radius: 50%;
+}
+.timeline-item h5 {
+  font-weight: 600;
+  color: #0d6efd;
+}
+.timeline-item small {
+  display: block;
+  color: #6c757d;
+  margin-bottom: 5px;
+}
+
+/* Certifications */
+.cert-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+.cert-card {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
   transition: 0.3s;
+  text-align: center;
+  font-weight: 500;
 }
-.nav-link:hover {
-  color: #0d6efd !important;
+.cert-card:hover {
+  background: #0d6efd;
+  color: white;
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+/* Contact */
+.contact-info {
+  font-size: 1.2rem;
+}
+.contact-info p {
+  margin: 12px 0;
+}
+.contact-info i {
+  color: #0d6efd;
+  margin-right: 10px;
+  font-size: 1.3rem;
+}
+.contact-info a {
+  color: #0d6efd;
+  text-decoration: none;
+}
+.contact-info a:hover {
+  text-decoration: underline;
 }
 
 /* Footer */
@@ -71,6 +173,8 @@ footer {
   color: #aaa;
   padding: 20px;
   text-align: center;
+  margin-top: 40px;
+  border-top: 2px solid #0d6efd;
 }
 footer a {
   color: #0d6efd;
