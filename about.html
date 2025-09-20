@@ -7,79 +7,90 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --primary-color: #0d6efd;
-    --background-light: #f8f9fa;
-    --background-dark: #212529;
+    --light-bg: #ffffff;
+    --light-bg-alt: #f8f9fa;
+    --dark-bg: #212529;
+    --dark-bg-alt: #343a40;
     --text-light: #212529;
     --text-dark: #f8f9fa;
-    --card-bg-light: rgba(255, 255, 255, 0.9);
-    --card-bg-dark: rgba(52, 58, 64, 0.9);
-    --shadow-light: 0 8px 20px rgba(0,0,0,0.15);
-    --shadow-dark: 0 8px 20px rgba(0,0,0,0.5);
   }
 
   [data-bs-theme="light"] {
-    --background-image: url('assets/about-background1.png');
     --text-color: var(--text-light);
-    --card-bg: var(--card-bg-light);
-    --shadow-color: var(--shadow-light);
+    --section-bg: var(--light-bg);
+    --section-bg-alt: var(--light-bg-alt);
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --shadow-color: 0 8px 20px rgba(0,0,0,0.1);
+    --timeline-line-color: #dee2e6;
   }
 
   [data-bs-theme="dark"] {
-    --background-image: none;
-    --background-color: var(--background-dark);
     --text-color: var(--text-dark);
-    --card-bg: var(--card-bg-dark);
-    --shadow-color: var(--shadow-dark);
+    --section-bg: var(--dark-bg);
+    --section-bg-alt: var(--dark-bg-alt);
+    --card-bg: rgba(52, 58, 64, 0.95);
+    --shadow-color: 0 8px 20px rgba(0,0,0,0.4);
+    --timeline-line-color: #495057;
   }
 
   body {
-    background-image: var(--background-image);
-    background-color: var(--background-color);
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-attachment: fixed;
-    background-size: cover;
+    background-color: var(--section-bg);
     color: var(--text-color);
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Poppins', sans-serif;
     transition: background-color 0.3s, color 0.3s;
     scroll-behavior: smooth;
   }
+  
+  .section-padding { padding: 6rem 0; }
+  .section-bg-alt { background-color: var(--section-bg-alt); }
 
   .navbar { backdrop-filter: blur(10px); }
-  a { color: var(--primary-color); text-decoration: none; }
-  a:hover { color: #61dafb; }
-
-  .section-title { font-weight: 700; text-align: center; margin-bottom: 3rem; font-size: 2rem; }
-  .section-title::after { content: ""; display: block; width: 80px; height: 3px; background: var(--primary-color); margin: 10px auto 0; border-radius: 2px; }
-  .profile-pic { width: 180px; height: 180px; object-fit: cover; border-radius: 50%; border: 4px solid var(--primary-color); }
-  .badge-skill { background: var(--primary-color); color: #fff; padding: 0.5rem 0.8rem; font-size: 0.85rem; border-radius: 10px; margin: 0.2rem; }
+  .section-title { font-weight: 700; position: relative; display: inline-block; margin-bottom: 3rem; }
+  .section-title::after { content: ""; display: block; width: 60px; height: 4px; background: var(--primary-color); margin: 8px auto 0; border-radius: 2px; }
   
+  .profile-pic {
+    width: 250px; height: 250px; object-fit: cover; border-radius: 50%; border: 5px solid var(--primary-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+
+  .skill-card {
+    background: var(--card-bg); border: 1px solid rgba(0,0,0,0.05); border-radius: 10px;
+    padding: 1.5rem 1rem; text-align: center; transition: transform 0.3s, box-shadow 0.3s; height: 100%;
+  }
+  [data-bs-theme="dark"] .skill-card { border: 1px solid rgba(255,255,255,0.1); }
+  .skill-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+  .skill-card i { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1rem; }
+  .skill-card h6 { font-weight: 600; font-size: 0.9rem; }
+
   .experience-timeline { position: relative; max-width: 900px; margin: 2rem auto; }
-  .experience-timeline::before { content: ''; position: absolute; width: 3px; background: var(--primary-color); top: 0; bottom: 0; left: 50%; margin-left: -1.5px; }
+  .experience-timeline::before { content: ''; position: absolute; width: 3px; background-color: var(--timeline-line-color); top: 0; bottom: 0; left: 50%; margin-left: -1.5px; }
   .exp-card { position: relative; width: 45%; padding: 1.5rem; margin-bottom: 2rem; background: var(--card-bg); border-radius: 15px; box-shadow: var(--shadow-color); transition: transform 0.3s; }
   .exp-card:nth-child(odd) { left: 0; }
   .exp-card:nth-child(even) { left: 55%; }
-  .exp-card:hover { transform: translateY(-5px); }
-  .exp-card::after { content: ''; position: absolute; top: 20px; width: 16px; height: 16px; background: var(--primary-color); border-radius: 50%; border: 3px solid #fff; z-index: 1; }
+  .exp-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
+  .exp-card::after {
+    content: ''; position: absolute; top: 20px; width: 16px; height: 16px; background: var(--primary-color);
+    border-radius: 50%; border: 3px solid var(--section-bg); z-index: 1; transition: transform 0.3s;
+  }
+  .exp-card:hover::after { transform: scale(1.2); }
   .exp-card:nth-child(odd)::after { right: -45.5px; }
   .exp-card:nth-child(even)::after { left: -45.5px; }
   .exp-content h5 { font-weight: 700; }
-  .exp-content small { display: block; margin-bottom: 10px; }
   
   .cert-card { background: var(--card-bg); box-shadow: var(--shadow-color); transition: transform 0.3s; cursor: pointer; border-radius: 15px; padding: 1.5rem; }
-  .cert-card:hover { transform: translateY(-5px); }
+  footer { background: var(--dark-bg); color: var(--text-dark); }
   
   .contact-info a { font-size: 1.5rem; margin: 0 1rem; color: var(--primary-color); transition: color 0.3s; }
-  
   #backToTop { position: fixed; bottom: 20px; right: 20px; display: none; z-index: 1000; }
   .theme-toggle-btn { cursor: pointer; font-size: 1.25rem; }
 
-  footer { background: var(--card-bg); text-align: center; padding: 1rem 0; margin-top: 3rem; }
-
-  @media (max-width: 768px) {
+  @media (max-width: 992px) {
     .experience-timeline::before { left: 20px; }
     .exp-card { width: calc(100% - 40px); left: 40px !important; }
     .exp-card::after { left: -28px !important; }
@@ -90,7 +101,7 @@
 
 <nav class="navbar navbar-expand-lg bg-dark bg-opacity-75 navbar-dark fixed-top shadow-sm">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="#">Bot Craft Labs</a>
+    <a class="navbar-brand fw-bold" href="index.html">🤖 Bot Craft Labs</a>
     <div class="ms-auto d-flex align-items-center order-lg-2">
       <i class="bi bi-brightness-high-fill theme-toggle-btn me-3 text-white" id="theme-toggler"></i>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
@@ -107,67 +118,93 @@
 </nav>
 
 <main>
-  <section id="about" class="container py-5 text-center" style="margin-top:100px;">
-    <h2 class="section-title">About Me</h2>
-    <img src="assets/profile.jpg" alt="Chaitanya Doneparthi" class="profile-pic mb-4">
-    <p class="lead">I am <strong>Chaitanya Doneparthi</strong>, a Senior Associate – Automation with over 5 years of experience in Robotic Process Automation (RPA), specializing in UiPath, Microsoft Power Automate, and Blueprint RPA Migration. I focus on delivering intelligent automation solutions to optimize business processes efficiently and accurately.</p>
-    <h4 class="mt-5">Core Skills</h4>
-    <div class="d-flex justify-content-center flex-wrap gap-3 mt-3">
-      <span class="badge-skill">UiPath Advanced Development</span>
-      <span class="badge-skill">Microsoft Power Automate</span>
-      <span class="badge-skill">Blueprint RPA Migration</span>
-      <span class="badge-skill">SAP & Oracle Automation</span>
-      <span class="badge-skill">Salesforce Integration</span>
-    </div>
-  </section>
-
-  <section id="experience" class="container py-5">
-    <h2 class="section-title" data-aos="fade-up">Professional Experience</h2>
-    <div class="experience-timeline">
-      <div class="exp-card" data-aos="fade-right">
-        <div class="exp-content">
-          <h5>Senior Associate – Automation</h5>
-          <small>Accelirate Inc | Apr 2025 – Present</small>
+  <section id="about" class="section-padding" style="margin-top:80px;">
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-5 text-center" data-aos="fade-right">
+          <img src="assets/profile.jpg" alt="Chaitanya Doneparthi" class="profile-pic">
         </div>
-      </div>
-      <div class="exp-card" data-aos="fade-left">
-        <div class="exp-content">
-          <h5>Senior Automation Engineer DU</h5>
-          <small>Accelirate Inc | Jun 2024 – Mar 2025</small>
-        </div>
-      </div>
-      <div class="exp-card" data-aos="fade-right">
-        <div class="exp-content">
-          <h5>Digital Engineer</h5>
-          <small>Sonata Software | Jan 2022 – May 2024</small>
-        </div>
-      </div>
-      <div class="exp-card" data-aos="fade-right">
-        <div class="exp-content">
-          <h5>Software Engineer</h5>
-          <small>Coforge | Oct 2019 – Jan 2022</small>
+        <div class="col-lg-7" data-aos="fade-left">
+          <h2 class="section-title text-start" style="display: block; margin-left: 0;">About Me</h2>
+          <p class="lead mb-4">I am <strong>Chaitanya Doneparthi</strong>, a Senior Associate – Automation with over 5 years of experience in Robotic Process Automation (RPA), specializing in UiPath, Microsoft Power Automate, and Blueprint RPA Migration.</p>
+          <p>My focus is on delivering intelligent automation solutions that optimize business processes with maximum efficiency and accuracy. I enjoy bridging the gap between business needs and technical solutions.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="certifications" class="container py-5">
-    <h2 class="section-title" data-aos="fade-up">Certifications</h2>
-    <div class="filter-bar d-flex justify-content-center flex-wrap gap-2 mb-4">
-      <button class="btn btn-outline-primary filter-btn" data-skill="All">All</button>
-      <button class="btn btn-outline-primary filter-btn" data-skill="UiPath">UiPath</button>
-      <button class="btn btn-outline-primary filter-btn" data-skill="Blueprint">Blueprint</button>
-      <button class="btn btn-outline-primary filter-btn" data-skill="Microsoft">Microsoft</button>
-    </div>
-    <div class="cert-list row g-4">
+  <section id="skills" class="section-padding section-bg-alt">
+    <div class="container">
+      <div class="text-center">
+        <h2 class="section-title" data-aos="fade-up">Core Skills</h2>
       </div>
+      <div class="row g-4 justify-content-center">
+        <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up">
+            <div class="skill-card"><i class="bi bi-robot"></i><h6>UiPath Dev</h6></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="50">
+            <div class="skill-card"><i class="bi bi-microsoft"></i><h6>Power Automate</h6></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="100">
+            <div class="skill-card"><i class="bi bi-sign-merge-left-fill"></i><h6>Blueprint RPA</h6></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="150">
+            <div class="skill-card"><i class="bi bi-file-earmark-code-fill"></i><h6>SAP Automation</h6></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="200">
+            <div class="skill-card"><i class="bi bi-cloud-check-fill"></i><h6>Oracle Automation</h6></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="250">
+            <div class="skill-card"><i class="bi bi-bounding-box-circles"></i><h6>Salesforce Int.</h6></div>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <section id="contact" class="container py-5 text-center">
-    <h2 class="section-title">Get in Touch</h2>
-    <div class="contact-info">
-      <a href="mailto:chaitanya.dgr@gmail.com" title="Email"><i class="bi bi-envelope-fill"></i></a>
-      <a href="https://www.linkedin.com/in/chaitanya-doneparthi-409539139" target="_blank" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+  <section id="experience" class="section-padding">
+    <div class="container">
+      <div class="text-center">
+        <h2 class="section-title" data-aos="fade-up">Professional Experience</h2>
+      </div>
+      <div class="experience-timeline">
+        <div class="exp-card" data-aos="fade-right">
+            <div class="exp-content"><h5>Senior Associate – Automation</h5><small>Accelirate Inc | Apr 2025 – Present</small></div>
+        </div>
+        <div class="exp-card" data-aos="fade-left">
+            <div class="exp-content"><h5>Senior Automation Engineer DU</h5><small>Accelirate Inc | Jun 2024 – Mar 2025</small></div>
+        </div>
+        <div class="exp-card" data-aos="fade-right">
+            <div class="exp-content"><h5>Digital Engineer</h5><small>Sonata Software | Jan 2022 – May 2024</small></div>
+        </div>
+        <div class="exp-card" data-aos="fade-left">
+            <div class="exp-content"><h5>Software Engineer</h5><small>Coforge | Oct 2019 – Jan 2022</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="certifications" class="section-padding section-bg-alt">
+    <div class="container">
+      <div class="text-center">
+        <h2 class="section-title" data-aos="fade-up">Certifications</h2>
+      </div>
+      <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
+        <button class="btn btn-outline-primary filter-btn" data-skill="All">All</button>
+        <button class="btn btn-outline-primary filter-btn" data-skill="UiPath">UiPath</button>
+        <button class="btn btn-outline-primary filter-btn" data-skill="Blueprint">Blueprint</button>
+        <button class="btn btn-outline-primary filter-btn" data-skill="Microsoft">Microsoft</button>
+      </div>
+      <div class="cert-list row g-4"></div>
+    </div>
+  </section>
+
+  <section id="contact" class="section-padding text-center">
+    <div class="container">
+        <h2 class="section-title">Get in Touch</h2>
+        <div class="contact-info">
+        <a href="mailto:chaitanya.dgr@gmail.com" title="Email"><i class="bi bi-envelope-fill"></i></a>
+        <a href="https://www.linkedin.com/in/chaitanya-doneparthi-409539139" target="_blank" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+        </div>
     </div>
   </section>
 </main>
@@ -175,23 +212,20 @@
 <div class="modal fade" id="certModal" tabindex="-1" aria-labelledby="certModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="certModalLabel">Certification Details</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+      <div class="modal-header"><h5 class="modal-title" id="certModalLabel">Certification Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
       <div class="modal-body">
-        <p><strong>Certification Name:</strong> <span id="modalName"></span></p>
+        <p><strong>Name:</strong> <span id="modalName"></span></p>
         <p><strong>Issued:</strong> <span id="modalIssued"></span></p>
         <p><strong>Expires:</strong> <span id="modalExpires"></span></p>
-        <p><strong>Credential ID:</strong> <span id="modalID"></span></p>
+        <p><strong>ID:</strong> <span id="modalID"></span></p>
         <p><strong>Skills:</strong> <span id="modalSkills"></span></p>
       </div>
     </div>
   </div>
 </div>
 
-<footer>
-  <p>&copy; 2025 Bot Craft Labs | Built with Professional Expertise</p>
+<footer class="text-center py-4">
+  <p class="mb-0">&copy; 2025 Bot Craft Labs | Built with Professional Expertise</p>
 </footer>
 
 <a href="#" id="backToTop" class="btn btn-primary btn-lg rounded-circle"><i class="bi bi-arrow-up"></i></a>
@@ -199,85 +233,75 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-  // --- Initialize AOS ---
-  AOS.init({ duration: 800, once: true });
+  document.addEventListener('DOMContentLoaded', function() {
+    AOS.init({ duration: 800, once: true, offset: 50 });
 
-  // --- Theme Toggler ---
-  const themeToggler = document.getElementById('theme-toggler');
-  const htmlEl = document.documentElement;
-  const currentTheme = localStorage.getItem('theme') || 'light';
-  htmlEl.setAttribute('data-bs-theme', currentTheme);
-  themeToggler.className = currentTheme === 'dark' ? 'bi bi-moon-fill theme-toggle-btn me-3 text-white' : 'bi bi-brightness-high-fill theme-toggle-btn me-3 text-white';
+    const themeToggler = document.getElementById('theme-toggler');
+    const htmlEl = document.documentElement;
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    htmlEl.setAttribute('data-bs-theme', currentTheme);
+    themeToggler.className = currentTheme === 'dark' ? 'bi bi-moon-fill theme-toggle-btn me-3 text-white' : 'bi bi-brightness-high-fill theme-toggle-btn me-3 text-white';
 
-  themeToggler.addEventListener('click', () => {
-    const newTheme = htmlEl.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
-    htmlEl.setAttribute('data-bs-theme', newTheme);
-    themeToggler.className = newTheme === 'dark' ? 'bi bi-moon-fill theme-toggle-btn me-3 text-white' : 'bi bi-brightness-high-fill theme-toggle-btn me-3 text-white';
-    localStorage.setItem('theme', newTheme);
-  });
-  
-  // --- Back to Top Button ---
-  const backToTopBtn = document.getElementById('backToTop');
-  window.addEventListener('scroll', () => {
-    backToTopBtn.style.display = (window.scrollY > 300) ? 'block' : 'none';
-  });
-
-  // --- Certification Data & Rendering ---
-  const certifications = [
-    { name: "UiPath Certified Professional Test Automation Engineer", issued: "Mar 2025", expires: "Mar 2028", id: "137766777", skills: "UiPath", logo: "assets/uipath-logo.png", category: "UiPath" },
-    { name: "UiPath Certified Professional Specialized AI", issued: "Oct 2024", expires: "Oct 2027", id: "118990938", skills: "UiPath", logo: "assets/uipath-logo.png", category: "UiPath" },
-    { name: "UiPath Specialized AI Associate", issued: "Oct 2024", expires: "Oct 2026", id: "117592886", skills: "UiPath", logo: "assets/uipath-logo.png", category: "UiPath" },
-    { name: "UiPath Academy Test Automation Engineer", issued: "Jul 2024", expires: "Jul 2026", id: "110389095", skills: "UiPath", logo: "assets/uipath-logo.png", category: "UiPath" },
-    { name: "Blueprint RPA Migration Specialist", issued: "Apr 2024", expires: "", id: "ifllqty2lg", skills: "Blueprint · RPA Migration", logo: "assets/blueprint-logo.png", category: "Blueprint" },
-    { name: "UiPath Certified Professional Advanced RPA Developer (UiARD)", issued: "Oct 2023", expires: "", id: "84798323", skills: "UiPath", logo: "assets/uipath-logo.png", category: "UiPath" },
-    { name: "Microsoft Power Automate RPA Developer", issued: "May 2024", expires: "May 2025", id: "3256001FAAFF7992", skills: "Microsoft Power Automate", logo: "assets/microsoft-logo.png", category: "Microsoft" }
-  ];
-
-  const certListContainer = document.querySelector('.cert-list');
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const certModal = new bootstrap.Modal(document.getElementById('certModal'));
-
-  function renderCerts(filter = 'All') {
-    certListContainer.innerHTML = '';
-    const filteredCerts = (filter === 'All') ? certifications : certifications.filter(c => c.category === filter);
+    themeToggler.addEventListener('click', () => {
+        const newTheme = htmlEl.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+        htmlEl.setAttribute('data-bs-theme', newTheme);
+        themeToggler.className = newTheme === 'dark' ? 'bi bi-moon-fill theme-toggle-btn me-3 text-white' : 'bi bi-brightness-high-fill theme-toggle-btn me-3 text-white';
+        localStorage.setItem('theme', newTheme);
+    });
     
-    filteredCerts.forEach(cert => {
-      const certCardHTML = `
-        <div class="col-md-6 col-lg-4" data-aos="fade-up">
-          <div class="cert-card h-100" 
-               data-name="${cert.name}"
-               data-issued="${cert.issued}"
-               data-expires="${cert.expires}"
-               data-id="${cert.id}"
-               data-skills="${cert.skills}">
-            <img src="${cert.logo}" alt="${cert.category}" height="40">
-            <h5 class="mt-3">${cert.name}</h5>
-            <p class="mb-0"><strong>Issued:</strong> ${cert.issued}${cert.expires ? ` · <strong>Expires:</strong> ${cert.expires}` : ''}</p>
-          </div>
-        </div>
-      `;
-      certListContainer.innerHTML += certCardHTML;
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        backToTopBtn.style.display = (window.scrollY > 300) ? 'flex' : 'none';
+    });
+    backToTopBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // Re-attach event listeners after rendering
-    document.querySelectorAll('.cert-card').forEach(card => {
-      card.addEventListener('click', () => {
-        document.getElementById('modalName').textContent = card.dataset.name;
-        document.getElementById('modalIssued').textContent = card.dataset.issued;
-        document.getElementById('modalExpires').textContent = card.dataset.expires || 'N/A';
-        document.getElementById('modalID').textContent = card.dataset.id;
-        document.getElementById('modalSkills').textContent = card.dataset.skills;
-        certModal.show();
-      });
-    });
-  }
+    const certifications = [
+        { name: "UiPath Certified Professional Test Automation Engineer", issued: "Mar 2025", expires: "Mar 2028", id: "137766777", skills: "UiPath", logo: "assets/uipath-logo.png", category: "UiPath" },
+        { name: "UiPath Certified Professional Specialized AI", issued: "Oct 2024", expires: "Oct 2027", id: "118990938", skills: "UiPath", logo: "assets/uipath-logo.png", category: "UiPath" },
+        { name: "Blueprint RPA Migration Specialist", issued: "Apr 2024", expires: "", id: "ifllqty2lg", skills: "Blueprint · RPA Migration", logo: "assets/blueprint-logo.png", category: "Blueprint" },
+        { name: "Microsoft Power Automate RPA Developer", issued: "May 2024", expires: "May 2025", id: "3256001FAAFF7992", skills: "Microsoft Power Automate", logo: "assets/microsoft-logo.png", category: "Microsoft" }
+    ];
 
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => renderCerts(btn.dataset.skill));
+    const certListContainer = document.querySelector('.cert-list');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const certModal = new bootstrap.Modal(document.getElementById('certModal'));
+
+    function renderCerts(filter = 'All') {
+        certListContainer.innerHTML = '';
+        const filteredCerts = (filter === 'All') ? certifications : certifications.filter(c => c.category === filter);
+        
+        filteredCerts.forEach(cert => {
+            const certCardHTML = `
+                <div class="col-md-6 col-lg-4" data-aos="fade-up">
+                <div class="cert-card h-100" data-name="${cert.name}" data-issued="${cert.issued}" data-expires="${cert.expires}" data-id="${cert.id}" data-skills="${cert.skills}">
+                    <img src="${cert.logo}" alt="${cert.category}" height="40">
+                    <h5 class="mt-3">${cert.name}</h5>
+                    <p class="mb-0 small text-muted"><strong>Issued:</strong> ${cert.issued}${cert.expires ? ` · <strong>Expires:</strong> ${cert.expires}` : ''}</p>
+                </div>
+                </div>`;
+            certListContainer.innerHTML += certCardHTML;
+        });
+
+        document.querySelectorAll('.cert-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.getElementById('modalName').textContent = card.dataset.name;
+                document.getElementById('modalIssued').textContent = card.dataset.issued;
+                document.getElementById('modalExpires').textContent = card.dataset.expires || 'N/A';
+                document.getElementById('modalID').textContent = card.dataset.id;
+                document.getElementById('modalSkills').textContent = card.dataset.skills;
+                certModal.show();
+            });
+        });
+    }
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => renderCerts(btn.dataset.skill));
+    });
+    renderCerts();
   });
-
-  // Initial render
-  renderCerts();
 </script>
 </body>
 </html>
