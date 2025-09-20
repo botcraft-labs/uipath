@@ -6,7 +6,20 @@
   <title>About - Bot Craft Labs</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="assets/style.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <style>
+    body { background: #f8f9fa; scroll-behavior: smooth; }
+    .section-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 2rem; text-align: center; position: relative; }
+    .section-title::after { content: ''; display: block; width: 80px; height: 3px; background: #0d6efd; margin: 10px auto 0; border-radius: 2px; }
+    .profile-pic { border-radius: 50%; width: 180px; height: 180px; object-fit: cover; border: 5px solid #0d6efd; }
+    .skill-bar { height: 20px; border-radius: 10px; background: #e9ecef; overflow: hidden; margin-bottom: 10px; }
+    .skill-level { height: 100%; text-align: right; padding-right: 10px; color: #fff; line-height: 20px; font-weight: 600; }
+    .experience-card { background: #fff; border-radius: 15px; padding: 1.5rem; box-shadow: 0 8px 20px rgba(0,0,0,0.1); margin-bottom: 20px; transition: transform 0.3s; }
+    .experience-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.2); }
+    .social-icons a { font-size: 1.5rem; margin: 0 10px; color: #0d6efd; transition: 0.3s; }
+    .social-icons a:hover { color: #0056b3; }
+    footer { background: #212529; color: #fff; text-align: center; padding: 1rem 0; margin-top: 3rem; }
+  </style>
 </head>
 <body>
   <!-- Navbar -->
@@ -18,51 +31,85 @@
       </button>
       <div class="collapse navbar-collapse" id="navMenu">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="about.html">About</a></li>
           <li class="nav-item"><a class="nav-link" href="experience.html">Experience</a></li>
           <li class="nav-item"><a class="nav-link" href="certifications.html">Certifications</a></li>
           <li class="nav-item"><a class="nav-link" href="projects.html">Projects</a></li>
           <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
-          <li class="nav-item"><a class="nav-link" href="linkedin-qa.html">LinkedIn Q&A</a></li>
         </ul>
       </div>
     </div>
   </nav>
 
   <!-- About Section -->
-  <section class="container py-5 text-center">
-    <h2 class="section-title">About Me</h2>
-    <img src="assets/profile.jpg" alt="Chaitanya Doneparthi" class="profile-pic mb-4">
+  <section class="container py-5 text-center" style="margin-top:100px;">
+    <h2 class="section-title" data-aos="fade-up">About Me</h2>
+    <img src="assets/profile.jpg" alt="Chaitanya Doneparthi" class="profile-pic mb-4" data-aos="zoom-in">
 
-    <p class="lead">
+    <p class="lead" data-aos="fade-up" data-aos-delay="100">
       Hi 👋 I’m <strong>Chaitanya Doneparthi</strong>, a <strong>Senior Associate – Automation</strong> at 
       <strong>Accelirate Inc</strong>. With over <strong>5 years of RPA experience</strong>, I specialize in 
       <strong>UiPath, Power Automate, and Blueprint RPA Migration</strong>.
     </p>
-    <p>
+    <p data-aos="fade-up" data-aos-delay="200">
       Previously, I worked at <strong>Sonata Software</strong> as a Digital Engineer and at 
       <strong>Coforge</strong> as a Software Engineer, gaining expertise in <em>SAP, Oracle, and Salesforce automation</em>.  
       I’m passionate about creating scalable RPA solutions and sharing automation knowledge with the community.
     </p>
 
-    <h4 class="mt-5">Top Skills</h4>
-    <div class="d-flex justify-content-center flex-wrap gap-3 mt-3">
-      <span class="badge bg-primary p-2">UiPath Advanced Development</span>
-      <span class="badge bg-success p-2">Microsoft Power Automate</span>
-      <span class="badge bg-warning text-dark p-2">Blueprint RPA Migration</span>
-      <span class="badge bg-secondary p-2">SAP & Oracle Automation</span>
-      <span class="badge bg-info text-dark p-2">Salesforce Integration</span>
+    <!-- Skills -->
+    <h4 class="mt-5" data-aos="fade-up">Top Skills</h4>
+    <div class="mt-3 mb-5" data-aos="fade-up" data-aos-delay="100">
+      <div class="skill-bar"><div class="skill-level bg-primary" style="width: 95%;">UiPath Advanced</div></div>
+      <div class="skill-bar"><div class="skill-level bg-success" style="width: 90%;">Power Automate</div></div>
+      <div class="skill-bar"><div class="skill-level bg-warning text-dark" style="width: 85%;">Blueprint RPA Migration</div></div>
+      <div class="skill-bar"><div class="skill-level bg-secondary" style="width: 80%;">SAP & Oracle Automation</div></div>
+      <div class="skill-bar"><div class="skill-level bg-info text-dark" style="width: 75%;">Salesforce Integration</div></div>
     </div>
 
-    <div class="mt-5">
-      <a href="https://www.linkedin.com/in/chaitanya-doneparthi-409539139" target="_blank" class="btn btn-primary btn-lg">
-        <i class="fab fa-linkedin"></i> Connect on LinkedIn
-      </a>
+    <!-- Experience Cards -->
+    <h4 class="mt-5" data-aos="fade-up">Professional Experience</h4>
+    <div class="row mt-4">
+      <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="experience-card">
+          <h5>Senior Associate – Automation</h5>
+          <p><strong>Accelirate Inc</strong></p>
+          <p>Specialized in UiPath, Power Automate, and Blueprint RPA Migration projects.</p>
+        </div>
+      </div>
+      <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
+        <div class="experience-card">
+          <h5>Digital Engineer</h5>
+          <p><strong>Sonata Software</strong></p>
+          <p>Worked on SAP, Oracle, and Salesforce automation projects using RPA solutions.</p>
+        </div>
+      </div>
+      <div class="col-md-6" data-aos="fade-up" data-aos-delay="300">
+        <div class="experience-card">
+          <h5>Software Engineer</h5>
+          <p><strong>Coforge</strong></p>
+          <p>Gained hands-on experience in enterprise automation workflows and process optimization.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Social Links -->
+    <div class="social-icons mt-5" data-aos="fade-up" data-aos-delay="400">
+      <a href="https://www.linkedin.com/in/chaitanya-doneparthi-409539139" target="_blank"><i class="fab fa-linkedin"></i></a>
+      <a href="mailto:chaitanya@example.com"><i class="fas fa-envelope"></i></a>
+      <a href="https://github.com/chaitanya" target="_blank"><i class="fab fa-github"></i></a>
     </div>
   </section>
 
   <footer>
     <p>&copy; 2025 Bot Craft Labs | Built with ❤️ using GitHub Pages</p>
   </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 800, once: true });
+  </script>
 </body>
 </html>
