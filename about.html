@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,44 +13,24 @@
 <style>
   :root {
     --primary-color: #0d6efd;
-    --light-bg: #ffffff;
-    --light-bg-alt: #f8f9fa;
-    --dark-bg: #212529;
-    --dark-bg-alt: #343a40;
-    --text-light: #212529;
-    --text-dark: #f8f9fa;
-  }
-
-  [data-bs-theme="light"] {
-    --text-color: var(--text-light);
-    --section-bg: var(--light-bg);
-    --section-bg-alt: var(--light-bg-alt);
-    --card-bg: rgba(255, 255, 255, 0.95);
+    --text-color: #212529;
+    --card-bg: rgba(255, 255, 255, 0.92);
     --shadow-color: 0 8px 20px rgba(0,0,0,0.1);
     --timeline-line-color: #dee2e6;
   }
 
-  [data-bs-theme="dark"] {
-    --text-color: var(--text-dark);
-    --section-bg: var(--dark-bg);
-    --section-bg-alt: var(--dark-bg-alt);
-    --card-bg: rgba(52, 58, 64, 0.95);
-    --shadow-color: 0 8px 20px rgba(0,0,0,0.4);
-    --timeline-line-color: #495057;
-  }
-
   body {
-    background-color: var(--section-bg);
+    background: url('assets/about-background1.png') no-repeat center center fixed;
+    background-size: cover;
     color: var(--text-color);
     font-family: 'Poppins', sans-serif;
-    transition: background-color 0.3s, color 0.3s;
     scroll-behavior: smooth;
   }
   
   .section-padding { padding: 6rem 0; }
-  .section-bg-alt { background-color: var(--section-bg-alt); }
+  .section-bg-alt { background-color: rgba(255, 255, 255, 0.7); backdrop-filter: blur(5px); }
 
-  .navbar { backdrop-filter: blur(10px); }
+  .navbar { background-color: rgba(33, 37, 41, 0.8); backdrop-filter: blur(10px); }
   .section-title { font-weight: 700; position: relative; display: inline-block; margin-bottom: 3rem; }
   .section-title::after { content: ""; display: block; width: 60px; height: 4px; background: var(--primary-color); margin: 8px auto 0; border-radius: 2px; }
   
@@ -60,11 +40,10 @@
   }
 
   .skill-card {
-    background: var(--card-bg); border: 1px solid rgba(0,0,0,0.05); border-radius: 10px;
-    padding: 1.5rem 1rem; text-align: center; transition: transform 0.3s, box-shadow 0.3s; height: 100%;
+    background: var(--card-bg); border-radius: 10px; box-shadow: var(--shadow-color);
+    padding: 1.5rem 1rem; text-align: center; transition: transform 0.3s; height: 100%;
   }
-  [data-bs-theme="dark"] .skill-card { border: 1px solid rgba(255,255,255,0.1); }
-  .skill-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+  .skill-card:hover { transform: translateY(-5px); }
   .skill-card i { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1rem; }
   .skill-card h6 { font-weight: 600; font-size: 0.9rem; }
 
@@ -73,22 +52,21 @@
   .exp-card { position: relative; width: 45%; padding: 1.5rem; margin-bottom: 2rem; background: var(--card-bg); border-radius: 15px; box-shadow: var(--shadow-color); transition: transform 0.3s; }
   .exp-card:nth-child(odd) { left: 0; }
   .exp-card:nth-child(even) { left: 55%; }
-  .exp-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
+  .exp-card:hover { transform: translateY(-5px); }
   .exp-card::after {
     content: ''; position: absolute; top: 20px; width: 16px; height: 16px; background: var(--primary-color);
-    border-radius: 50%; border: 3px solid var(--section-bg); z-index: 1; transition: transform 0.3s;
+    border-radius: 50%; border: 3px solid #f8f9fa; z-index: 1;
   }
-  .exp-card:hover::after { transform: scale(1.2); }
   .exp-card:nth-child(odd)::after { right: -45.5px; }
   .exp-card:nth-child(even)::after { left: -45.5px; }
   .exp-content h5 { font-weight: 700; }
   
   .cert-card { background: var(--card-bg); box-shadow: var(--shadow-color); transition: transform 0.3s; cursor: pointer; border-radius: 15px; padding: 1.5rem; }
-  footer { background: var(--dark-bg); color: var(--text-dark); }
+  footer { background: #212529; color: #f8f9fa; }
   
   .contact-info a { font-size: 1.5rem; margin: 0 1rem; color: var(--primary-color); transition: color 0.3s; }
+  .contact-info a:hover { color: #61dafb; }
   #backToTop { position: fixed; bottom: 20px; right: 20px; display: none; z-index: 1000; }
-  .theme-toggle-btn { cursor: pointer; font-size: 1.25rem; }
 
   @media (max-width: 992px) {
     .experience-timeline::before { left: 20px; }
@@ -99,16 +77,13 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg bg-dark bg-opacity-75 navbar-dark fixed-top shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
   <div class="container">
     <a class="navbar-brand fw-bold" href="index.html">🤖 Bot Craft Labs</a>
-    <div class="ms-auto d-flex align-items-center order-lg-2">
-      <i class="bi bi-brightness-high-fill theme-toggle-btn me-3 text-white" id="theme-toggler"></i>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-    </div>
-    <div class="collapse navbar-collapse order-lg-1" id="navMenu">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
         <li class="nav-item"><a class="nav-link" href="linkedin-qa.html">LinkedIn Q&A</a></li>
@@ -139,23 +114,29 @@
         <h2 class="section-title" data-aos="fade-up">Core Skills</h2>
       </div>
       <div class="row g-4 justify-content-center">
-        <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up">
-            <div class="skill-card"><i class="bi bi-robot"></i><h6>UiPath Dev</h6></div>
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
+            <div class="skill-card"><i class="bi bi-robot"></i><h6>UiPath Development</h6></div>
         </div>
-        <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="50">
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="50">
             <div class="skill-card"><i class="bi bi-microsoft"></i><h6>Power Automate</h6></div>
         </div>
-        <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="100">
-            <div class="skill-card"><i class="bi bi-sign-merge-left-fill"></i><h6>Blueprint RPA</h6></div>
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+            <div class="skill-card"><i class="bi bi-file-text-fill"></i><h6>Intelligent Document Processing</h6></div>
         </div>
-        <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="150">
-            <div class="skill-card"><i class="bi bi-file-earmark-code-fill"></i><h6>SAP Automation</h6></div>
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="150">
+            <div class="skill-card"><i class="bi bi-brain"></i><h6>AI Center & Agentic Automation</h6></div>
         </div>
-        <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="200">
-            <div class="skill-card"><i class="bi bi-cloud-check-fill"></i><h6>Oracle Automation</h6></div>
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="skill-card"><i class="bi bi-bullseye"></i><h6>Process & Task Mining</h6></div>
         </div>
-        <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="250">
-            <div class="skill-card"><i class="bi bi-bounding-box-circles"></i><h6>Salesforce Int.</h6></div>
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="250">
+            <div class="skill-card"><i class="bi bi-sign-merge-left-fill"></i><h6>RPA Migration (Blueprint)</h6></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+            <div class="skill-card"><i class="bi bi-journal-code"></i><h6>C# & .NET Integration</h6></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="350">
+            <div class="skill-card"><i class="bi bi-gear-wide-connected"></i><h6>Enterprise App Automation</h6></div>
         </div>
       </div>
     </div>
@@ -235,19 +216,6 @@
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     AOS.init({ duration: 800, once: true, offset: 50 });
-
-    const themeToggler = document.getElementById('theme-toggler');
-    const htmlEl = document.documentElement;
-    const currentTheme = localStorage.getItem('theme') || 'light';
-    htmlEl.setAttribute('data-bs-theme', currentTheme);
-    themeToggler.className = currentTheme === 'dark' ? 'bi bi-moon-fill theme-toggle-btn me-3 text-white' : 'bi bi-brightness-high-fill theme-toggle-btn me-3 text-white';
-
-    themeToggler.addEventListener('click', () => {
-        const newTheme = htmlEl.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
-        htmlEl.setAttribute('data-bs-theme', newTheme);
-        themeToggler.className = newTheme === 'dark' ? 'bi bi-moon-fill theme-toggle-btn me-3 text-white' : 'bi bi-brightness-high-fill theme-toggle-btn me-3 text-white';
-        localStorage.setItem('theme', newTheme);
-    });
     
     const backToTopBtn = document.getElementById('backToTop');
     window.addEventListener('scroll', () => {
@@ -298,8 +266,16 @@
     }
 
     filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => renderCerts(btn.dataset.skill));
+        btn.addEventListener('click', () => {
+            // Active button styling
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderCerts(btn.dataset.skill)
+        });
     });
+    
+    // Set initial active button
+    document.querySelector('.filter-btn[data-skill="All"]').classList.add('active');
     renderCerts();
   });
 </script>
