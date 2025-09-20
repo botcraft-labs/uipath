@@ -168,34 +168,6 @@
     </div>
   </section>
 
-  <!-- LinkedIn Q&A Preview -->
-  <section class="container py-5">
-    <h2 class="section-title text-center mb-4">LinkedIn Q&A Preview</h2>
-    <div class="table-responsive">
-      <table class="table table-striped table-bordered" id="linkedin-preview">
-        <thead class="table-dark">
-          <tr>
-            <th>Category</th>
-            <th>Question</th>
-            <th>Answer</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <div class="text-center mt-3">
-      <a href="linkedin-qa.html" class="btn btn-primary">View All Q&A</a>
-    </div>
-  </section>
-
-  <!-- CTA Section -->
-  <section class="cta-section">
-    <div class="container" data-aos="zoom-in">
-      <h2>Want to see all my LinkedIn Q&A?</h2>
-      <a href="linkedin-qa.html" class="btn btn-light btn-lg mt-3">Check Now</a>
-    </div>
-  </section>
-
   <!-- Footer -->
   <footer class="text-center py-3 text-white">
     <p>&copy; 2025 Bot Craft Labs | Built with ❤️ using GitHub Pages</p>
@@ -205,32 +177,5 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <script>
-    AOS.init();
-
-    // Google Sheet CSV URL
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRH47EynjreS2JDNkksivQLcC1pTP19pl68iPW_pT_5ydKA6dWOoaajgA0yWHdrfBYuAJRDMl7KZ5TJ/pub?output=csv';
-
-    Papa.parse(sheetUrl, {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      complete: function(results) {
-        const tbody = document.querySelector('#linkedin-preview tbody');
-        results.data.slice(0, 3).forEach(row => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td style="white-space: pre-wrap;">${row.Category || ''}</td>
-            <td style="white-space: pre-wrap;">${row.Post || ''}</td>
-            <td style="white-space: pre-wrap;">${row.Comment || ''}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-      },
-      error: function(err) {
-        console.error('Error loading CSV:', err);
-      }
-    });
-  </script>
 </body>
 </html>
