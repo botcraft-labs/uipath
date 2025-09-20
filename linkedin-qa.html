@@ -19,12 +19,21 @@
     --text-color: #212529;
   }
 
-  body { 
-    font-family: 'Poppins', sans-serif;
-    color: var(--text-color);
-    background: linear-gradient(rgba(248, 249, 250, 0.92), rgba(248, 249, 250, 0.92)), url('assets/QA-background.jpg') no-repeat center center fixed;
-    background-size: cover;
-  }
+body { 
+  font-family: 'Poppins', sans-serif;
+  color: var(--text-color);
+  
+  /* Fallback color in case the image doesn't load */
+  background-color: #f8f9fa; 
+  
+  /* Image with a semi-transparent overlay */
+  background-image: linear-gradient(rgba(248, 249, 250, 0.92), rgba(248, 249, 250, 0.92)), url('assets/QA-background.jpg');
+  
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-size: cover;
+}
   
   .navbar { background-color: rgba(33, 37, 41, 0.9); backdrop-filter: blur(10px); }
 
