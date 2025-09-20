@@ -93,6 +93,7 @@
         results.data.forEach(row => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
+            <td style="white-space: pre-wrap;">${row.Category || ''}</td>
             <td style="white-space: pre-wrap;">${row.Post || ''}</td>
             <td style="white-space: pre-wrap;">${row.Comment || ''}</td>
           `;
