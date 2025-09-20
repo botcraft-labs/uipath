@@ -137,7 +137,7 @@
     <div class="container" data-aos="zoom-in">
       <h1>Welcome to Bot Craft Labs</h1>
       <p>Crafting Intelligent RPA Solutions with UiPath, Power Automate & Blueprint</p>
-      <a href="about.html" class="btn btn-primary btn-lg mt-3">Explore More</a>
+      <a href="linkedin-qa.html" class="btn btn-primary btn-lg mt-3">Explore Interview Q&A</a>
     </div>
   </header>
 
@@ -218,7 +218,7 @@
       skipEmptyLines: true,
       complete: function(results) {
         const tbody = document.querySelector('#linkedin-preview tbody');
-        results.data.slice(0, 5).forEach(row => {
+        results.data.slice(0, 3).forEach(row => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td style="white-space: pre-wrap;">${row.Category || ''}</td>
