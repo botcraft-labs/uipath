@@ -103,7 +103,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-
   <script>
     const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0ArJT6stpqYAl8Z0Jj_VOxEnUI4jFDf56JYib9QymSAYZr-BliBVe5DbyH1-UkXtbmLQ_eVxR_ug8/pub?gid=0&single=true&output=csv";
     let allData = [];
@@ -159,19 +158,6 @@
       renderTable(filteredData, searchTerm);
     }
 
-    function exportPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const tableData = filteredData.map(row => [row.Category, row.Post, row.Comment]);
-      doc.autoTable({
-        head: [['Category', 'Post', 'Comment']],
-        body: tableData,
-        styles: { fontSize: 8 },
-        headStyles: { fillColor: [13, 110, 253] }
-      });
-      doc.save('LinkedIn_QA.pdf');
-    }
-
     Papa.parse(sheetUrl, {
       download: true,
       header: true,
@@ -210,7 +196,21 @@
         currentPage++; renderTable(filteredData);
       }
     });
-    document.getElementById("exportBtn").addEventListener("click", exportPDF);
+
+    // Export filtered data to PDF
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const tableData = filteredData.map(r => [r.Category || '', r.Post || '', r.Comment || '']);
+      doc.autoTable({
+        head: [['Category', 'Post', 'Comment']],
+        body: tableData,
+        startY: 20,
+      });
+
+      doc.save('LinkedIn_QA.pdf');
+    });
   </script>
 </body>
 </html>
