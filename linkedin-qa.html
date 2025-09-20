@@ -32,34 +32,7 @@
       justify-content: center;
     }
     .highlight { background-color: #fff3cd; }
-    .category-chip {
-      cursor: pointer;
-      padding: 5px 12px;
-      background-color: #0d6efd;
-      color: #fff;
-      border-radius: 20px;
-      margin: 2px;
-      transition: 0.3s;
-    }
-    .category-chip:hover {
-      background-color: #0b5ed7;
-    }
-    #linkedin-table th {
-      cursor: pointer;
-    }
-    #linkedin-table tbody tr:hover {
-      background-color: #e9f0ff;
-      transform: scale(1.02);
-      transition: all 0.3s;
-    }
     footer { background: #212529; }
-    .copy-btn {
-      cursor: pointer;
-      font-size: 0.9rem;
-      margin-left: 5px;
-      color: #0d6efd;
-    }
-    .copy-btn:hover { color: #0b5ed7; }
   </style>
 </head>
 <body>
@@ -97,17 +70,14 @@
       <button class="btn btn-secondary" id="resetBtn">Reset</button>
     </div>
 
-    <!-- Category Chips -->
-    <div id="categoryChips" class="mb-3 text-center"></div>
-
     <!-- Table -->
     <div class="table-responsive">
       <table class="table table-striped table-bordered" id="linkedin-table">
         <thead class="table-dark">
           <tr>
-            <th data-column="Category" data-order="desc">Category ⬍</th>
-            <th data-column="Post" data-order="desc">Post ⬍</th>
-            <th data-column="Comment" data-order="desc">Comment ⬍</th>
+            <th>Category</th>
+            <th>Post</th>
+            <th>Comment</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -132,38 +102,41 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script>
     const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0ArJT6stpqYAl8Z0Jj_VOxEnUI4jFDf56JYib9QymSAYZr-BliBVe5DbyH1-UkXtbmLQ_eVxR_ug8/pub?gid=0&single=true&output=csv";
-    let allData = [], filteredData = [], currentPage = 1, rowsPerPage = 10;
-
-    function highlight(text, term) {
-      if (!term) return text;
-      return text.replace(new RegExp(`(${term})`, 'gi'), "<span class='highlight'>$1</span>");
-    }
+    let allData = [];
+    let filteredData = [];
+    let currentPage = 1;
+    const rowsPerPage = 10;
 
     function renderTable(data, searchTerm = '') {
       const tbody = document.querySelector('#linkedin-table tbody');
       tbody.innerHTML = '';
+
       const start = (currentPage - 1) * rowsPerPage;
       const end = start + rowsPerPage;
       const pageData = data.slice(start, end);
 
       pageData.forEach(row => {
+        const category = row.Category || '';
+        const post = row.Post || '';
+        const comment = row.Comment || '';
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${highlight(row.Category || '', searchTerm)}</td>
-          <td>${highlight(row.Post || '', searchTerm)} <span class="copy-btn" onclick="copyText('${row.Post}')">📋</span></td>
-          <td>${highlight(row.Comment || '', searchTerm)} <span class="copy-btn" onclick="copyText('${row.Comment}')">📋</span></td>
+          <td>${highlight(category, searchTerm)}</td>
+          <td>${highlight(post, searchTerm)}</td>
+          <td>${highlight(comment, searchTerm)}</td>
         `;
         tbody.appendChild(tr);
       });
 
-      document.getElementById("pageInfo").textContent = `Page ${currentPage} of ${Math.ceil(data.length / rowsPerPage)}`;
+      document.getElementById("pageInfo").textContent =
+        `Page ${currentPage} of ${Math.ceil(data.length / rowsPerPage)}`;
       document.getElementById("prevBtn").disabled = currentPage === 1;
       document.getElementById("nextBtn").disabled = end >= data.length;
     }
 
-    function copyText(text) {
-      navigator.clipboard.writeText(text);
-      alert('Copied to clipboard!');
+    function highlight(text, term) {
+      if (!term) return text;
+      return text.replace(new RegExp(`(${term})`, 'gi'), "<span class='highlight'>$1</span>");
     }
 
     function applyFilters() {
@@ -182,20 +155,6 @@
       renderTable(filteredData, searchTerm);
     }
 
-    function createCategoryChips(categories) {
-      const container = document.getElementById("categoryChips");
-      categories.forEach(cat => {
-        const chip = document.createElement("span");
-        chip.className = "category-chip";
-        chip.textContent = cat;
-        chip.addEventListener("click", () => {
-          document.getElementById("categoryFilter").value = cat;
-          applyFilters();
-        });
-        container.appendChild(chip);
-      });
-    }
-
     Papa.parse(sheetUrl, {
       download: true,
       header: true,
@@ -203,6 +162,8 @@
       complete: function(results) {
         allData = results.data;
         filteredData = [...allData];
+
+        // Populate categories
         const categories = [...new Set(allData.map(r => r.Category).filter(Boolean))];
         const select = document.getElementById("categoryFilter");
         categories.forEach(cat => {
@@ -211,7 +172,7 @@
           opt.textContent = cat;
           select.appendChild(opt);
         });
-        createCategoryChips(categories);
+
         renderTable(filteredData);
       }
     });
@@ -228,24 +189,9 @@
       if (currentPage > 1) { currentPage--; renderTable(filteredData); }
     });
     document.getElementById("nextBtn").addEventListener("click", () => {
-      if (currentPage < Math.ceil(filteredData.length / rowsPerPage)) { currentPage++; renderTable(filteredData); }
-    });
-
-    // Sort functionality
-    document.querySelectorAll("#linkedin-table th").forEach(th => {
-      th.addEventListener("click", () => {
-        const column = th.getAttribute("data-column");
-        const order = th.getAttribute("data-order");
-        filteredData.sort((a,b) => {
-          const valA = (a[column] || '').toLowerCase();
-          const valB = (b[column] || '').toLowerCase();
-          if (valA < valB) return order === 'asc' ? -1 : 1;
-          if (valA > valB) return order === 'asc' ? 1 : -1;
-          return 0;
-        });
-        th.setAttribute("data-order", order === 'asc' ? 'desc' : 'asc');
-        renderTable(filteredData, document.getElementById("searchInput").value.trim().toLowerCase());
-      });
+      if (currentPage < Math.ceil(filteredData.length / rowsPerPage)) {
+        currentPage++; renderTable(filteredData);
+      }
     });
   </script>
 </body>
