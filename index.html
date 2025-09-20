@@ -1,548 +1,245 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
-  <meta charset="UTF-8">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Bot Craft Labs - Intelligent Automation</title>
-
-  
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-
-  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
-
-  
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-  
-
-  <style>
-
-    :root {
-
-      --primary-color: #0d6efd;
-
-      --secondary-color: #6c757d;
-
-      --light-bg: #f8f9fa;
-
-      --dark-bg: #212529;
-
-    }
-
-
-
-    body { 
-
-      scroll-behavior: smooth; 
-
-      font-family: 'Poppins', sans-serif;
-
-    }
-
-
-
-    /* --- Navigation Bar --- */
-
-    .navbar {
-
-      transition: background-color 0.4s ease-in-out, padding 0.4s ease-in-out;
-
-    }
-
-    .navbar-dark .navbar-nav .nav-link {
-
-      color: rgba(255,255,255,0.8);
-
-      transition: color 0.3s;
-
-    }
-
-    .navbar-dark .navbar-nav .nav-link:hover {
-
-      color: #fff;
-
-    }
-
-    .navbar.scrolled {
-
-      background-color: var(--dark-bg) !important;
-
-      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-
-    }
-
-
-
-    /* --- Hero Section --- */
-
-    .hero {
-
-      min-height: 100vh;
-
-      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('assets/background.png') center/cover no-repeat fixed;
-
-      color: #fff;
-
-    }
-
-    .hero h1 { font-weight: 800; font-size: clamp(2.5rem, 5vw, 3.5rem); text-shadow: 2px 2px 10px rgba(0,0,0,0.6); }
-
-    .hero .btn-primary {
-
-      background: linear-gradient(45deg, #0d6efd, #0dcaf0);
-
-      border: none;
-
-      padding: 12px 30px;
-
-      font-weight: 600;
-
-      transition: transform 0.3s, box-shadow 0.3s;
-
-    }
-
-    .hero .btn-primary:hover {
-
-      transform: translateY(-3px);
-
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-
-    }
-
-    .scroll-down {
-
-      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); font-size: 2rem; color: #fff;
-
-      animation: bounce 2s infinite; cursor: pointer;
-
-    }
-
-    @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); } 40% { transform: translate(-50%, 10px); } 60% { transform: translate(-50%, 5px); } }
-
-
-
-    /* --- General Styling --- */
-
-    .section-title { font-weight: 700; position: relative; display: inline-block; margin-bottom: 2rem; }
-
-    .section-title::after { content: ""; display: block; width: 60px; height: 4px; background: var(--primary-color); margin: 8px auto 0; border-radius: 2px; }
-
-
-
-    /* --- Features Section --- */
-
-    .feature-card {
-
-      transition: transform 0.4s, box-shadow 0.4s; background: #fff; border-radius: 15px; height: 100%;
-
-      border: 1px solid #eee; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-
-    }
-
-    .feature-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
-
-    .feature-icon {
-
-      width: 70px; height: 70px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 1.5rem;
-
-      color: #fff; font-size: 1.8rem;
-
-    }
-
-    .icon-primary { background: linear-gradient(45deg, #0d6efd, #0dcaf0); }
-
-    .icon-success { background: linear-gradient(45deg, #198754, #20c997); }
-
-    .icon-warning { background: linear-gradient(45deg, #ffc107, #fd7e14); }
-
-    
-
-    /* --- Counters Section --- */
-
-    .counter-section { background-color: var(--light-bg); }
-
-    .counter { font-size: 3rem; font-weight: 700; color: var(--primary-color); }
-
-    .counter-text { font-size: 1rem; color: var(--secondary-color); font-weight: 600; }
-
-
-
-    /* --- NEW: Tech Stack Section --- */
-
-    .tech-logo { height: 60px; filter: grayscale(100%); transition: filter 0.3s; }
-
-    .tech-logo:hover { filter: grayscale(0%); }
-
-    
-
-    /* --- Footer --- */
-
-    footer { background: var(--dark-bg); }
-
-    .footer-socials a { color: rgba(255,255,255,0.7); font-size: 1.5rem; transition: color 0.3s, transform 0.3s; }
-
-    .footer-socials a:hover { color: #fff; transform: translateY(-3px); }
-
-
-
-    /* --- Back to Top Button --- */
-
-    #backToTop {
-
-      position: fixed; bottom: 20px; right: 20px; background: var(--primary-color); color: #fff; border: none; border-radius: 50%;
-
-      width: 45px; height: 45px; display: none; align-items: center; justify-content: center; z-index: 1000;
-
-      transition: background-color 0.3s, transform 0.3s;
-
-    }
-
-    #backToTop:hover { background: #0b5ed7; transform: scale(1.1); }
-
-  </style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bot Craft Labs - Intelligent Automation</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary-color: #0d6efd;
+      --secondary-color: #6c757d;
+      --light-bg: #f8f9fa;
+      --dark-bg: #212529;
+    }
+
+    body { 
+      scroll-behavior: smooth; 
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* --- Navigation Bar --- */
+    .navbar { transition: background-color 0.4s ease-in-out; }
+    .navbar-dark .navbar-nav .nav-link { color: rgba(255,255,255,0.8); transition: color 0.3s; }
+    .navbar-dark .navbar-nav .nav-link:hover { color: #fff; }
+    .navbar.scrolled { background-color: var(--dark-bg) !important; box-shadow: 0 3px 10px rgba(0,0,0,0.15); }
+
+    /* --- Hero Section --- */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('assets/background.png') center/cover no-repeat fixed;
+      color: #fff;
+    }
+    .hero h1 { font-weight: 800; font-size: clamp(2.5rem, 5vw, 3.5rem); text-shadow: 2px 2px 10px rgba(0,0,0,0.6); }
+    .hero .btn-primary {
+      background: linear-gradient(45deg, #0d6efd, #0dcaf0); border: none; padding: 12px 30px;
+      font-weight: 600; transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .hero .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+    .scroll-down {
+      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); font-size: 2rem; color: #fff;
+      animation: bounce 2s infinite; cursor: pointer;
+    }
+    @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); } 40% { transform: translate(-50%, 10px); } 60% { transform: translate(-50%, 5px); } }
+
+    .section-title { font-weight: 700; position: relative; display: inline-block; margin-bottom: 2rem; }
+    .section-title::after { content: ""; display: block; width: 60px; height: 4px; background: var(--primary-color); margin: 8px auto 0; border-radius: 2px; }
+
+    .feature-card {
+      transition: transform 0.4s, box-shadow 0.4s; background: #fff; border-radius: 15px; height: 100%;
+      border: 1px solid #eee; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    .feature-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+    .feature-icon {
+      width: 70px; height: 70px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 1.5rem;
+      color: #fff; font-size: 1.8rem;
+    }
+    .icon-primary { background: linear-gradient(45deg, #0d6efd, #0dcaf0); }
+    .icon-success { background: linear-gradient(45deg, #198754, #20c997); }
+    .icon-warning { background: linear-gradient(45deg, #ffc107, #fd7e14); }
+    
+    .counter-section { background-color: var(--light-bg); }
+    .counter { font-size: 3rem; font-weight: 700; color: var(--primary-color); }
+    .counter-text { font-size: 1rem; color: var(--secondary-color); font-weight: 600; }
+
+    .tech-logo { height: 60px; filter: grayscale(100%); transition: filter 0.3s; }
+    .tech-logo:hover { filter: grayscale(0%); }
+    
+    footer { background: var(--dark-bg); }
+    .footer-socials a { color: rgba(255,255,255,0.7); font-size: 1.5rem; transition: color 0.3s, transform 0.3s; }
+    .footer-socials a:hover { color: #fff; transform: translateY(-3px); }
+
+    #backToTop {
+      position: fixed; bottom: 20px; right: 20px; background: var(--primary-color); color: #fff; border: none; border-radius: 50%;
+      width: 45px; height: 45px; display: none; align-items: center; justify-content: center; z-index: 1000;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    #backToTop:hover { background: #0b5ed7; transform: scale(1.1); }
+  </style>
 </head>
-
 <body>
 
-
-
-  <nav class="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top">
-
-    <div class="container">
-
-      <a class="navbar-brand fw-bold" href="index.html">🤖 Bot Craft Labs</a>
-
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-
-        <span class="navbar-toggler-icon"></span>
-
-      </button>
-
-      <div class="collapse navbar-collapse" id="navMenu">
-
-        <ul class="navbar-nav ms-auto">
-
-          <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
-
-          <li class="nav-item"><a class="nav-link" href="linkedin-qa.html">LinkedIn Q&A</a></li>
-
-        </ul>
-
-      </div>
-
-    </div>
-
-  </nav>
-
-
-
-  <header class="hero d-flex align-items-center justify-content-center text-center">
-
-    <div class="container" data-aos="zoom-in">
-
-      <h1 class="mb-3">Welcome to Bot Craft Labs</h1>
-
-      <p class="lead mb-4">Crafting Intelligent RPA Solutions with UiPath, Power Automate & Blueprint</p>
-
-      <a href="linkedin-qa.html" class="btn btn-primary btn-lg">Explore My Q&A Posts</a>
-
-    </div>
-
-    <div class="scroll-down"><i class="fas fa-chevron-down"></i></div>
-
-  </header>
-
-
-
-  <main>
-
-    <section id="features" class="container py-5 my-4">
-
-      <h2 class="section-title text-center" data-aos="fade-up">What I Do</h2>
-
-      <div class="row text-center g-4">
-
-        <div class="col-md-4" data-aos="fade-up">
-
-          <div class="feature-card p-4">
-
-            <div class="feature-icon icon-primary"><i class="fas fa-robot"></i></div>
-
-            <h5>RPA Development</h5>
-
-            <p>Creating scalable automation solutions using UiPath, Power Automate, and Blueprint.</p>
-
-          </div>
-
-        </div>
-
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-
-          <div class="feature-card p-4">
-
-            <div class="feature-icon icon-success"><i class="fas fa-cogs"></i></div>
-
-            <h5>Process Optimization</h5>
-
-            <p>Analyzing and optimizing workflows for maximum efficiency and minimal manual effort.</p>
-
-          </div>
-
-        </div>
-
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-
-          <div class="feature-card p-4">
-
-            <div class="feature-icon icon-warning"><i class="fas fa-brain"></i></div>
-
-            <h5>AI Integration</h5>
-
-            <p>Integrating AI/ML components into automation solutions for intelligent decision-making.</p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-
-    <section class="counter-section py-5">
-
-      <div class="container">
-
-        <h2 class="section-title text-center" data-aos="fade-up">My Achievements</h2>
-
-        <div class="row text-center">
-
-          <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up">
-
-            <div class="counter" data-count="25">0</div>
-
-            <div class="counter-text">Projects Completed</div>
-
-          </div>
-
-          <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="100">
-
-            <div class="counter" data-count="11">0</div>
-
-            <div class="counter-text">Clients Served</div>
-
-          </div>
-
-          <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-
-            <div class="counter" data-count="7">0</div>
-
-            <div class="counter-text">Awards & Certifications</div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-
-<section id="tech-stack" class="container py-5 my-4">
-
-  <h2 class="section-title text-center" data-aos="fade-up">My Tech Stack</h2>
-
-  <div class="d-flex flex-wrap justify-content-center align-items-center gap-5" data-aos="fade-up">
-
-    <img src="assets/uipath-logo.png" alt="UiPath" class="tech-logo" title="UiPath">
-
-    <img src="assets/microsoft-logo.png" alt="Power Automate" class="tech-logo" title="Microsoft Power Automate">
-
-    <img src="assets/blueprint-logo.png" alt="Blueprint" class="tech-logo" title="Blueprint">
-
-    <img src="assets/vb-net.png" alt="VB.NET" class="tech-logo" title="VB.NET">
-
-    <img src="assets/c-sharp.png" alt="C#" class="tech-logo" title="C#">
-
-    <img src="assets/python.png" alt="Python" class="tech-logo" title="Python">
-
-    <img src="assets/mysql.png" alt="MySQL" class="tech-logo" title="MySQL">
-
-    <img src="assets/vba.png" alt="VBA" class="tech-logo" title="VBA">
-
-    <img src="assets/javascript.png" alt="JavaScript" class="tech-logo" title="JavaScript">
-
-  </div>
-
-</section>
-
-  </main>
-
-
-
-  <footer class="text-center py-4 text-white">
-
-    <div class="container">
-
-      <div class="footer-socials d-flex justify-content-center gap-4 mb-3">
-
-          <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-
-          <a href="#" target="_blank"><i class="fab fa-github"></i></a>
-
-          <a href="mailto:your-email@example.com"><i class="fas fa-envelope"></i></a>
-
-      </div>
-
-      <p class="mb-0">&copy; 2025 Bot Craft Labs | Built with ❤️ using GitHub Pages</p>
-
-    </div>
-
-  </footer>
-
-  
-
-  <button id="backToTop" title="Go to top"><i class="fas fa-arrow-up"></i></button>
-
-
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-
-  <script>
-
-    document.addEventListener('DOMContentLoaded', function() {
-
-      // Initialize AOS
-
-      AOS.init({ duration: 800, once: true, offset: 50 });
-
-
-
-      // --- Navbar Scroll Effect ---
-
-      const navbar = document.querySelector('.navbar');
-
-      window.addEventListener('scroll', () => {
-
-        if (window.scrollY > 50) {
-
-          navbar.classList.add('scrolled');
-
-        } else {
-
-          navbar.classList.remove('scrolled');
-
-        }
-
-      });
-
-
-
-      // --- Counter Animation on Scroll ---
-
-      const counters = document.querySelectorAll('.counter');
-
-      const speed = 200; // The lower the slower
-
-      const observer = new IntersectionObserver(entries => {
-
-        entries.forEach(entry => {
-
-          if (entry.isIntersecting) {
-
-            const counter = entry.target;
-
-            const animate = () => {
-
-              const target = +counter.getAttribute('data-count');
-
-              const count = +counter.innerText;
-
-              const inc = Math.ceil(target / speed);
-
-
-
-              if (count < target) {
-
-                counter.innerText = count + inc;
-
-                setTimeout(animate, 20);
-
-              } else {
-
-                counter.innerText = target;
-
-              }
-
-            };
-
-            animate();
-
-            observer.unobserve(counter); // Stop observing after animation
-
-          }
-
-        });
-
-      }, { threshold: 0.5 }); // Trigger when 50% of the element is visible
-
-
-
-      counters.forEach(counter => observer.observe(counter));
-
-
-
-      // --- Back to Top Button ---
-
-      const backToTop = document.getElementById('backToTop');
-
-      window.addEventListener('scroll', () => {
-
-        backToTop.style.display = (window.scrollY > 300) ? 'flex' : 'none';
-
-      });
-
-      backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
-      
-
-      // --- Scroll Down Arrow in Hero Section ---
-
-      const scrollDown = document.querySelector('.scroll-down');
-
-      if(scrollDown) {
-
-        scrollDown.addEventListener('click', () => {
-
-          document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
-
-        });
-
-      }
-
-    });
-
-  </script>
-
+  <nav class="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">🤖 Bot Craft Labs</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="linkedin-qa.html">LinkedIn Q&A</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero d-flex align-items-center justify-content-center text-center">
+    <div class="container" data-aos="zoom-in">
+      <h1 class="mb-3">Welcome to Bot Craft Labs</h1>
+      <p class="lead mb-4">Crafting Intelligent RPA Solutions with UiPath, Power Automate & Blueprint</p>
+      <a href="linkedin-qa.html" class="btn btn-primary btn-lg">Explore My Q&A Posts</a>
+    </div>
+    <div class="scroll-down"><i class="fas fa-chevron-down"></i></div>
+  </header>
+
+  <main>
+    <section id="features" class="container py-5 my-4">
+      <h2 class="section-title text-center" data-aos="fade-up">What I Do</h2>
+      <div class="row text-center g-4">
+        <div class="col-md-4" data-aos="fade-up">
+          <div class="feature-card p-4">
+            <div class="feature-icon icon-primary"><i class="fas fa-robot"></i></div>
+            <h5>RPA Development</h5>
+            <p>Creating scalable automation solutions using UiPath, Power Automate, and Blueprint.</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="feature-card p-4">
+            <div class="feature-icon icon-success"><i class="fas fa-cogs"></i></div>
+            <h5>Process Optimization</h5>
+            <p>Analyzing and optimizing workflows for maximum efficiency and minimal manual effort.</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="feature-card p-4">
+            <div class="feature-icon icon-warning"><i class="fas fa-brain"></i></div>
+            <h5>AI Integration</h5>
+            <p>Integrating AI/ML components into automation solutions for intelligent decision-making.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="counter-section py-5">
+      <div class="container">
+        <h2 class="section-title text-center" data-aos="fade-up">My Achievements</h2>
+        <div class="row text-center">
+          <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up">
+            <div class="counter" data-count="25">0</div>
+            <div class="counter-text">Projects Completed</div>
+          </div>
+          <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="150">
+            <div class="counter" data-count="11">0</div>
+            <div class="counter-text">Clients Served</div>
+          </div>
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="counter" data-count="7">0</div>
+            <div class="counter-text">Awards & Certifications</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tech-stack" class="container py-5 my-4">
+        <h2 class="section-title text-center" data-aos="fade-up">My Tech Stack</h2>
+        <div class="d-flex flex-wrap justify-content-center align-items-center gap-5" data-aos="fade-up">
+            <img src="assets/uipath-logo.png" alt="UiPath" class="tech-logo" title="UiPath">
+            <img src="assets/microsoft-logo.png" alt="Power Automate" class="tech-logo" title="Microsoft Power Automate">
+            <img src="assets/blueprint-logo.png" alt="Blueprint" class="tech-logo" title="Blueprint">
+            <img src="assets/vb-net.png" alt="VB.NET" class="tech-logo" title="VB.NET">
+            <img src="assets/c-sharp.png" alt="C#" class="tech-logo" title="C#">
+            <img src="assets/python.png" alt="Python" class="tech-logo" title="Python">
+            <img src="assets/mysql.png" alt="MySQL" class="tech-logo" title="MySQL">
+            <img src="assets/vba.png" alt="VBA" class="tech-logo" title="VBA">
+            <img src="assets/javascript.png" alt="JavaScript" class="tech-logo" title="JavaScript">
+        </div>
+    </section>
+  </main>
+
+  <footer class="text-center py-4 text-white">
+    <div class="container">
+      <div class="footer-socials d-flex justify-content-center gap-4 mb-3">
+          <a href="https://www.linkedin.com/in/chaitanya-doneparthi-409539139/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="#" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+          <a href="mailto:chaitanya.dgr@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+      </div>
+      <p class="mb-0">&copy; 2025 Bot Craft Labs | Built with ❤️ using GitHub Pages</p>
+    </div>
+  </footer>
+  
+  <button id="backToTop" title="Go to top"><i class="fas fa-arrow-up"></i></button>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      AOS.init({ duration: 800, once: true, offset: 50 });
+
+      const navbar = document.querySelector('.navbar');
+      window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 50);
+      });
+
+      // --- Counter Animation on Scroll ---
+      const counters = document.querySelectorAll('.counter');
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const counter = entry.target;
+            const target = +counter.getAttribute('data-count');
+            let count = 0;
+            const speed = 200; // Lower number is slower
+            
+            const updateCount = () => {
+              const increment = Math.ceil(target / speed);
+              if (count < target) {
+                count += increment;
+                counter.innerText = Math.min(count, target);
+                setTimeout(updateCount, 15);
+              } else {
+                counter.innerText = target;
+              }
+            };
+            
+            updateCount();
+            observer.unobserve(counter);
+          }
+        });
+      }, { threshold: 0.5 });
+      counters.forEach(counter => observer.observe(counter));
+
+      const backToTop = document.getElementById('backToTop');
+      window.addEventListener('scroll', () => {
+        backToTop.style.display = (window.scrollY > 300) ? 'flex' : 'none';
+      });
+      backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      
+      const scrollDown = document.querySelector('.scroll-down');
+      if(scrollDown) {
+        scrollDown.addEventListener('click', () => {
+          document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        });
+      }
+    });
+  </script>
 </body>
-
 </html>
-
