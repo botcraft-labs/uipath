@@ -3,98 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bot Craft Labs</title>
+  <title>Bot Craft Labs - Intelligent Automation</title>
+  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
-  <link rel="stylesheet" href="assets/style.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
-    body { scroll-behavior: smooth; }
+    :root {
+      --primary-color: #0d6efd;
+      --secondary-color: #6c757d;
+      --light-bg: #f8f9fa;
+      --dark-bg: #212529;
+    }
 
-    /* Hero Section */
+    body { 
+      scroll-behavior: smooth; 
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* --- Navigation Bar --- */
+    .navbar {
+      transition: background-color 0.4s ease-in-out, padding 0.4s ease-in-out;
+    }
+    .navbar-dark .navbar-nav .nav-link {
+      color: rgba(255,255,255,0.8);
+      transition: color 0.3s;
+    }
+    .navbar-dark .navbar-nav .nav-link:hover {
+      color: #fff;
+    }
+    .navbar.scrolled {
+      background-color: var(--dark-bg) !important;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    }
+
+    /* --- Hero Section --- */
     .hero {
       min-height: 100vh;
-      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
-                  url('assets/background.png') center/cover no-repeat;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('assets/background.png') center/cover no-repeat fixed;
       color: #fff;
-      text-align: center;
-      position: relative;
     }
-    .hero h1 { font-weight: 800; font-size: 3rem; text-shadow: 2px 2px 10px rgba(0,0,0,0.6); }
-    .hero p { font-size: 1.2rem; margin-bottom: 1.5rem; text-shadow: 1px 1px 6px rgba(0,0,0,0.6); }
-    .scroll-down {
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 2rem;
-      color: #fff;
-      animation: bounce 2s infinite;
-      cursor: pointer;
-    }
-    @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
-      40% { transform: translate(-50%, 10px); }
-      60% { transform: translate(-50%, 5px); }
-    }
-
-    /* Section Titles */
-    .section-title { font-weight: 700; position: relative; display: inline-block; margin-bottom: 2rem; }
-    .section-title::after { content: ""; display: block; width: 60px; height: 3px; background: #0d6efd; margin: 8px auto 0; border-radius: 2px; }
-
-    /* Features Section */
-    .feature-card {
-      transition: transform 0.4s, box-shadow 0.4s;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 15px;
-      height: 100%;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    .feature-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
-
-    /* Counters Section */
-    .counter {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: #0d6efd;
-    }
-    .counter-text { font-size: 1rem; margin-top: 5px; color: #6c757d; }
-
-    /* Testimonials Carousel */
-    .testimonial-card { background: #f8f9fa; border-radius: 15px; padding: 2rem; text-align: center; }
-    .testimonial-card i { color: #0d6efd; }
-
-    /* Footer */
-    footer { background: #212529; }
-
-    /* Back to Top */
-    #backToTop {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background: #0d6efd;
-      color: #fff;
+    .hero h1 { font-weight: 800; font-size: clamp(2.5rem, 5vw, 3.5rem); text-shadow: 2px 2px 10px rgba(0,0,0,0.6); }
+    .hero .btn-primary {
+      background: linear-gradient(45deg, #0d6efd, #0dcaf0);
       border: none;
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      display: none;
-      z-index: 999;
+      padding: 12px 30px;
+      font-weight: 600;
+      transition: transform 0.3s, box-shadow 0.3s;
     }
-    #backToTop:hover { background: #0b5ed7; }
+    .hero .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .scroll-down {
+      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); font-size: 2rem; color: #fff;
+      animation: bounce 2s infinite; cursor: pointer;
+    }
+    @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); } 40% { transform: translate(-50%, 10px); } 60% { transform: translate(-50%, 5px); } }
+
+    /* --- General Styling --- */
+    .section-title { font-weight: 700; position: relative; display: inline-block; margin-bottom: 2rem; }
+    .section-title::after { content: ""; display: block; width: 60px; height: 4px; background: var(--primary-color); margin: 8px auto 0; border-radius: 2px; }
+
+    /* --- Features Section --- */
+    .feature-card {
+      transition: transform 0.4s, box-shadow 0.4s; background: #fff; border-radius: 15px; height: 100%;
+      border: 1px solid #eee; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    .feature-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+    .feature-icon {
+      width: 70px; height: 70px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 1.5rem;
+      color: #fff; font-size: 1.8rem;
+    }
+    .icon-primary { background: linear-gradient(45deg, #0d6efd, #0dcaf0); }
+    .icon-success { background: linear-gradient(45deg, #198754, #20c997); }
+    .icon-warning { background: linear-gradient(45deg, #ffc107, #fd7e14); }
+    
+    /* --- Counters Section --- */
+    .counter-section { background-color: var(--light-bg); }
+    .counter { font-size: 3rem; font-weight: 700; color: var(--primary-color); }
+    .counter-text { font-size: 1rem; color: var(--secondary-color); font-weight: 600; }
+
+    /* --- NEW: Tech Stack Section --- */
+    .tech-logo { height: 60px; filter: grayscale(100%); transition: filter 0.3s; }
+    .tech-logo:hover { filter: grayscale(0%); }
+    
+    /* --- Footer --- */
+    footer { background: var(--dark-bg); }
+    .footer-socials a { color: rgba(255,255,255,0.7); font-size: 1.5rem; transition: color 0.3s, transform 0.3s; }
+    .footer-socials a:hover { color: #fff; transform: translateY(-3px); }
+
+    /* --- Back to Top Button --- */
+    #backToTop {
+      position: fixed; bottom: 20px; right: 20px; background: var(--primary-color); color: #fff; border: none; border-radius: 50%;
+      width: 45px; height: 45px; display: none; align-items: center; justify-content: center; z-index: 1000;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    #backToTop:hover { background: #0b5ed7; transform: scale(1.1); }
   </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top">
     <div class="container">
       <a class="navbar-brand fw-bold" href="index.html">🤖 Bot Craft Labs</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
@@ -109,105 +124,146 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <header class="hero">
+  <header class="hero d-flex align-items-center justify-content-center text-center">
     <div class="container" data-aos="zoom-in">
-      <h1>Welcome to Bot Craft Labs</h1>
-      <p>Crafting Intelligent RPA Solutions with UiPath, Power Automate & Blueprint</p>
-      <a href="linkedin-qa.html" class="btn btn-primary btn-lg mt-3">Explore My Q&A Posts</a>
+      <h1 class="mb-3">Welcome to Bot Craft Labs</h1>
+      <p class="lead mb-4">Crafting Intelligent RPA Solutions with UiPath, Power Automate & Blueprint</p>
+      <a href="linkedin-qa.html" class="btn btn-primary btn-lg">Explore My Q&A Posts</a>
     </div>
     <div class="scroll-down"><i class="fas fa-chevron-down"></i></div>
   </header>
 
-  <!-- Features Section -->
-  <section class="container py-5">
-    <h2 class="section-title text-center mb-4" data-aos="fade-up">What I Do</h2>
-    <div class="row text-center g-4">
-      <div class="col-md-4" data-aos="fade-up">
-        <div class="feature-card">
-          <i class="fas fa-robot fa-3x mb-3 text-primary"></i>
-          <h5>RPA Development</h5>
-          <p>Creating scalable automation solutions using UiPath, Power Automate, and Blueprint.</p>
+  <main>
+    <section id="features" class="container py-5 my-4">
+      <h2 class="section-title text-center" data-aos="fade-up">What I Do</h2>
+      <div class="row text-center g-4">
+        <div class="col-md-4" data-aos="fade-up">
+          <div class="feature-card p-4">
+            <div class="feature-icon icon-primary"><i class="fas fa-robot"></i></div>
+            <h5>RPA Development</h5>
+            <p>Creating scalable automation solutions using UiPath, Power Automate, and Blueprint.</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="feature-card p-4">
+            <div class="feature-icon icon-success"><i class="fas fa-cogs"></i></div>
+            <h5>Process Optimization</h5>
+            <p>Analyzing and optimizing workflows for maximum efficiency and minimal manual effort.</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="feature-card p-4">
+            <div class="feature-icon icon-warning"><i class="fas fa-brain"></i></div>
+            <h5>AI Integration</h5>
+            <p>Integrating AI/ML components into automation solutions for intelligent decision-making.</p>
+          </div>
         </div>
       </div>
-      <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-        <div class="feature-card">
-          <i class="fas fa-cogs fa-3x mb-3 text-success"></i>
-          <h5>Process Optimization</h5>
-          <p>Analyzing and optimizing workflows for maximum efficiency and minimal manual effort.</p>
+    </section>
+
+    <section class="counter-section py-5">
+      <div class="container">
+        <h2 class="section-title text-center" data-aos="fade-up">My Achievements</h2>
+        <div class="row text-center">
+          <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up">
+            <div class="counter" data-count="25">0</div>
+            <div class="counter-text">Projects Completed</div>
+          </div>
+          <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="100">
+            <div class="counter" data-count="11">0</div>
+            <div class="counter-text">Clients Served</div>
+          </div>
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="counter" data-count="7">0</div>
+            <div class="counter-text">Awards & Certifications</div>
+          </div>
         </div>
       </div>
-      <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-        <div class="feature-card">
-          <i class="fas fa-brain fa-3x mb-3 text-warning"></i>
-          <h5>AI Integration</h5>
-          <p>Integrating AI/ML components into automation solutions for intelligent decision-making.</p>
-        </div>
+    </section>
+
+    <section id="tech-stack" class="container py-5 my-4">
+      <h2 class="section-title text-center" data-aos="fade-up">My Tech Stack</h2>
+      <div class="d-flex flex-wrap justify-content-center align-items-center gap-5" data-aos="fade-up">
+        <img src="assets/uipath.svg" alt="UiPath" class="tech-logo" title="UiPath">
+        <img src="assets/power-automate.svg" alt="Power Automate" class="tech-logo" title="Microsoft Power Automate">
+        <img src="assets/blueprint.svg" alt="Blueprint" class="tech-logo" title="Blueprint">
+        <img src="assets/c-sharp.svg" alt="C#" class="tech-logo" title="C#">
+        <img src="assets/python.svg" alt="Python" class="tech-logo" title="Python">
       </div>
+    </section>
+  </main>
+
+  <footer class="text-center py-4 text-white">
+    <div class="container">
+      <div class="footer-socials d-flex justify-content-center gap-4 mb-3">
+          <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+          <a href="#" target="_blank"><i class="fab fa-github"></i></a>
+          <a href="mailto:your-email@example.com"><i class="fas fa-envelope"></i></a>
+      </div>
+      <p class="mb-0">&copy; 2025 Bot Craft Labs | Built with ❤️ using GitHub Pages</p>
     </div>
-  </section>
-
-  <!-- Achievements Section -->
-  <section class="container py-5 bg-light">
-    <h2 class="section-title text-center mb-4" data-aos="fade-up">My Achievements</h2>
-    <div class="row text-center">
-      <div class="col-md-4" data-aos="fade-up">
-        <div class="counter" data-count="25">0</div>
-        <div class="counter-text">Projects Completed</div>
-      </div>
-      <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-        <div class="counter" data-count="11">0</div>
-        <div class="counter-text">Clients Served</div>
-      </div>
-      <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-        <div class="counter" data-count="7">0</div>
-        <div class="counter-text">Awards & Certifications</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Back to Top Button -->
-  <button id="backToTop"><i class="fas fa-arrow-up"></i></button>
-
-  <!-- Footer -->
-  <footer class="text-center py-3 text-white">
-    <p>&copy; 2025 Bot Craft Labs | Built with ❤️ using GitHub Pages</p>
   </footer>
+  
+  <button id="backToTop" title="Go to top"><i class="fas fa-arrow-up"></i></button>
 
-  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   <script>
-    AOS.init({ duration: 800, once: true });
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize AOS
+      AOS.init({ duration: 800, once: true, offset: 50 });
 
-    // Counters animation
-    const counters = document.querySelectorAll('.counter');
-    counters.forEach(counter => {
-      const updateCount = () => {
-        const target = +counter.getAttribute('data-count');
-        const count = +counter.innerText;
-        const increment = target / 100;
-        if(count < target) {
-          counter.innerText = Math.ceil(count + increment);
-          setTimeout(updateCount, 20);
+      // --- Navbar Scroll Effect ---
+      const navbar = document.querySelector('.navbar');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
         } else {
-          counter.innerText = target;
+          navbar.classList.remove('scrolled');
         }
-      };
-      updateCount();
-    });
+      });
 
-    // Back to Top
-    const backToTop = document.getElementById('backToTop');
-    window.addEventListener('scroll', () => {
-      if(window.scrollY > 300) backToTop.style.display = 'flex';
-      else backToTop.style.display = 'none';
-    });
-    backToTop.addEventListener('click', () => window.scrollTo({ top:0, behavior: 'smooth' }));
+      // --- Counter Animation on Scroll ---
+      const counters = document.querySelectorAll('.counter');
+      const speed = 200; // The lower the slower
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const counter = entry.target;
+            const animate = () => {
+              const target = +counter.getAttribute('data-count');
+              const count = +counter.innerText;
+              const inc = Math.ceil(target / speed);
 
-    // Scroll down arrow
-    document.querySelector('.scroll-down').addEventListener('click', () => {
-      window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+              if (count < target) {
+                counter.innerText = count + inc;
+                setTimeout(animate, 20);
+              } else {
+                counter.innerText = target;
+              }
+            };
+            animate();
+            observer.unobserve(counter); // Stop observing after animation
+          }
+        });
+      }, { threshold: 0.5 }); // Trigger when 50% of the element is visible
+
+      counters.forEach(counter => observer.observe(counter));
+
+      // --- Back to Top Button ---
+      const backToTop = document.getElementById('backToTop');
+      window.addEventListener('scroll', () => {
+        backToTop.style.display = (window.scrollY > 300) ? 'flex' : 'none';
+      });
+      backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      
+      // --- Scroll Down Arrow in Hero Section ---
+      const scrollDown = document.querySelector('.scroll-down');
+      if(scrollDown) {
+        scrollDown.addEventListener('click', () => {
+          document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        });
+      }
     });
   </script>
 </body>
