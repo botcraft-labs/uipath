@@ -198,19 +198,27 @@
     });
 
     // Export filtered data to PDF
-    document.getElementById("exportBtn").addEventListener("click", () => {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
+document.getElementById("exportBtn").addEventListener("click", () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-      const tableData = filteredData.map(r => [r.Category || '', r.Post || '', r.Comment || '']);
-      doc.autoTable({
-        head: [['Category', 'Post', 'Comment']],
-        body: tableData,
-        startY: 20,
-      });
+  // Only export filtered data
+  let exportData = filteredData.map(r => [r.Category || '', r.Post || '', r.Comment || '']);
 
-      doc.save('LinkedIn_QA.pdf');
-    });
+  // Optional: export only current page
+  // const start = (currentPage - 1) * rowsPerPage;
+  // const end = start + rowsPerPage;
+  // let exportData = filteredData.slice(start, end).map(r => [r.Category || '', r.Post || '', r.Comment || '']);
+
+  doc.autoTable({
+    head: [['Category', 'Post', 'Comment']],
+    body: exportData,
+    startY: 20,
+  });
+
+  doc.save('LinkedIn_QA.pdf');
+});
+
   </script>
 </body>
 </html>
