@@ -93,6 +93,13 @@
         <tbody></tbody>
       </table>
     </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <button class="btn btn-outline-primary" id="prevBtn">⬅ Prev</button>
+      <span id="pageInfo"></span>
+      <button class="btn btn-outline-primary" id="nextBtn">Next ➡</button>
+    </div>
   </section>
 
   <!-- Footer -->
@@ -106,18 +113,24 @@
   <script>
     const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0ArJT6stpqYAl8Z0Jj_VOxEnUI4jFDf56JYib9QymSAYZr-BliBVe5DbyH1-UkXtbmLQ_eVxR_ug8/pub?gid=0&single=true&output=csv';
     let allData = [];
+    let currentPage = 1;
+    const rowsPerPage = 10;
 
-    // Populate table
     function renderTable(data, searchTerm = '') {
       const tbody = document.querySelector('#linkedin-table tbody');
       tbody.innerHTML = '';
 
-      data.forEach(row => {
-        const tr = document.createElement('tr');
-        const question = row.Post || '';
-        const answer = row.Comment || '';
-        const category = row.Category || '';
+      // Pagination slice
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const pageData = data.slice(start, end);
 
+      pageData.forEach(row => {
+        const category = row.Category || row["category"] || '';
+        const question = row.Post || row["Question"] || '';
+        const answer = row.Comment || row["Answer"] || '';
+
+        const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${highlightText(category, searchTerm)}</td>
           <td>${highlightText(question, searchTerm)}</td>
@@ -125,9 +138,16 @@
         `;
         tbody.appendChild(tr);
       });
+
+      // Update page info
+      document.getElementById('pageInfo').textContent = 
+        \`Page \${currentPage} of \${Math.ceil(data.length / rowsPerPage)}\`;
+
+      // Enable/disable buttons
+      document.getElementById('prevBtn').disabled = currentPage === 1;
+      document.getElementById('nextBtn').disabled = end >= data.length;
     }
 
-    // Highlight matched search text
     function highlightText(text, term) {
       if (!term) return text;
       const regex = new RegExp(\`(${term})\`, 'gi');
@@ -142,8 +162,8 @@
       complete: function(results) {
         allData = results.data;
 
-        // Populate category filter
-        const categories = [...new Set(allData.map(r => r.Category).filter(c => c))];
+        // Fill category dropdown
+        const categories = [...new Set(allData.map(r => r.Category || r["category"]).filter(Boolean))];
         const categoryFilter = document.getElementById('categoryFilter');
         categories.forEach(cat => {
           const opt = document.createElement('option');
@@ -159,13 +179,12 @@
       }
     });
 
-    // Search button click
-    document.getElementById('searchBtn').addEventListener('click', () => {
+    function applyFilters() {
       const searchTerm = document.getElementById('searchInput').value.trim();
       const category = document.getElementById('categoryFilter').value;
       let filtered = allData;
 
-      if (category) filtered = filtered.filter(r => r.Category === category);
+      if (category) filtered = filtered.filter(r => (r.Category || r["category"]) === category);
       if (searchTerm) {
         filtered = filtered.filter(r =>
           (r.Post && r.Post.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -174,14 +193,29 @@
         );
       }
 
+      currentPage = 1;
       renderTable(filtered, searchTerm);
-    });
+    }
 
-    // Reset button
+    // Search & Reset
+    document.getElementById('searchBtn').addEventListener('click', applyFilters);
     document.getElementById('resetBtn').addEventListener('click', () => {
       document.getElementById('searchInput').value = '';
       document.getElementById('categoryFilter').value = '';
+      currentPage = 1;
       renderTable(allData);
+    });
+
+    // Pagination controls
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        applyFilters();
+      }
+    });
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      currentPage++;
+      applyFilters();
     });
   </script>
 </body>
