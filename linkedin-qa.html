@@ -40,16 +40,36 @@
     text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
   }
 
+  /* --- NEW: Attractive Filter Layout --- */
+  .filter-container h4 {
+    font-weight: 600;
+  }
   .filter-bar {
     background-color: #fff;
     border-radius: 0.75rem;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     border: 1px solid #dee2e6;
   }
-  
+  .filter-bar .form-select, .filter-bar .form-control, .filter-bar .btn {
+    border-radius: 0.5rem;
+    height: 100%;
+  }
+  .filter-bar .input-group .form-control {
+    border-left: 0;
+    padding-left: 0;
+  }
+  .filter-bar .input-group .input-group-text {
+    background-color: #fff;
+    border-right: 0;
+  }
+  .filter-bar .form-control:focus, .filter-bar .form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    border-color: var(--primary-color);
+  }
   .filter-bar .btn { font-weight: 500; transition: all 0.2s ease-in-out; }
   .filter-bar .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
   .filter-bar .btn-success { background-image: linear-gradient(45deg, #198754, #20c997); border: none; }
+
 
   /* --- Robot Loader --- */
   .robot-loader {
@@ -117,16 +137,33 @@
 </header>
 
 <section class="container py-5">
-  <div class="filter-bar d-flex flex-wrap gap-2 justify-content-center align-items-center mb-5 p-3">
-    <select id="categoryFilter" class="form-select w-auto">
-      <option value="">All Categories</option>
-    </select>
-    <input type="text" id="searchInput" class="form-control w-auto flex-grow-1" placeholder="Search questions or answers...">
-    <button class="btn btn-secondary" id="resetBtn" title="Reset Filters"><i class="bi bi-arrow-clockwise"></i></button>
-    <div class="d-flex align-items-center">
-        <button class="btn btn-success" id="exportBtn" title="Export as PDF"><i class="bi bi-file-earmark-pdf me-2"></i>Export</button>
-        <span class="ms-2 text-muted small">(Exports: <span id="exportCounter">0</span>)</span>
+  <div class="filter-container mb-5">
+    <div class="filter-bar p-3 p-md-4">
+      <div class="row g-3 align-items-center">
+        <div class="col-lg-3 col-md-6">
+            <select id="categoryFilter" class="form-select form-select-lg">
+                <option value="">All Categories</option>
+            </select>
+        </div>
+        <div class="col-lg-5 col-md-6">
+            <div class="input-group input-group-lg">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" id="searchInput" class="form-control" placeholder="Search by keyword...">
+            </div>
+        </div>
+        <div class="col-lg-4 d-flex justify-content-start justify-content-lg-end align-items-center gap-2 mt-3 mt-lg-0">
+            <button class="btn btn-secondary btn-lg" id="resetBtn" title="Reset Filters"><i class="bi bi-arrow-clockwise"></i></button>
+            <div class="d-flex align-items-center">
+                <button class="btn btn-success btn-lg" id="exportBtn" title="Export as PDF"><i class="bi bi-file-earmark-pdf me-2"></i>Export</button>
+                <span class="ms-2 text-muted small" id="exportCounterDisplay">(Exports: <span id="exportCounter">0</span>)</span>
+            </div>
+        </div>
+      </div>
     </div>
+  </div>
+  
+  <div class="text-center text-muted mb-4" id="totalCounterDisplay" style="display: none;">
+      <p class="mb-0">Showing <strong id="showingCount"></strong> of <strong id="totalCount"></strong> Q&A entries.</p>
   </div>
 
   <div id="loading" class="text-center py-5">
@@ -140,9 +177,9 @@
   <div id="qa-container" class="row g-4"></div>
 
   <div class="d-flex justify-content-between align-items-center mt-5">
-    <button class="btn btn-primary" id="prevBtn"><i class="bi bi-arrow-left me-2"></i>Prev</button>
+    <button class="btn btn-primary btn-lg" id="prevBtn"><i class="bi bi-arrow-left me-2"></i>Prev</button>
     <span id="pageInfo" class="fw-bold"></span>
-    <button class="btn btn-primary" id="nextBtn">Next<i class="bi bi-arrow-right ms-2"></i></button>
+    <button class="btn btn-primary btn-lg" id="nextBtn">Next<i class="bi bi-arrow-right ms-2"></i></button>
   </div>
 </section>
 
@@ -167,15 +204,22 @@
     const noResultsEl = document.getElementById('no-results');
     const searchInput = document.getElementById("searchInput");
     const categoryFilter = document.getElementById("categoryFilter");
+    
+    // --- Counter Elements ---
     const exportCounterEl = document.getElementById('exportCounter');
+    const exportCounterDisplay = document.getElementById('exportCounterDisplay');
+    const totalCounterDisplay = document.getElementById('totalCounterDisplay');
+    const totalCountEl = document.getElementById('totalCount');
+    const showingCountEl = document.getElementById('showingCount');
 
-    // --- Export Counter Logic ---
+    // --- LocalStorage Export Counter ---
     let exportCount = parseInt(localStorage.getItem('pdfExportCount')) || 0;
     exportCounterEl.textContent = exportCount;
-
+    
     function renderCards(data, searchTerm = '') {
       qaContainer.innerHTML = '';
       noResultsEl.classList.toggle('d-none', data.length > 0);
+      showingCountEl.textContent = data.length; // Update showing count
 
       const start = (currentPage - 1) * rowsPerPage;
       const end = start + rowsPerPage;
@@ -246,6 +290,10 @@
         allData = results.data;
         filteredData = [...allData];
         loadingEl.classList.add('d-none');
+        
+        // --- Display Total Count ---
+        totalCountEl.textContent = allData.length;
+        totalCounterDisplay.style.display = 'block';
 
         const categories = [...new Set(allData.map(r => r.Category).filter(Boolean))].sort();
         categories.forEach(cat => {
@@ -273,10 +321,12 @@
       }
     });
     document.getElementById("exportBtn").addEventListener("click", () => {
+      // Increment localStorage counter
       exportCount++;
       localStorage.setItem('pdfExportCount', exportCount);
       exportCounterEl.textContent = exportCount;
 
+      // Generate PDF
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
       const tableData = filteredData.map(r => [r.Category || '', r.Post || '', r.Comment || '']);
