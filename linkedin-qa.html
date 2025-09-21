@@ -6,7 +6,7 @@
 <title>LinkedIn Q&A - Bot Craft Labs</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -19,12 +19,11 @@
     --text-color: #212529;
   }
 
-  body {
-    background: url('assets/QA-background.png') no-repeat center center fixed;
-    background-size: cover;
-    color: var(--text-color);
+  body { 
     font-family: 'Poppins', sans-serif;
-    scroll-behavior: smooth;
+    color: var(--text-color);
+    background: linear-gradient(rgba(248, 249, 250, 0.92), rgba(248, 249, 250, 0.92)), url('assets/QA-background.jpg') no-repeat center center fixed;
+    background-size: cover;
   }
   
   .navbar { background-color: rgba(33, 37, 41, 0.9); backdrop-filter: blur(10px); }
@@ -47,25 +46,44 @@
     box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     border: 1px solid #dee2e6;
   }
+  
+  .filter-bar .btn { font-weight: 500; transition: all 0.2s ease-in-out; }
+  .filter-bar .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+  .filter-bar .btn-success { background-image: linear-gradient(45deg, #198754, #20c997); border: none; }
+
+  /* --- NEW: Robot Loader --- */
+  .robot-loader {
+    position: relative; width: 100px; height: 100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .robot-loader .icon {
+    font-size: 3.5rem; color: var(--primary-color); z-index: 2;
+  }
+  .robot-loader::before,
+  .robot-loader::after {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    width: 100px; height: 100px; border-radius: 50%;
+    background: rgba(13, 110, 253, 0.2); z-index: 1;
+    animation: sonar-pulse 2s infinite cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .robot-loader::after { animation-delay: -1s; }
+  @keyframes sonar-pulse {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+  }
+
 
   .qa-card {
-    border: 1px solid #e9ecef;
-    border-radius: 0.75rem;
+    border: 1px solid #e9ecef; border-radius: 0.75rem;
     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     transition: transform 0.3s, box-shadow 0.3s;
     border-top: 4px solid var(--primary-color);
   }
-  .qa-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-  }
+  .qa-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
   .card-category {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--primary-color);
+    font-size: 0.8rem; font-weight: 600; color: var(--primary-color);
     background-color: rgba(13, 110, 253, 0.1);
-    padding: 0.25rem 0.6rem;
-    border-radius: 5px;
+    padding: 0.25rem 0.6rem; border-radius: 5px;
   }
   .card-post { font-weight: 600; font-size: 1.05rem; }
   .card-comment { white-space: pre-wrap; font-size: 0.95rem; }
@@ -104,14 +122,14 @@
       <option value="">All Categories</option>
     </select>
     <input type="text" id="searchInput" class="form-control w-auto flex-grow-1" placeholder="Search questions or answers...">
-    <button class="btn btn-outline-secondary" id="resetBtn" title="Reset Filters"><i class="bi bi-arrow-clockwise"></i></button>
-    <button class="btn btn-outline-success" id="exportBtn" title="Export as PDF"><i class="bi bi-file-earmark-pdf"></i> Export</button>
+    <button class="btn btn-secondary" id="resetBtn" title="Reset Filters"><i class="bi bi-arrow-clockwise"></i></button>
+    <button class="btn btn-success" id="exportBtn" title="Export as PDF"><i class="bi bi-file-earmark-pdf me-2"></i>Export</button>
   </div>
 
   <div id="loading" class="text-center py-5">
-      <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-          <span class="visually-hidden">Loading...</span>
-      </div>
+    <div class="robot-loader">
+        <i class="bi bi-robot icon"></i>
+    </div>
   </div>
   
   <div id="no-results" class="alert alert-warning text-center d-none">No results found.</div>
@@ -119,9 +137,9 @@
   <div id="qa-container" class="row g-4"></div>
 
   <div class="d-flex justify-content-between align-items-center mt-5">
-    <button class="btn btn-outline-primary" id="prevBtn"><i class="bi bi-arrow-left"></i> Prev</button>
-    <span id="pageInfo"></span>
-    <button class="btn btn-outline-primary" id="nextBtn">Next <i class="bi bi-arrow-right"></i></button>
+    <button class="btn btn-primary" id="prevBtn"><i class="bi bi-arrow-left me-2"></i>Prev</button>
+    <span id="pageInfo" class="fw-bold"></span>
+    <button class="btn btn-primary" id="nextBtn">Next<i class="bi bi-arrow-right ms-2"></i></button>
   </div>
 </section>
 
