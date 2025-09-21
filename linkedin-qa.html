@@ -411,7 +411,7 @@
         const userQuery = `In the context of Robotic Process Automation (RPA) interview preparation, provide a detailed explanation for the following question. Use markdown for formatting, including code blocks for examples if applicable. Question: "${selectedQuestion.Post}"`;
         
         try {
-            const apiKey = "";
+            const apiKey = "AIzaSyCkGI0WCPMZ2hInv3rieMomeUJtTObagOw";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
             const payload = { contents: [{ parts: [{ text: userQuery }] }] };
 
