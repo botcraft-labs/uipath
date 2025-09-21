@@ -51,7 +51,7 @@
   .filter-bar .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
   .filter-bar .btn-success { background-image: linear-gradient(45deg, #198754, #20c997); border: none; }
 
-  /* --- NEW: Robot Loader --- */
+  /* --- Robot Loader --- */
   .robot-loader {
     position: relative; width: 100px; height: 100px; margin: 0 auto;
     display: flex; align-items: center; justify-content: center;
@@ -117,13 +117,16 @@
 </header>
 
 <section class="container py-5">
-  <div class="filter-bar d-flex flex-wrap gap-2 justify-content-center mb-5 p-3">
+  <div class="filter-bar d-flex flex-wrap gap-2 justify-content-center align-items-center mb-5 p-3">
     <select id="categoryFilter" class="form-select w-auto">
       <option value="">All Categories</option>
     </select>
     <input type="text" id="searchInput" class="form-control w-auto flex-grow-1" placeholder="Search questions or answers...">
     <button class="btn btn-secondary" id="resetBtn" title="Reset Filters"><i class="bi bi-arrow-clockwise"></i></button>
-    <button class="btn btn-success" id="exportBtn" title="Export as PDF"><i class="bi bi-file-earmark-pdf me-2"></i>Export</button>
+    <div class="d-flex align-items-center">
+        <button class="btn btn-success" id="exportBtn" title="Export as PDF"><i class="bi bi-file-earmark-pdf me-2"></i>Export</button>
+        <span class="ms-2 text-muted small">(Exports: <span id="exportCounter">0</span>)</span>
+    </div>
   </div>
 
   <div id="loading" class="text-center py-5">
@@ -164,6 +167,11 @@
     const noResultsEl = document.getElementById('no-results');
     const searchInput = document.getElementById("searchInput");
     const categoryFilter = document.getElementById("categoryFilter");
+    const exportCounterEl = document.getElementById('exportCounter');
+
+    // --- Export Counter Logic ---
+    let exportCount = parseInt(localStorage.getItem('pdfExportCount')) || 0;
+    exportCounterEl.textContent = exportCount;
 
     function renderCards(data, searchTerm = '') {
       qaContainer.innerHTML = '';
@@ -265,6 +273,10 @@
       }
     });
     document.getElementById("exportBtn").addEventListener("click", () => {
+      exportCount++;
+      localStorage.setItem('pdfExportCount', exportCount);
+      exportCounterEl.textContent = exportCount;
+
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
       const tableData = filteredData.map(r => [r.Category || '', r.Post || '', r.Comment || '']);
@@ -278,3 +290,4 @@
 </script>
 </body>
 </html>
+
