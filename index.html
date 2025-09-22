@@ -72,7 +72,8 @@
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
     /* --- General Styling --- */
-    .section-title { font-weight: 700; position: relative; display: inline-block; margin-bottom: 3rem; color: #fff; }
+    .section-title { font-weight: 700; position: relative; display: inline-block; margin-bottom: 3rem; }
+    main .section-title { color: var(--dark-bg); } /* Ensures titles in main content are dark */
     .section-title::after { content: ""; display: block; width: 60px; height: 4px; background: var(--primary-color); margin: 8px auto 0; border-radius: 2px; }
 
     /* --- Glassmorphism Effect --- */
@@ -85,8 +86,6 @@
       border-radius: 1.25rem;
     }
     
-    .section-title-light { color: var(--dark-bg); }
-
     /* --- Features Section with Aurora Effect --- */
     .feature-card {
       background: #fff; border-radius: 15px; height: 100%;
@@ -177,7 +176,7 @@
 
   <main>
     <section id="features" class="container py-5 my-4">
-      <h2 class="section-title text-center section-title-light" data-aos="fade-up">What I Do</h2>
+      <h2 class="section-title text-center" data-aos="fade-up">What I Do</h2>
       <div class="row text-center g-4">
         <div class="col-md-4" data-aos="fade-right">
           <div class="feature-card p-4">
@@ -207,7 +206,7 @@
       <div class="glass-panel">
         <section class="counter-section py-5">
           <div class="container">
-            <h2 class="section-title text-center section-title-light" data-aos="fade-up">My Achievements</h2>
+            <h2 class="section-title text-center" data-aos="fade-up">My Achievements</h2>
             <div class="row text-center">
               <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up">
                 <div class="counter" data-count="25">0</div>
@@ -228,7 +227,7 @@
     </div>
 
     <section id="tech-stack" class="container py-5 my-4">
-        <h2 class="section-title text-center section-title-light" data-aos="fade-up">My Tech Stack</h2>
+        <h2 class="section-title text-center" data-aos="fade-up">My Tech Stack</h2>
         <div class="row g-4 justify-content-center">
             <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-in-up">
                 <div class="tech-card text-center"><img src="assets/uipath-logo.png" alt="UiPath" class="tech-logo"><p class="tech-name mt-2 mb-0">UiPath</p></div>
