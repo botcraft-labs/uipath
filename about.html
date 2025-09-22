@@ -27,18 +27,14 @@
   }
   
   .navbar { background-color: rgba(33, 37, 41, 0.8); backdrop-filter: blur(10px); }
-  
-  /* --- Enhanced Glassmorphism UI --- */
-  .glass-panel {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5));
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-    border-radius: 1.5rem;
+
+  .section-padding { padding: 6rem 0; }
+  .section-bg-alt { 
+    background-color: rgba(255, 255, 255, 0.7); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 
-  .section-padding { padding: 3rem 0; }
   .section-title { font-weight: 700; position: relative; display: inline-block; margin-bottom: 3rem; }
   .section-title::after { content: ""; display: block; width: 60px; height: 4px; background: var(--primary-color); margin: 8px auto 0; border-radius: 2px; }
   
@@ -59,6 +55,7 @@
     border: 1px solid transparent;
   }
   .skill-card:hover { 
+    transform: translateY(-8px) scale(1.03);
     box-shadow: 0 15px 30px rgba(0,0,0,0.15);
     border-color: rgba(13, 110, 253, 0.5);
   }
@@ -94,10 +91,7 @@
   
   /* --- Beautiful Tile Design for Certs --- */
   .cert-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: #fff;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     transition: transform 0.2s ease-out, box-shadow 0.3s; 
     cursor: pointer; 
@@ -106,6 +100,7 @@
     height: 100%;
   }
   .cert-card:hover { 
+    transform: translateY(-8px);
     box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
   }
 
@@ -139,97 +134,102 @@
   </div>
 </nav>
 
-<main class="py-5" style="margin-top: 56px;">
-  <div class="container">
-    <div class="glass-panel p-4 p-md-5">
-
-      <section id="about" class="section-padding">
-        <div class="row align-items-center g-5">
-          <div class="col-lg-5 text-center" data-aos="fade-right">
-            <img src="assets/profile.jpg" alt="Chaitanya Doneparthi" class="profile-pic">
-          </div>
-          <div class="col-lg-7" data-aos="fade-left">
-            <h2 class="section-title text-start" style="display: block; margin-left: 0;">About Me</h2>
-            <p class="lead mb-4">I am <strong>Chaitanya Doneparthi</strong>, a Senior Associate – Automation with over 5 years of experience in Robotic Process Automation (RPA), specializing in UiPath, Microsoft Power Automate, and Blueprint RPA Migration.</p>
-            <p>My focus is on delivering intelligent automation solutions that optimize business processes with maximum efficiency and accuracy. I enjoy bridging the gap between business needs and technical solutions.</p>
-          </div>
+<main>
+  <section id="about" class="section-padding" style="margin-top:80px;">
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-5 text-center" data-aos="fade-right">
+          <img src="assets/profile.jpg" alt="Chaitanya Doneparthi" class="profile-pic">
         </div>
-      </section>
-
-      <section id="skills" class="section-padding">
-        <div class="text-center">
-          <h2 class="section-title" data-aos="fade-up">Core Skills</h2>
+        <div class="col-lg-7" data-aos="fade-left">
+          <h2 class="section-title text-start" style="display: block; margin-left: 0;">About Me</h2>
+          <p class="lead mb-4">I am <strong>Chaitanya Doneparthi</strong>, a Senior Associate – Automation with over 5 years of experience in Robotic Process Automation (RPA), specializing in UiPath, Microsoft Power Automate, and Blueprint RPA Migration.</p>
+          <p>My focus is on delivering intelligent automation solutions that optimize business processes with maximum efficiency and accuracy. I enjoy bridging the gap between business needs and technical solutions.</p>
         </div>
-        <div class="row g-4 justify-content-center">
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
-              <div class="skill-card"><i class="bi bi-robot"></i><h6>UiPath Development</h6></div>
-          </div>
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="50">
-              <div class="skill-card"><i class="bi bi-microsoft"></i><h6>Power Automate</h6></div>
-          </div>
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="100">
-              <div class="skill-card"><i class="bi bi-file-text-fill"></i><h6>Intelligent Document Processing</h6></div>
-          </div>
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="150">
-              <div class="skill-card"><i class="bi bi-cpu-fill"></i><h6>AI & Agentic Automation</h6></div>
-          </div>
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="200">
-              <div class="skill-card"><i class="bi bi-bullseye"></i><h6>Process & Task Mining</h6></div>
-          </div>
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="250">
-              <div class="skill-card"><i class="bi bi-sign-merge-left-fill"></i><h6>RPA Migration (Blueprint)</h6></div>
-          </div>
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="300">
-              <div class="skill-card"><i class="bi bi-journal-code"></i><h6>C# & .NET Integration</h6></div>
-          </div>
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="350">
-              <div class="skill-card"><i class="bi bi-gear-wide-connected"></i><h6>Enterprise App Automation</h6></div>
-          </div>
-        </div>
-      </section>
-
-      <section id="experience" class="section-padding">
-          <div class="text-center">
-            <h2 class="section-title" data-aos="fade-up">Professional Experience</h2>
-          </div>
-          <div class="experience-timeline">
-            <div class="exp-card" data-aos="fade-right">
-                <div class="exp-content"><h5>Senior Associate – Automation</h5><small>Accelirate Inc | Apr 2025 – Present</small></div>
-            </div>
-            <div class="exp-card" data-aos="fade-left">
-                <div class="exp-content"><h5>Senior Automation Engineer DU</h5><small>Accelirate Inc | Jun 2024 – Mar 2025</small></div>
-            </div>
-            <div class="exp-card" data-aos="fade-right">
-                <div class="exp-content"><h5>Digital Engineer</h5><small>Sonata Software | Jan 2022 – May 2024</small></div>
-            </div>
-            <div class="exp-card" data-aos="fade-left">
-                <div class="exp-content"><h5>Software Engineer</h5><small>Coforge | Oct 2019 – Jan 2022</small></div>
-            </div>
-          </div>
-      </section>
-
-      <section id="certifications" class="section-padding">
-          <div class="text-center">
-            <h2 class="section-title" data-aos="fade-up">Certifications</h2>
-          </div>
-          <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
-            <button class="btn btn-outline-primary filter-btn active" data-skill="All">All</button>
-            <button class="btn btn-outline-primary filter-btn" data-skill="UiPath">UiPath</button>
-            <button class="btn btn-outline-primary filter-btn" data-skill="Blueprint">Blueprint</button>
-            <button class="btn btn-outline-primary filter-btn" data-skill="Microsoft">Microsoft</button>
-          </div>
-          <div class="cert-list row g-4"></div>
-      </section>
-
-      <section id="contact" class="section-padding text-center">
-          <h2 class="section-title">Get in Touch</h2>
-          <div class="contact-info">
-          <a href="mailto:chaitanya.dgr@gmail.com" title="Email"><i class="bi bi-envelope-fill"></i></a>
-          <a href="https://www.linkedin.com/in/chaitanya-doneparthi-409539139" target="_blank" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
-          </div>
-      </section>
+      </div>
     </div>
-  </div>
+  </section>
+
+  <section id="skills" class="section-padding section-bg-alt">
+    <div class="container">
+      <div class="text-center">
+        <h2 class="section-title" data-aos="fade-up">Core Skills</h2>
+      </div>
+      <div class="row g-4 justify-content-center">
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
+            <div class="skill-card"><i class="bi bi-robot"></i><h6>UiPath Development</h6></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="50">
+            <div class="skill-card"><i class="bi bi-microsoft"></i><h6>Power Automate</h6></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+            <div class="skill-card"><i class="bi bi-file-text-fill"></i><h6>Intelligent Document Processing</h6></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="150">
+            <div class="skill-card"><i class="bi bi-cpu-fill"></i><h6>AI & Agentic Automation</h6></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="skill-card"><i class="bi bi-bullseye"></i><h6>Process & Task Mining</h6></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="250">
+            <div class="skill-card"><i class="bi bi-sign-merge-left-fill"></i><h6>RPA Migration (Blueprint)</h6></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+            <div class="skill-card"><i class="bi bi-journal-code"></i><h6>C# & .NET Integration</h6></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="350">
+            <div class="skill-card"><i class="bi bi-gear-wide-connected"></i><h6>Enterprise App Automation</h6></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience" class="section-padding">
+    <div class="container">
+        <div class="text-center">
+          <h2 class="section-title" data-aos="fade-up">Professional Experience</h2>
+        </div>
+        <div class="experience-timeline">
+          <div class="exp-card" data-aos="fade-right">
+              <div class="exp-content"><h5>Senior Associate – Automation</h5><small>Accelirate Inc | Apr 2025 – Present</small></div>
+          </div>
+          <div class="exp-card" data-aos="fade-left">
+              <div class="exp-content"><h5>Senior Automation Engineer DU</h5><small>Accelirate Inc | Jun 2024 – Mar 2025</small></div>
+          </div>
+          <div class="exp-card" data-aos="fade-right">
+              <div class="exp-content"><h5>Digital Engineer</h5><small>Sonata Software | Jan 2022 – May 2024</small></div>
+          </div>
+          <div class="exp-card" data-aos="fade-left">
+              <div class="exp-content"><h5>Software Engineer</h5><small>Coforge | Oct 2019 – Jan 2022</small></div>
+          </div>
+        </div>
+    </div>
+  </section>
+
+  <section id="certifications" class="section-padding section-bg-alt">
+    <div class="container">
+      <div class="text-center">
+        <h2 class="section-title" data-aos="fade-up">Certifications</h2>
+      </div>
+      <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
+        <button class="btn btn-outline-primary filter-btn active" data-skill="All">All</button>
+        <button class="btn btn-outline-primary filter-btn" data-skill="UiPath">UiPath</button>
+        <button class="btn btn-outline-primary filter-btn" data-skill="Blueprint">Blueprint</button>
+        <button class="btn btn-outline-primary filter-btn" data-skill="Microsoft">Microsoft</button>
+      </div>
+      <div class="cert-list row g-4"></div>
+    </div>
+  </section>
+
+  <section id="contact" class="section-padding text-center">
+    <div class="container">
+        <h2 class="section-title">Get in Touch</h2>
+        <div class="contact-info">
+        <a href="mailto:chaitanya.dgr@gmail.com" title="Email"><i class="bi bi-envelope-fill"></i></a>
+        <a href="https://www.linkedin.com/in/chaitanya-doneparthi-409539139" target="_blank" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+        </div>
+    </div>
+  </section>
 </main>
 
 <div class="modal fade" id="certModal" tabindex="-1" aria-labelledby="certModalLabel" aria-hidden="true">
@@ -297,22 +297,11 @@
                 </div>`;
             certListContainer.innerHTML += certCardHTML;
         });
-
-        // Add modal listeners and tilt effect after rendering
         addCardEventListeners();
     }
     
     function addCardEventListeners() {
-        document.querySelectorAll('.cert-card').forEach(card => {
-            card.addEventListener('click', () => {
-                document.getElementById('modalName').textContent = card.dataset.name;
-                document.getElementById('modalIssued').textContent = card.dataset.issued;
-                document.getElementById('modalExpires').textContent = card.dataset.expires || 'N/A';
-                document.getElementById('modalID').textContent = card.dataset.id;
-                document.getElementById('modalSkills').textContent = card.dataset.skills;
-                certModal.show();
-            });
-
+        document.querySelectorAll('.cert-card, .skill-card').forEach(card => {
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left;
@@ -326,6 +315,17 @@
                 card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
             });
         });
+
+        document.querySelectorAll('.cert-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.getElementById('modalName').textContent = card.dataset.name;
+                document.getElementById('modalIssued').textContent = card.dataset.issued;
+                document.getElementById('modalExpires').textContent = card.dataset.expires || 'N/A';
+                document.getElementById('modalID').textContent = card.dataset.id;
+                document.getElementById('modalSkills').textContent = card.dataset.skills;
+                certModal.show();
+            });
+        });
     }
 
     filterBtns.forEach(btn => {
@@ -337,22 +337,6 @@
     });
     
     renderCerts();
-
-    const skillCards = document.querySelectorAll('.skill-card');
-    skillCards.forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const { width, height } = rect;
-            const rotateX = (y - height / 2) / 15;
-            const rotateY = (width / 2 - x) / 15;
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
-        });
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
-        });
-    });
   });
 </script>
 </body>
