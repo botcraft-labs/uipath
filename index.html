@@ -119,21 +119,29 @@
     .icon-success { background: linear-gradient(45deg, #198754, #20c997); }
     .icon-warning { background: linear-gradient(45deg, #ffc107, #fd7e14); }
     
-    /* --- NEW: Enhanced Counters Section --- */
+    /* --- Enhanced Counters Section --- */
     .counter-section { background-color: transparent; }
     .achievement-card {
-      padding: 1rem;
-      transition: transform 0.3s, background-color 0.3s;
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 1.5rem 1rem;
+      transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
       border-radius: 1rem;
+      text-align: center;
     }
     .achievement-card:hover {
-      transform: translateY(-5px);
-      background-color: rgba(255,255,255,0.3);
+      transform: translateY(-10px);
+      background-color: rgba(255,255,255,0.5);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
     }
     .achievement-icon {
       font-size: 3rem;
       color: var(--primary-color);
       margin-bottom: 0.5rem;
+      transition: transform 0.3s ease-in-out;
+    }
+    .achievement-card:hover .achievement-icon {
+        transform: scale(1.15) rotate(-8deg);
     }
     .counter { font-size: 2.5rem; font-weight: 700; color: var(--dark-bg); }
     .counter-text { font-size: 1rem; color: var(--secondary-color); font-weight: 600; }
@@ -246,7 +254,10 @@
           <a href="#" target="_blank" title="GitHub"><i class="bi bi-github"></i></a>
           <a href="mailto:chaitanya.dgr@gmail.com" title="Email"><i class="bi bi-envelope-fill"></i></a>
       </div>
-      <p class="mb-0">&copy; 2025 Bot Craft Labs | Built with Professional Expertise</p>
+      <p class="mb-2">&copy; 2025 Bot Craft Labs | Built with Professional Expertise</p>
+      <p class="mb-0 text-white-50 small">
+        <i class="bi bi-eye-fill me-1"></i> Your Visits: <span id="visitor-counter">0</span>
+      </p>
     </div>
   </footer>
   
@@ -313,6 +324,20 @@
           card.style.setProperty('--y', `${y}px`);
         });
       });
+      
+      // --- Visitor Counter using localStorage ---
+      const visitorCounter = document.getElementById('visitor-counter');
+      function updateVisitorCount() {
+        let count = localStorage.getItem('botcraft_visit_count');
+        if (count === null) {
+          count = 1;
+        } else {
+          count = parseInt(count) + 1;
+        }
+        localStorage.setItem('botcraft_visit_count', count);
+        visitorCounter.textContent = count;
+      }
+      updateVisitorCount();
 
     });
   </script>
