@@ -57,8 +57,8 @@
       animation-fill-mode: backwards;
     }
     .hero .btn-primary {
-      background: linear-gradient(45deg, #0d6efd, #0dcaf0); border: none; padding: 14px 35px;
-      font-weight: 600; transition: transform 0.3s, box-shadow 0.3s;
+      background: linear-gradient(45deg, #0d6efd, #0dcaf0); border: none; padding: 10px 28px;
+      font-weight: 500; transition: transform 0.3s, box-shadow 0.3s;
       animation: fadeInUp 1s ease-out 0.4s;
       animation-fill-mode: backwards;
     }
@@ -86,6 +86,8 @@
       border-radius: 1.25rem;
     }
     
+    .section-title-light { color: var(--dark-bg); }
+
     /* --- Features Section with Aurora Effect --- */
     .feature-card {
       background: #fff; border-radius: 15px; height: 100%;
@@ -117,11 +119,25 @@
     .icon-success { background: linear-gradient(45deg, #198754, #20c997); }
     .icon-warning { background: linear-gradient(45deg, #ffc107, #fd7e14); }
     
-    /* --- Counters Section --- */
+    /* --- NEW: Enhanced Counters Section --- */
     .counter-section { background-color: transparent; }
-    .counter { font-size: 3rem; font-weight: 700; color: var(--primary-color); }
+    .achievement-card {
+      padding: 1rem;
+      transition: transform 0.3s, background-color 0.3s;
+      border-radius: 1rem;
+    }
+    .achievement-card:hover {
+      transform: translateY(-5px);
+      background-color: rgba(255,255,255,0.3);
+    }
+    .achievement-icon {
+      font-size: 3rem;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+    .counter { font-size: 2.5rem; font-weight: 700; color: var(--dark-bg); }
     .counter-text { font-size: 1rem; color: var(--secondary-color); font-weight: 600; }
-    
+
     /* --- Footer --- */
     footer { background: var(--dark-bg); }
     .footer-socials a { color: rgba(255,255,255,0.7); font-size: 1.5rem; transition: color 0.3s, transform 0.3s; }
@@ -193,19 +209,28 @@
       <div class="glass-panel">
         <section class="counter-section py-5">
           <div class="container">
-            <h2 class="section-title text-center" data-aos="fade-up">My Achievements</h2>
+            <h2 class="section-title text-center" data-aos="fade-up" style="color: var(--dark-bg);">My Achievements</h2>
             <div class="row text-center">
               <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up">
-                <div class="counter" data-count="25">0</div>
-                <div class="counter-text">Projects Completed</div>
+                <div class="achievement-card">
+                  <div class="achievement-icon"><i class="bi bi-stack"></i></div>
+                  <div class="counter" data-count="50">0</div>
+                  <div class="counter-text">Projects Completed</div>
+                </div>
               </div>
               <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="200">
-                <div class="counter" data-count="11">0</div>
-                <div class="counter-text">Clients Served</div>
+                <div class="achievement-card">
+                  <div class="achievement-icon"><i class="bi bi-people-fill"></i></div>
+                  <div class="counter" data-count="20">0</div>
+                  <div class="counter-text">Happy Clients</div>
+                </div>
               </div>
               <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="400">
-                <div class="counter" data-count="7">0</div>
-                <div class="counter-text">Awards & Certifications</div>
+                <div class="achievement-card">
+                  <div class="achievement-icon"><i class="bi bi-patch-check-fill"></i></div>
+                  <div class="counter" data-count="10">0</div>
+                  <div class="counter-text">Awards & Certifications</div>
+                </div>
               </div>
             </div>
           </div>
@@ -287,22 +312,6 @@
           card.style.setProperty('--x', `${x}px`);
           card.style.setProperty('--y', `${y}px`);
         });
-      });
-      
-      const techCards = document.querySelectorAll('.tech-card');
-      techCards.forEach(card => {
-          card.addEventListener('mousemove', (e) => {
-              const rect = card.getBoundingClientRect();
-              const x = e.clientX - rect.left;
-              const y = e.clientY - rect.top;
-              const { width, height } = rect;
-              const rotateX = (y - height / 2) / 10;
-              const rotateY = (width / 2 - x) / 10;
-              card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
-          });
-          card.addEventListener('mouseleave', () => {
-              card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
-          });
       });
 
     });
