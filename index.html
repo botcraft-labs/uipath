@@ -325,17 +325,21 @@
         });
       });
       
-      // --- Visitor Counter using localStorage ---
+      // --- Visitor Counter ---
       const visitorCounter = document.getElementById('visitor-counter');
+      const namespace = 'botcraft-labs-portfolio';
+      const key = 'homepage';
+      
       function updateVisitorCount() {
-        let count = localStorage.getItem('botcraft_visit_count');
-        if (count === null) {
-          count = 1;
-        } else {
-          count = parseInt(count) + 1;
-        }
-        localStorage.setItem('botcraft_visit_count', count);
-        visitorCounter.textContent = count;
+        fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`)
+          .then(res => res.json())
+          .then(data => {
+            visitorCounter.textContent = data.count.toLocaleString();
+          })
+          .catch(error => {
+            console.error('Could not fetch visitor count:', error);
+            visitorCounter.textContent = 'N/A';
+          });
       }
       updateVisitorCount();
 
