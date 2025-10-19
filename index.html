@@ -73,7 +73,7 @@
 
     /* --- General Styling --- */
     .section-title { font-weight: 700; position: relative; display: inline-block; margin-bottom: 3rem; }
-    main .section-title { color: #fff; } /* Ensures titles in main content are light */
+    main .section-title { color: #fff; } 
     .section-title::after { content: ""; display: block; width: 60px; height: 4px; background: var(--primary-color); margin: 8px auto 0; border-radius: 2px; }
 
     /* --- Glassmorphism Effect --- */
@@ -122,17 +122,13 @@
     /* --- Enhanced Counters Section --- */
     .counter-section { background-color: transparent; }
     .achievement-card {
-      background-color: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 1.5rem 1rem;
-      transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+      padding: 1rem;
+      transition: transform 0.3s, background-color 0.3s;
       border-radius: 1rem;
-      text-align: center;
     }
     .achievement-card:hover {
-      transform: translateY(-10px);
-      background-color: rgba(255,255,255,0.5);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+      transform: translateY(-5px);
+      background-color: rgba(255,255,255,0.3);
     }
     .achievement-icon {
       font-size: 3rem;
@@ -256,7 +252,7 @@
       </div>
       <p class="mb-2">&copy; 2025 Bot Craft Labs | Built with Professional Expertise</p>
       <p class="mb-0 text-white-50 small">
-        <i class="bi bi-eye-fill me-1"></i> Website Visits: <span id="visitor-counter">0</span>
+        <i class="bi bi-eye-fill me-1"></i> Website Visits: <span id="visitor-counter">...</span>
       </p>
     </div>
   </footer>
@@ -287,10 +283,9 @@
               const increment = Math.ceil(target / speed);
               if (count < target) {
                 count += increment;
-                counter.innerText = Math.min(count, target);
-                setTimeout(updateCount, 15);
+                counter.innerText = Math.min(count, target).toLocaleString();
               } else {
-                counter.innerText = target;
+                counter.innerText = target.toLocaleString();
               }
             };
             
@@ -325,17 +320,21 @@
         });
       });
       
-      // --- Visitor Counter using localStorage ---
+      // --- Visitor Counter ---
       const visitorCounter = document.getElementById('visitor-counter');
+      const namespace = 'botcraft-labs-portfolio';
+      const key = 'homepage';
+      
       function updateVisitorCount() {
-        let count = localStorage.getItem('botcraft_visit_count');
-        if (count === null) {
-          count = 1;
-        } else {
-          count = parseInt(count) + 1;
-        }
-        localStorage.setItem('botcraft_visit_count', count);
-        visitorCounter.textContent = count;
+        fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`)
+          .then(res => res.json())
+          .then(data => {
+            visitorCounter.textContent = data.count.toLocaleString();
+          })
+          .catch(error => {
+            console.error('Could not fetch visitor count:', error);
+            visitorCounter.textContent = 'N/A';
+          });
       }
       updateVisitorCount();
 
