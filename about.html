@@ -24,27 +24,51 @@
     color: var(--text-color);
     font-family: 'Poppins', sans-serif;
     scroll-behavior: smooth;
+    cursor: none; /* Hide default cursor */
+  }
+
+  /* --- NEW: Beautiful Spotlight Cursor --- */
+  .cursor-spotlight {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference;
+    transition: width 0.3s ease, height 0.3s ease;
+  }
+  body.cursor-active .cursor-spotlight {
+    width: 80px;
+    height: 80px;
   }
   
   .navbar { background-color: rgba(33, 37, 41, 0.8); backdrop-filter: blur(10px); }
-
-  .section-padding { padding: 6rem 0; }
-  .section-bg-alt { 
-    background-color: rgba(255, 255, 255, 0.7); 
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+  
+  /* --- Enhanced Glassmorphism UI --- */
+  .glass-panel {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    border-radius: 1.5rem;
   }
 
+  .section-padding { padding: 3rem 0; }
   .section-title { font-weight: 700; position: relative; display: inline-block; margin-bottom: 3rem; }
   .section-title::after { content: ""; display: block; width: 60px; height: 4px; background: var(--primary-color); margin: 8px auto 0; border-radius: 2px; }
   
   .profile-pic {
     width: 250px; height: 250px; object-fit: cover; border-radius: 50%; border: 5px solid var(--primary-color);
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    transition: transform 0.4s ease;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
   }
   .profile-pic:hover {
     transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(13, 110, 253, 0.3);
   }
 
   /* --- Enhanced Skill Cards --- */
@@ -71,13 +95,13 @@
   /* --- Enhanced Timeline --- */
   .experience-timeline { position: relative; max-width: 900px; margin: 2rem auto; }
   .experience-timeline::before { content: ''; position: absolute; width: 3px; background-color: var(--timeline-line-color); top: 0; bottom: 0; left: 50%; margin-left: -1.5px; }
-  .exp-card { position: relative; width: 45%; padding: 1.5rem; margin-bottom: 2rem; background: #fff; border-radius: 15px; box-shadow: var(--shadow-color); transition: transform 0.3s; border: 1px solid #eee; }
+  .exp-card { position: relative; width: 45%; padding: 1.5rem; margin-bottom: 2rem; background: #fff; border-radius: 15px; box-shadow: var(--shadow-color); transition: transform 0.3s, box-shadow 0.3s; border: 1px solid #eee; }
   .exp-card:nth-child(odd) { left: 0; }
   .exp-card:nth-child(even) { left: 55%; }
   .exp-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
   .exp-card::after {
-    content: ''; position: absolute; top: 20px; width: 16px; height: 16px; background: var(--primary-color);
-    border-radius: 50%; border: 3px solid #fff; z-index: 1; 
+    content: ''; position: absolute; top: 20px; width: 16px; height: 16px; background: #fff;
+    border-radius: 50%; border: 3px solid var(--primary-color); z-index: 1; 
     transition: transform 0.3s, box-shadow 0.3s;
     box-shadow: 0 0 0 4px var(--primary-color);
   }
@@ -100,7 +124,6 @@
     height: 100%;
   }
   .cert-card:hover { 
-    transform: translateY(-8px);
     box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
   }
 
@@ -114,10 +137,14 @@
     .experience-timeline::before { left: 20px; }
     .exp-card { width: calc(100% - 40px); left: 40px !important; }
     .exp-card::after { left: -28px !important; }
+    .cursor-spotlight { display: none; } /* Hide custom cursor on mobile */
+    body { cursor: auto; } /* Restore default cursor on mobile */
   }
 </style>
 </head>
 <body>
+
+<div class="cursor-spotlight"></div>
 
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
   <div class="container">
@@ -134,102 +161,97 @@
   </div>
 </nav>
 
-<main>
-  <section id="about" class="section-padding" style="margin-top:80px;">
-    <div class="container">
-      <div class="row align-items-center g-5">
-        <div class="col-lg-5 text-center" data-aos="fade-right">
-          <img src="assets/profile.jpg" alt="Chaitanya Doneparthi" class="profile-pic">
-        </div>
-        <div class="col-lg-7" data-aos="fade-left">
-          <h2 class="section-title text-start" style="display: block; margin-left: 0;">About Me</h2>
-          <p class="lead mb-4">I am <strong>Chaitanya Doneparthi</strong>, a Senior Associate – Automation with over 5 years of experience in Robotic Process Automation (RPA), specializing in UiPath, Microsoft Power Automate, and Blueprint RPA Migration.</p>
-          <p>My focus is on delivering intelligent automation solutions that optimize business processes with maximum efficiency and accuracy. I enjoy bridging the gap between business needs and technical solutions.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+<main class="py-5" style="margin-top: 56px;">
+  <div class="container">
+    <div class="glass-panel p-4 p-md-5">
 
-  <section id="skills" class="section-padding section-bg-alt">
-    <div class="container">
-      <div class="text-center">
-        <h2 class="section-title" data-aos="fade-up">Core Skills</h2>
-      </div>
-      <div class="row g-4 justify-content-center">
-        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
-            <div class="skill-card"><i class="bi bi-robot"></i><h6>UiPath</h6></div>
+      <section id="about" class="section-padding">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-5 text-center" data-aos="fade-right">
+            <img src="assets/profile.jpg" alt="Chaitanya Doneparthi" class="profile-pic">
+          </div>
+          <div class="col-lg-7" data-aos="fade-left">
+            <h2 class="section-title text-start" style="display: block; margin-left: 0;">About Me</h2>
+            <p class="lead mb-4">I am <strong>Chaitanya Doneparthi</strong>, a Senior Associate – Automation with over 5 years of experience in Robotic Process Automation (RPA), specializing in UiPath, Microsoft Power Automate, and Blueprint RPA Migration.</p>
+            <p>My focus is on delivering intelligent automation solutions that optimize business processes with maximum efficiency and accuracy. I enjoy bridging the gap between business needs and technical solutions.</p>
+          </div>
         </div>
-        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="50">
-            <div class="skill-card"><i class="bi bi-microsoft"></i><h6>Power Automate</h6></div>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="100">
-            <div class="skill-card"><i class="bi bi-file-text-fill"></i><h6>Intelligent Document Processing</h6></div>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="150">
-            <div class="skill-card"><i class="bi bi-cpu-fill"></i><h6>AI & Agentic Automation</h6></div>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="200">
-            <div class="skill-card"><i class="bi bi-bullseye"></i><h6>Process & Task Mining</h6></div>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="250">
-            <div class="skill-card"><i class="bi bi-sign-merge-left-fill"></i><h6>RPA Migration (Blueprint)</h6></div>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="300">
-            <div class="skill-card"><i class="bi bi-journal-code"></i><h6>C# & .NET Integration</h6></div>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="350">
-            <div class="skill-card"><i class="bi bi-gear-wide-connected"></i><h6>Enterprise App Automation</h6></div>
-        </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <section id="experience" class="section-padding">
-    <div class="container">
+      <section id="skills" class="section-padding">
         <div class="text-center">
-          <h2 class="section-title" data-aos="fade-up">Professional Experience</h2>
+          <h2 class="section-title" data-aos="fade-up">Core Skills</h2>
         </div>
-        <div class="experience-timeline">
-          <div class="exp-card" data-aos="fade-right">
-              <div class="exp-content"><h5>Senior Associate – Automation</h5><small>Accelirate Inc | Apr 2025 – Present</small></div>
+        <div class="row g-4 justify-content-center">
+          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
+              <div class="skill-card"><i class="bi bi-robot"></i><h6>UiPath</h6></div>
           </div>
-          <div class="exp-card" data-aos="fade-left">
-              <div class="exp-content"><h5>Senior Automation Engineer DU</h5><small>Accelirate Inc | Jun 2024 – Mar 2025</small></div>
+          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="50">
+              <div class="skill-card"><i class="bi bi-microsoft"></i><h6>Power Automate</h6></div>
           </div>
-          <div class="exp-card" data-aos="fade-right">
-              <div class="exp-content"><h5>Digital Engineer</h5><small>Sonata Software | Jan 2022 – May 2024</small></div>
+          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+              <div class="skill-card"><i class="bi bi-file-text-fill"></i><h6>Intelligent Document Processing</h6></div>
           </div>
-          <div class="exp-card" data-aos="fade-left">
-              <div class="exp-content"><h5>Software Engineer</h5><small>Coforge | Oct 2019 – Jan 2022</small></div>
+          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="150">
+              <div class="skill-card"><i class="bi bi-cpu-fill"></i><h6>AI & Agentic Automation</h6></div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+              <div class="skill-card"><i class="bi bi-bullseye"></i><h6>Process & Task Mining</h6></div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="250">
+              <div class="skill-card"><i class="bi bi-sign-merge-left-fill"></i><h6>RPA Migration (Blueprint)</h6></div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+              <div class="skill-card"><i class="bi bi-journal-code"></i><h6>C# & .NET Integration</h6></div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="350">
+              <div class="skill-card"><i class="bi bi-gear-wide-connected"></i><h6>Enterprise App Automation</h6></div>
           </div>
         </div>
-    </div>
-  </section>
+      </section>
 
-  <section id="certifications" class="section-padding section-bg-alt">
-    <div class="container">
-      <div class="text-center">
-        <h2 class="section-title" data-aos="fade-up">Certifications</h2>
-      </div>
-      <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
-        <button class="btn btn-outline-primary filter-btn active" data-skill="All">All</button>
-        <button class="btn btn-outline-primary filter-btn" data-skill="UiPath">UiPath</button>
-        <button class="btn btn-outline-primary filter-btn" data-skill="Blueprint">Blueprint</button>
-        <button class="btn btn-outline-primary filter-btn" data-skill="Microsoft">Microsoft</button>
-      </div>
-      <div class="cert-list row g-4"></div>
-    </div>
-  </section>
+      <section id="experience" class="section-padding">
+          <div class="text-center">
+            <h2 class="section-title" data-aos="fade-up">Professional Experience</h2>
+          </div>
+          <div class="experience-timeline">
+            <div class="exp-card" data-aos="fade-right">
+                <div class="exp-content"><h5>Senior Associate – Automation</h5><small>Accelirate Inc | Apr 2025 – Present</small></div>
+            </div>
+            <div class="exp-card" data-aos="fade-left">
+                <div class="exp-content"><h5>Senior Automation Engineer DU</h5><small>Accelirate Inc | Jun 2024 – Mar 2025</small></div>
+            </div>
+            <div class="exp-card" data-aos="fade-right">
+                <div class="exp-content"><h5>Digital Engineer</h5><small>Sonata Software | Jan 2022 – May 2024</small></div>
+            </div>
+            <div class="exp-card" data-aos="fade-left">
+                <div class="exp-content"><h5>Software Engineer</h5><small>Coforge | Oct 2019 – Jan 2022</small></div>
+            </div>
+          </div>
+      </section>
 
-  <section id="contact" class="section-padding text-center">
-    <div class="container">
-        <h2 class="section-title">Get in Touch</h2>
-        <div class="contact-info">
-        <a href="mailto:chaitanya.dgr@gmail.com" title="Email"><i class="bi bi-envelope-fill"></i></a>
-        <a href="https://www.linkedin.com/in/chaitanya-doneparthi-409539139" target="_blank" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
-        </div>
+      <section id="certifications" class="section-padding">
+          <div class="text-center">
+            <h2 class="section-title" data-aos="fade-up">Certifications</h2>
+          </div>
+          <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
+            <button class="btn btn-outline-primary filter-btn active" data-skill="All">All</button>
+            <button class="btn btn-outline-primary filter-btn" data-skill="UiPath">UiPath</button>
+            <button class="btn btn-outline-primary filter-btn" data-skill="Blueprint">Blueprint</button>
+            <button class="btn btn-outline-primary filter-btn" data-skill="Microsoft">Microsoft</button>
+          </div>
+          <div class="cert-list row g-4"></div>
+      </section>
+
+      <section id="contact" class="section-padding text-center">
+          <h2 class="section-title">Get in Touch</h2>
+          <div class="contact-info">
+          <a href="mailto:chaitanya.dgr@gmail.com" title="Email"><i class="bi bi-envelope-fill"></i></a>
+          <a href="https://www.linkedin.com/in/chaitanya-doneparthi-409539139" target="_blank" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+          </div>
+      </section>
     </div>
-  </section>
+  </div>
 </main>
 
 <div class="modal fade" id="certModal" tabindex="-1" aria-labelledby="certModalLabel" aria-hidden="true">
@@ -315,6 +337,16 @@
                 card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
             });
         });
+        
+        document.querySelectorAll('.exp-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--x', `${x}px`);
+                card.style.setProperty('--y', `${y}px`);
+            });
+        });
 
         document.querySelectorAll('.cert-card').forEach(card => {
             card.addEventListener('click', () => {
@@ -337,6 +369,20 @@
     });
     
     renderCerts();
+
+    // --- Custom Cursor ---
+    const cursorSpotlight = document.querySelector('.cursor-spotlight');
+    const interactiveElements = document.querySelectorAll('a, button, .skill-card, .exp-card, .cert-card, .filter-btn');
+
+    window.addEventListener('mousemove', e => {
+        cursorSpotlight.style.left = e.clientX + 'px';
+        cursorSpotlight.style.top = e.clientY + 'px';
+    });
+
+    interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => document.body.classList.add('cursor-active'));
+        el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-active'));
+    });
   });
 </script>
 </body>
