@@ -119,9 +119,31 @@
     .icon-success { background: linear-gradient(45deg, #198754, #20c997); }
     .icon-warning { background: linear-gradient(45deg, #ffc107, #fd7e14); }
     
-    /* --- Counters Section --- */
+    /* --- Enhanced Counters Section --- */
     .counter-section { background-color: transparent; }
-    .counter { font-size: 3rem; font-weight: 700; color: var(--primary-color); }
+    .achievement-card {
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 1.5rem 1rem;
+      transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+      border-radius: 1rem;
+      text-align: center;
+    }
+    .achievement-card:hover {
+      transform: translateY(-10px);
+      background-color: rgba(255,255,255,0.5);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    .achievement-icon {
+      font-size: 3rem;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+      transition: transform 0.3s ease-in-out;
+    }
+    .achievement-card:hover .achievement-icon {
+        transform: scale(1.15) rotate(-8deg);
+    }
+    .counter { font-size: 2.5rem; font-weight: 700; color: var(--dark-bg); }
     .counter-text { font-size: 1rem; color: var(--secondary-color); font-weight: 600; }
 
     /* --- Footer --- */
@@ -159,7 +181,6 @@
       <h1 class="mb-3">Welcome to Bot Craft Labs</h1>
       <p class="lead mb-4">Crafting Intelligent RPA Solutions with UiPath, Power Automate & Blueprint</p>
       
-      <!-- Updated Label -->
       <p class="mb-3" style="opacity: 0.9; animation: fadeInUp 1s ease-out 0.3s; animation-fill-mode: backwards;">
         Click below to explore automation insights and interview Q&As
       </p>
@@ -197,40 +218,38 @@
       </div>
     </section>
 
-  <div class="container my-4" data-aos="fade-up">
-        <div class="glass-panel">
-          <section class="counter-section py-5">
-            <div class="container">
-              <h2 class="section-title text-center" data-aos="fade-up" style="color: var(--dark-bg);">My Achievements</h2>
-              <div class="row text-center">
-                <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up">
-                  <div class="achievement-card">
-                    <div class="achievement-icon"><i class="bi bi-stack"></i></div>
-                    <div class="counter" data-count="50">0</div>
-                    <div class="counter" data-count="52">0</div>
-                    <div class="counter-text">Projects Completed</div>
-                  </div>
+    <div class="container my-4" data-aos="fade-up">
+      <div class="glass-panel">
+        <section class="counter-section py-5">
+          <div class="container">
+            <h2 class="section-title text-center" data-aos="fade-up" style="color: var(--dark-bg);">My Achievements</h2>
+            <div class="row text-center">
+              <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up">
+                <div class="achievement-card">
+                  <div class="achievement-icon"><i class="bi bi-stack"></i></div>
+                  <div class="counter" data-count="50">0</div>
+                  <div class="counter-text">Projects Completed</div>
                 </div>
-                <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="200">
-                  <div class="achievement-card">
-                    <div class="achievement-icon"><i class="bi bi-people-fill"></i></div>
-                    <div class="counter" data-count="20">0</div>
-                    <div class="counter" data-count="21">0</div>
-                    <div class="counter-text">Happy Clients</div>
-                  </div>
+              </div>
+              <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="200">
+                <div class="achievement-card">
+                  <div class="achievement-icon"><i class="bi bi-people-fill"></i></div>
+                  <div class="counter" data-count="20">0</div>
+                  <div class="counter-text">Happy Clients</div>
                 </div>
-                <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="400">
-                  <div class="achievement-card">
-                    <div class="achievement-icon"><i class="bi bi-patch-check-fill"></i></div>
-                    <div class="counter" data-count="10">0</div>
-                    <div class="counter-text">Awards & Certifications</div>
-                  </div>
+              </div>
+              <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="400">
+                <div class="achievement-card">
+                  <div class="achievement-icon"><i class="bi bi-patch-check-fill"></i></div>
+                  <div class="counter" data-count="10">0</div>
+                  <div class="counter-text">Awards & Certifications</div>
                 </div>
               </div>
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
       </div>
+    </div>
   </main>
 
   <footer class="text-center py-4 text-white">
@@ -332,3 +351,4 @@
   </script>
 </body>
 </html>
+
