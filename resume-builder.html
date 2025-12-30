@@ -48,14 +48,6 @@ border-radius:18px;
 box-shadow:0 30px 60px rgba(0,0,0,.12);
 transition:0.3s;
 }
-.panel:hover{
-transform:translateY(-2px);
-}
-
-h4{
-font-weight:800;
-letter-spacing:.5px;
-}
 
 .template-card{
 padding:12px 16px;
@@ -65,10 +57,6 @@ cursor:pointer;
 font-weight:600;
 background:white;
 transition:0.25s;
-}
-.template-card:hover{
-transform:translateY(-3px) scale(1.03);
-border-color:var(--primary);
 }
 .template-card.active{
 border-color:var(--primary);
@@ -94,31 +82,11 @@ font-size:14px;
 line-height:1.5;
 }
 
-.heading-name{
-font-size:34px;
-font-weight:900;
-}
-.heading-contact{
-font-size:13px;
-opacity:.8;
-}
-
-.section-title{
-font-weight:900;
-border-bottom:2px solid #000;
-margin:12px 0 6px 0;
-font-size:15px;
-}
-
-.item{
-margin-bottom:8px;
-font-size:13px;
-}
-
-button{
-border-radius:10px !important;
-font-weight:700 !important;
-}
+.heading-name{font-size:34px;font-weight:900}
+.heading-contact{font-size:12px;opacity:.8}
+.section-title{font-weight:900;border-bottom:2px solid #000;margin:12px 0 6px 0}
+.item{margin-bottom:8px;font-size:13px}
+.sidebar-box{background:#f1f5ff;padding:10px;border-radius:8px}
 
 </style>
 </head>
@@ -128,38 +96,40 @@ font-weight:700 !important;
 <nav class="navbar fixed-top navbar-dark">
 <div class="container d-flex justify-content-between">
 <span class="navbar-brand fw-bold">🤖 Bot Craft Resume Studio</span>
-<div>
-<button class="btn btn-warning" onclick="toggleTheme()">Light / Dark</button>
-</div>
+<button class="btn btn-warning" onclick="document.body.classList.toggle('dark')">Light / Dark</button>
 </div>
 </nav>
 
 <div class="container builder-container">
 <div class="row g-4">
 
-<!-- LEFT PANEL -->
+<!-- LEFT -->
 <div class="col-md-5">
 <div class="panel">
 
 <h4>Choose Resume Layout</h4>
-
 <div class="d-flex flex-wrap gap-2 mb-2">
+
 <div class="template-card active" onclick="setLayout('apollo',this)">Apollo</div>
 <div class="template-card" onclick="setLayout('classic',this)">Classic</div>
 <div class="template-card" onclick="setLayout('modern',this)">Modern</div>
+<div class="template-card" onclick="setLayout('sidebar',this)">Elegant Sidebar</div>
+<div class="template-card" onclick="setLayout('grid',this)">Professional Grid</div>
+<div class="template-card" onclick="setLayout('timeline',this)">Premium Timeline</div>
+
 </div>
 
 <hr>
 
-<h5>Personal Details</h5>
+<h5>Personal</h5>
 <input id="first" class="form-control mb-2" placeholder="First Name">
 <input id="last" class="form-control mb-2" placeholder="Last Name">
 <input id="email" class="form-control mb-2" placeholder="Email">
-<input id="phone" class="form-control mb-2" placeholder="Phone Number">
+<input id="phone" class="form-control mb-2" placeholder="Phone">
 <input id="loc" class="form-control mb-2" placeholder="Location">
 
 <h5>Summary</h5>
-<textarea id="summary" class="form-control mb-2" rows="3"></textarea>
+<textarea id="summary" class="form-control mb-2"></textarea>
 
 <h5>Experience</h5>
 <div id="exp"></div>
@@ -195,14 +165,14 @@ font-weight:700 !important;
 <li class="list-group-item" data-sec="skills">Skills</li>
 </ul>
 
-<button class="btn btn-dark w-100" onclick="preview()">Preview Resume</button>
+<button class="btn btn-dark w-100" onclick="preview()">Preview</button>
 <button class="btn btn-success w-100 mt-2" onclick="exportPDF()">Export PDF</button>
 <button class="btn btn-secondary w-100 mt-2" onclick="exportDOCX()">Export DOCX</button>
 
 </div>
 </div>
 
-<!-- RIGHT PANEL -->
+<!-- RIGHT -->
 <div class="col-md-7">
 <div class="resume-frame">
 <div class="resume">
@@ -217,107 +187,84 @@ Start building your resume…
 </div>
 
 <script>
-
 let layout="apollo";
 Sortable.create(sectionOrder,{animation:150});
 
-function toggleTheme(){document.body.classList.toggle("dark");}
-function setLayout(l,el){
+function setLayout(l,e){
 layout=l;
 document.querySelectorAll(".template-card").forEach(x=>x.classList.remove("active"));
-el.classList.add("active");
+e.classList.add("active");
 preview();
 }
 
-function addExp(){
-let e=document.createElement("div");
-e.className="border rounded p-2 mb-2";
-e.innerHTML=`
+function addExp(){exp.innerHTML+=`
+<div class="border rounded p-2 mb-2">
 <input class="form-control mb-1 c" placeholder="Company">
-<input class="form-control mb-1 r" placeholder="Role / Position">
-<textarea class="form-control mb-1 d" placeholder="Responsibilities"></textarea>
-<button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>`;
-exp.appendChild(e);
-}
+<input class="form-control mb-1 r" placeholder="Role">
+<textarea class="form-control mb-1 d" placeholder="Achievements / Work"></textarea>
+<button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
+</div>`;}
 
-function addEdu(){
-let e=document.createElement("div");
-e.className="border rounded p-2 mb-2";
-e.innerHTML=`
-<input class="form-control mb-1 school" placeholder="College / University">
+function addEdu(){edu.innerHTML+=`
+<div class="border rounded p-2 mb-2">
+<input class="form-control mb-1 school" placeholder="College">
 <input class="form-control mb-1 degree" placeholder="Degree">
-<button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>`;
-edu.appendChild(e);
-}
+<button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
+</div>`;}
 
-function addProject(){
-let e=document.createElement("div");
-e.className="border rounded p-2 mb-2";
-e.innerHTML=`
+function addProject(){proj.innerHTML+=`
+<div class="border rounded p-2 mb-2">
 <input class="form-control mb-1 title" placeholder="Project Title">
-<textarea class="form-control mb-1 desc" placeholder="Description"></textarea>
-<button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>`;
-proj.appendChild(e);
-}
+<textarea class="form-control mb-1 desc"></textarea>
+<button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
+</div>`;}
 
 function buildSections(){
-
-let exp="",eduHTML="",projHTML="";
+let expHTML="",eduHTML="",projHTML="";
 document.querySelectorAll("#exp>div").forEach(e=>{
-exp+=`<div class="item"><b>${e.querySelector(".c").value}</b> — ${e.querySelector(".r").value}<br>${e.querySelector(".d").value}</div>`;
-});
+expHTML+=`<div class="item"><b>${e.querySelector(".c").value}</b> — ${e.querySelector(".r").value}<br>${e.querySelector(".d").value}</div>`;});
 document.querySelectorAll("#edu>div").forEach(e=>{
-eduHTML+=`<div class="item"><b>${e.querySelector(".school").value}</b> — ${e.querySelector(".degree").value}</div>`;
-});
+eduHTML+=`<div class="item"><b>${e.querySelector(".school").value}</b> — ${e.querySelector(".degree").value}</div>`;});
 document.querySelectorAll("#proj>div").forEach(e=>{
-projHTML+=`<div class="item"><b>${e.querySelector(".title").value}</b><br>${e.querySelector(".desc").value}</div>`;
-});
+projHTML+=`<div class="item"><b>${e.querySelector(".title").value}</b><br>${e.querySelector(".desc").value}</div>`;});
 
 let html="";
 document.querySelectorAll("#sectionOrder li").forEach(li=>{
-let sec=li.getAttribute("data-sec");
-
-if(sec==="summary") html+=`<div class="section-title">Summary</div><p>${summary.value}</p>`;
-if(sec==="experience") html+=`<div class="section-title">Experience</div>${exp}`;
-if(sec==="education") html+=`<div class="section-title">Education</div>${eduHTML}`;
-if(sec==="projects") html+=`<div class="section-title">Projects</div>${projHTML}`;
-if(sec==="certifications") html+=`<div class="section-title">Certifications</div>${certifications.value}`;
-if(sec==="languages") html+=`<div class="section-title">Languages</div>${languages.value}`;
-if(sec==="skills") html+=`<div class="section-title">Skills</div>${skills.value}`;
-});
-
-return html;
-}
-
+let s=li.getAttribute("data-sec");
+if(s==="summary") html+=`<div class="section-title">Summary</div><p>${summary.value}</p>`;
+if(s==="experience") html+=`<div class="section-title">Experience</div>${expHTML}`;
+if(s==="education") html+=`<div class="section-title">Education</div>${eduHTML}`;
+if(s==="projects") html+=`<div class="section-title">Projects</div>${projHTML}`;
+if(s==="certifications") html+=`<div class="section-title">Certifications</div>${certifications.value}`;
+if(s==="languages") html+=`<div class="section-title">Languages</div>${languages.value}`;
+if(s==="skills") html+=`<div class="section-title">Skills</div>${skills.value}`;
+});return html;}
 function preview(){
-const name = `${first.value} ${last.value}`.trim() || "Your Name";
-const contact = `${email.value} | ${phone.value} | ${loc.value}`;
-const content = buildSections();
+
+const name=`${first.value} ${last.value}`||"Your Name";
+const contact=`${email.value} | ${phone.value} | ${loc.value}`;
+const body=buildSections();
 
 let html="";
-if(layout==="apollo"){
-html=`
+if(layout==="apollo")
+html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div><hr>${body}`;
+else if(layout==="classic")
+html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>${body}`;
+else if(layout==="modern")
+html=`<div style='border:2px solid black;padding:10px;border-radius:8px'>
 <div class="heading-name">${name}</div>
-<div class="heading-contact">${contact}</div>
-<hr>
-${content}`;
-}
-else if(layout==="classic"){
-html=`
-<div class="heading-name">${name}</div>
-<div class="heading-contact">${contact}</div>
-${content}`;
-}
-else{
-html=`
-<div class="heading-name">${name}</div>
-<div class="heading-contact">${contact}</div>
-<div class="section-title">Professional Profile</div>
-${content}`;
-}
-
-resumePreview.innerHTML=html;
-}
+<div class="heading-contact">${contact}</div></div>${body}`;
+else if(layout==="sidebar")
+html=`<div style="display:grid;grid-template-columns:1fr 2fr;gap:20px">
+<div class="sidebar-box"><b>${name}</b><br>${contact}<br><br>${skills.value}</div>
+<div>${body}</div></div>`;
+else if(layout==="grid")
+html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${body}</div>`;
+else if(layout==="timeline")
+html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>
+<div style="border-left:3px solid black;padding-left:10px">${body}</div>`;
+resumePreview.innerHTML=html;}
 
 function exportPDF(){
 html2pdf().set({
@@ -326,29 +273,23 @@ filename:"resume.pdf",
 image:{type:"jpeg",quality:1},
 html2canvas:{scale:3},
 jsPDF:{unit:"mm",format:"a4"}
-}).from(document.getElementById("resumePreview")).save();
+}).from(resumePreview).save();
 }
 
 async function exportDOCX(){
-const { Document, Packer, Paragraph, TextRun } = docx;
-const doc = new Document({
-sections:[{
- children:[
- new Paragraph({children:[
- new TextRun({text:`${first.value} ${last.value}`,bold:true,size:36})
- ]}),
- new Paragraph(`${email.value} | ${phone.value} | ${loc.value}`),
- new Paragraph(summary.value)
- ]
-}]
-});
-const blob = await Packer.toBlob(doc);
-const link=document.createElement("a");
-link.href=URL.createObjectURL(blob);
-link.download="resume.docx";
-link.click();
+const { Document,Packer,Paragraph,TextRun }=docx;
+const doc=new Document({
+sections:[{children:[
+new Paragraph({children:[new TextRun({text:`${first.value} ${last.value}`,bold:true,size:36})]}),
+new Paragraph(`${email.value} | ${phone.value} | ${loc.value}`),
+new Paragraph(summary.value)
+]}]});
+const blob=await Packer.toBlob(doc);
+const a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="resume.docx";
+a.click();
 }
-
 </script>
 
 </body>
