@@ -1,87 +1,112 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Bot Craft Resume Studio – Advanced Professional Edition</title>
+<title>Bot Craft Resume Studio – Liquid Glass Animated Edition</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Frameworks -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js"></script>
 
 <style>
 
-body{
-background:#020617;
-color:white;
-font-family:Segoe UI;
-}
-.navbar{background:#0b1220}
-.builder-container{margin-top:120px}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
+*{font-family:'Poppins',sans-serif}
 
-/* Liquid Panels */
-.panel{
-background:rgba(255,255,255,.08);
+/* Background */
+body{
+background:radial-gradient(circle at top,#0ea5e9,transparent 40%),
+linear-gradient(120deg,#020617,#0f172a,#020617);
+background-attachment:fixed;
+color:white;
+}
+
+/* NAV BAR */
+.navbar{
+background:rgba(255,255,255,.06);
 backdrop-filter:blur(15px);
-padding:18px;
-border-radius:18px;
+border-bottom:1px solid rgba(255,255,255,.2);
+box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+
+.builder-container{ margin-top:120px; }
+
+/* Glass Panel */
+.panel{
+background:linear-gradient(145deg,rgba(255,255,255,.2),rgba(255,255,255,.05));
+border-radius:25px;
+padding:20px;
+box-shadow:inset 0 0 80px rgba(255,255,255,.1),0 25px 80px rgba(0,0,0,.7);
+backdrop-filter:blur(25px);
 border:1px solid rgba(255,255,255,.25);
-box-shadow:0 30px 80px rgba(0,0,0,.7);
+}
+
+/* Titles */
+.panel h3,.panel h4,.panel h5{
+font-weight:800;
+letter-spacing:1px;
+background:linear-gradient(to right,#a5b4fc,#38bdf8);
+-webkit-background-clip:text;
+color:transparent;
 }
 
 /* Template Cards */
 .template-card{
-width:150px;
+width:140px;
 padding:10px;
-border-radius:14px;
+border-radius:16px;
 border:1px solid rgba(255,255,255,.3);
-background:rgba(255,255,255,.1);
-text-align:center;
 cursor:pointer;
-color:white;
+background:rgba(255,255,255,.08);
+backdrop-filter:blur(14px);
 transition:.3s;
+color:white;
+text-align:center;
 }
-.template-card:hover{
-transform:scale(1.05);
-border-color:#38bdf8;
+.template-thumb{
+width:100%;height:110px;border-radius:12px;background:white;
+box-shadow:0 0 15px rgba(0,0,0,.4);margin-bottom:6px;
 }
-.template-card.active{
-background:#38bdf860;
-border-color:white;
-}
+.template-card:hover{transform:translateY(-4px) scale(1.05);border-color:#38bdf8}
+.template-card.active{background:rgba(56,189,248,.45);border-color:white}
 
-/* Resume Preview */
-.resume{
-background:white;
-border-radius:18px;
-box-shadow:0 30px 80px rgba(0,0,0,.8)
+/* Resume Frame */
+.resume-frame{
+border-radius:30px;
+padding:20px;
+background:linear-gradient(140deg,#020617,#0b1734,#020617);
+box-shadow:inset 0 0 40px rgba(0,0,0,.9);
 }
-.page{
-padding:40px;
-color:black;
-}
+.resume{background:white;border-radius:18px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.9)}
+.page{padding:40px;color:black;line-height:1.5;opacity:0;transform:translateY(15px);transition:.4s}
+.page.show{opacity:1;transform:translateY(0)}
 
-/* Editor Toolbar */
+.heading-name{font-size:35px;font-weight:900}
+.heading-contact{font-size:12px;opacity:.8}
+.section-title{font-weight:900;border-bottom:2px solid #000;margin:6px 0}
+.item{font-size:13px;margin:4px 0}
+
 .toolbar button{
-padding:5px 10px;
-margin-right:4px;
+padding:4px 8px;
 border-radius:6px;
 border:1px solid #ccc;
+margin-right:4px;
 background:#eee;
 cursor:pointer;
 }
-
-.section-title{font-weight:900;border-bottom:2px solid black;margin-top:8px}
-.item{margin-bottom:6px}
 
 </style>
 </head>
 
 <body>
 
-<nav class="navbar fixed-top navbar-dark">
+<nav class="navbar fixed-top">
 <div class="container">
-<span class="navbar-brand">🤖 Bot Craft Resume Studio — Advanced</span>
+<span class="navbar-brand fw-bold text-light">
+✨ Bot Craft Resume Studio — Liquid Glass Animated
+</span>
 </div>
 </nav>
 
@@ -92,10 +117,26 @@ cursor:pointer;
 <div class="col-md-5">
 <div class="panel">
 
-<h4>Choose Layout</h4>
+<h3>Choose Resume Layout</h3>
+
 <div class="d-flex flex-wrap gap-2 mb-2">
-<div class="template-card active" onclick="setLayout('apollo',this)">Apollo</div>
-<div class="template-card" onclick="setLayout('classic',this)">Classic</div>
+<div class="template-card active" onclick="setLayout('apollo',this)">
+<div class="template-thumb"></div>Apollo</div>
+
+<div class="template-card" onclick="setLayout('classic',this)">
+<div class="template-thumb"></div>Classic</div>
+
+<div class="template-card" onclick="setLayout('modern',this)">
+<div class="template-thumb"></div>Modern</div>
+
+<div class="template-card" onclick="setLayout('sidebar',this)">
+<div class="template-thumb"></div>Sidebar</div>
+
+<div class="template-card" onclick="setLayout('grid',this)">
+<div class="template-thumb"></div>Grid</div>
+
+<div class="template-card" onclick="setLayout('timeline',this)">
+<div class="template-thumb"></div>Timeline</div>
 </div>
 
 <hr>
@@ -103,41 +144,52 @@ cursor:pointer;
 <h5>Personal</h5>
 <input id="first" class="form-control mb-2" placeholder="First Name">
 <input id="last" class="form-control mb-2" placeholder="Last Name">
-<input id="email" class="form-control mb-2" placeholder="Email Address">
+<input id="email" class="form-control mb-2" placeholder="Email">
 <input id="phone" class="form-control mb-2" placeholder="Phone Number">
 <input id="loc" class="form-control mb-2" placeholder="Current Location">
 
 <h5>Summary</h5>
-<textarea id="summary" class="form-control mb-2" placeholder="Short professional summary..."></textarea>
+<textarea id="summary" class="form-control mb-2" placeholder="Professional summary..."></textarea>
 
-<!-- EXPERIENCE -->
+<!-------- EXPERIENCE -------->
 <h5>Experience</h5>
 <div id="exp"></div>
-<button class="btn btn-outline-light w-100 mb-2" onclick="addExp()">+ Add Experience</button>
+<button class="btn btn-outline-light mb-2 w-100" onclick="addExp()">+ Add Experience</button>
 
-<!-- EDUCATION -->
+<!-------- EDUCATION -------->
 <h5>Education</h5>
 <div id="edu"></div>
-<button class="btn btn-outline-light w-100 mb-2" onclick="addEdu()">+ Add Education</button>
+<button class="btn btn-outline-light mb-2 w-100" onclick="addEdu()">+ Add Education</button>
 
-<!-- PROJECTS -->
+<!-------- PROJECTS -------->
 <h5>Projects</h5>
 <div id="proj"></div>
-<button class="btn btn-outline-light w-100 mb-2" onclick="addProject()">+ Add Project</button>
+<button class="btn btn-outline-light mb-2 w-100" onclick="addProject()">+ Add Project</button>
 
 <hr>
 
-<button class="btn btn-primary w-100 mb-2" onclick="preview()">Preview</button>
-<button class="btn btn-success w-100" onclick="exportPDF()">Export PDF</button>
+<h4>Reorder Sections</h4>
+<ul id="sectionOrder" class="list-group mb-3">
+<li class="list-group-item" data-sec="summary">Summary</li>
+<li class="list-group-item" data-sec="experience">Experience</li>
+<li class="list-group-item" data-sec="education">Education</li>
+<li class="list-group-item" data-sec="projects">Projects</li>
+<li class="list-group-item" data-sec="skills">Skills</li>
+</ul>
+
+<button class="btn btn-primary w-100" onclick="preview()">Preview</button>
+<button class="btn btn-success w-100 mt-2" onclick="exportPDF()">Export PDF</button>
 
 </div>
 </div>
 
 <!-- RIGHT -->
 <div class="col-md-7">
+<div class="resume-frame">
 <div class="resume">
 <div class="page" id="resumePreview">
-Resume Preview…
+Live Resume Preview…
+</div>
 </div>
 </div>
 </div>
@@ -150,7 +202,7 @@ Resume Preview…
 let layout="apollo";
 Sortable.create(sectionOrder,{animation:150});
 
-/*************** EXPERIENCE ***************/
+/******** EXPERIENCE ********/
 function addExp(){
 exp.innerHTML+=`
 <div class="border p-2 mb-2 bg-white rounded">
@@ -160,9 +212,9 @@ exp.innerHTML+=`
 <input class="form-control mb-1 l" placeholder="Location (City, Country)">
 
 <div class="d-flex gap-2 mb-1">
-<label>Start:</label>
+<label>Start</label>
 <input type="month" class="form-control s">
-<label>End:</label>
+<label>End</label>
 <input type="month" class="form-control e">
 </div>
 
@@ -171,45 +223,42 @@ exp.innerHTML+=`
 <label>Currently Working</label>
 </div>
 
-<textarea class="form-control mb-1 d" placeholder="Describe responsibilities, key achievements..."></textarea>
+<textarea class="form-control mb-1 d" placeholder="Responsibilities | Achievements..."></textarea>
 
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
 </div>`;
 }
-
 function toggleCurrent(chk){
-const end=chk.closest("div").parentElement.querySelector(".e");
-end.disabled=chk.checked;
+chk.closest("div").parentElement.querySelector(".e").disabled=chk.checked;
 }
 
-/*************** EDUCATION ***************/
+/******** EDUCATION ********/
 function addEdu(){
 edu.innerHTML+=`
 <div class="border p-2 mb-2 bg-white rounded">
-<input class="form-control mb-1 school" placeholder="University / College Name">
-<input class="form-control mb-1 degree" placeholder="Degree & Specialization">
-
+<input class="form-control mb-1 school" placeholder="University / College">
+<input class="form-control mb-1 degree" placeholder="Degree">
 <div class="d-flex gap-2 mb-1">
-<label>Start:</label>
+<label>Start</label>
 <input type="month" class="form-control estart">
-<label>End:</label>
+<label>End</label>
 <input type="month" class="form-control eend">
 </div>
-
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
 </div>`;
 }
 
-/*************** PROJECTS ***************/
+/******** PROJECTS ********/
 function addProject(){
 proj.innerHTML+=`
 <div class="border p-2 mb-2 bg-white rounded">
+
 <input class="form-control mb-1 title" placeholder="Project Title">
 
 <div class="toolbar">
-<button onclick="formatText(this,'bold')"><b>B</b></button>
-<button onclick="formatText(this,'italic')"><i>I</i></button>
-<button onclick="applyBullet(this)">•</button>
+<button onclick="execCmd('bold')"><b>B</b></button>
+<button onclick="execCmd('italic')"><i>I</i></button>
+<button onclick="execCmd('insertUnorderedList')">•</button>
 </div>
 
 <div class="desc form-control mb-1" contenteditable="true" style="min-height:70px">
@@ -217,6 +266,7 @@ Project description here...
 </div>
 
 <label><b>Roles & Responsibilities</b></label>
+
 <div class="roles form-control mb-1" contenteditable="true" style="min-height:70px">
 Add bullet roles here...
 </div>
@@ -224,35 +274,23 @@ Add bullet roles here...
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
 </div>`;
 }
+function execCmd(cmd){document.execCommand(cmd,false,null);}
 
-function formatText(btn,cmd){
-document.execCommand(cmd,false,null);
-}
-
-function applyBullet(el){
-document.execCommand("insertUnorderedList");
-}
-
-/*************** BUILD RESUME ***************/
+/******** BUILD ********/
 function buildSections(){
-
-let expHTML="",eduHTML="",projHTML="";
-
-/* EXPERIENCE */
+let exp="",eduHTML="",projHTML="";
 document.querySelectorAll("#exp>div").forEach(e=>{
-const s = e.querySelector(".s").value;
-const en = e.querySelector(".cur").checked ? "Present" : e.querySelector(".e").value;
-const range = s ? `${s} – ${en}` : "";
-expHTML+=`
+const s=e.querySelector(".s").value;
+const en=e.querySelector(".cur").checked?"Present":e.querySelector(".e").value;
+exp+=`
 <div class="item">
 <b>${e.querySelector(".c").value}</b> — ${e.querySelector(".r").value}
 <br>${e.querySelector(".l").value}
-<br><small>${range}</small>
+<br><small>${s} – ${en}</small>
 <br>${e.querySelector(".d").value}
 </div>`;
 });
 
-/* EDUCATION */
 document.querySelectorAll("#edu>div").forEach(e=>{
 eduHTML+=`
 <div class="item">
@@ -262,49 +300,62 @@ eduHTML+=`
 </div>`;
 });
 
-/* PROJECTS */
 document.querySelectorAll("#proj>div").forEach(e=>{
 projHTML+=`
 <div class="item">
 <b>${e.querySelector(".title").value}</b><br>
 ${e.querySelector(".desc").innerHTML}
-<br><b>Roles & Responsibilities:</b>
+<br><b>Roles:</b>
 ${e.querySelector(".roles").innerHTML}
 </div>`;
 });
 
-return {expHTML,eduHTML,projHTML};
+return {exp,eduHTML,projHTML};
 }
 
-/*************** PREVIEW ***************/
+/******** PREVIEW ********/
 function preview(){
-
 const name=`${first.value} ${last.value}`||"Your Name";
 const contact=`${email.value} | ${phone.value} | ${loc.value}`;
-const {expHTML,eduHTML,projHTML}=buildSections();
+const {exp,eduHTML,projHTML}=buildSections();
 
-const html=`
-<div style="font-size:32px;font-weight:900">${name}</div>
-<div style="font-size:12px">${contact}</div>
-<hr>
+let html="";
 
-<div class="section-title">Summary</div>
-<p>${summary.value}</p>
-
-<div class="section-title">Experience</div>
-${expHTML}
-
-<div class="section-title">Education</div>
-${eduHTML}
-
-<div class="section-title">Projects</div>
-${projHTML}
+if(layout==="apollo")
+html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div><hr>
+${generateOrdered(exp,eduHTML,projHTML)}
 `;
 
-resumePreview.innerHTML=html;
+else if(layout==="sidebar")
+html=`<div style="display:grid;grid-template-columns:1fr 2fr;gap:18px">
+<div style="background:#f6f6f6;padding:10px;border-radius:8px">
+<b>${name}</b><br>${contact}<br><br><b>Skills</b><br>${skills.value}</div>
+<div>${generateOrdered(exp,eduHTML,projHTML)}</div></div>`;
+
+else
+html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>
+${generateOrdered(exp,eduHTML,projHTML)}
+`;
+
+const preview=document.getElementById("resumePreview");
+preview.classList.remove("show");
+setTimeout(()=>{preview.innerHTML=html;preview.classList.add("show");},150);
 }
 
-/*************** EXPORT ***************/
+function generateOrdered(exp,eduHTML,projHTML){
+let html="";
+document.querySelectorAll("#sectionOrder li").forEach(li=>{
+let s=li.getAttribute("data-sec");
+if(s==="summary") html+=`<div class="section-title">Summary</div>${summary.value}`;
+if(s==="experience") html+=`<div class="section-title">Experience</div>${exp}`;
+if(s==="education") html+=`<div class="section-title">Education</div>${eduHTML}`;
+if(s==="projects") html+=`<div class="section-title">Projects</div>${projHTML}`;
+if(s==="skills") html+=`<div class="section-title">Skills</div>${skills.value}`;
+});
+return html;
+}
+
+/******** EXPORT PDF ********/
 function exportPDF(){
 html2pdf().set({
 margin:10,
@@ -317,10 +368,11 @@ jsPDF:{unit:"mm",format:"a4"}
 
 function setLayout(l,e){
 layout=l;
-document.querySelectorAll(".template-card").forEach(c=>c.classList.remove("active"));
+document.querySelectorAll(".template-card").forEach(x=>x.classList.remove("active"));
 e.classList.add("active");
 preview();
 }
+
 </script>
 
 </body>
