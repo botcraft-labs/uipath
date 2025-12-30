@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Bot Craft Resume Studio</title>
+<title>Bot Craft Resume Studio – Liquid Glass Animated Edition</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Frameworks -->
@@ -12,102 +12,128 @@
 
 <style>
 
-:root{
- --primary:#3b82f6;
- --bg:#0b1121;
- --panel:rgba(255,255,255,.08);
- --text:#fff;
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
+*{font-family:'Poppins',sans-serif}
 
+/* Background Universe */
 body{
-background:linear-gradient(120deg,#020617,#0f172a,#020617);
+background:radial-gradient(circle at top,#0ea5e9,transparent 40%),
+linear-gradient(120deg,#020617,#0f172a,#020617);
 background-attachment:fixed;
-font-family:"Segoe UI",Arial;
-color:var(--text);
-}
-
-.navbar{
-background:rgba(0,0,0,.6);
-backdrop-filter:blur(12px);
-border-bottom:1px solid rgba(255,255,255,.1);
-}
-
-.builder-container{
-margin-top:120px;
-}
-
-.panel{
-background:var(--panel);
-padding:18px;
-border-radius:20px;
-box-shadow:0 20px 60px rgba(0,0,0,.4);
-backdrop-filter:blur(14px);
-border:1px solid rgba(255,255,255,.15);
-}
-
-.template-card{
-padding:12px 16px;
-border:1px solid rgba(255,255,255,.2);
-border-radius:14px;
-cursor:pointer;
-font-weight:600;
-background:rgba(255,255,255,.1);
-backdrop-filter:blur(10px);
-transition:0.25s;
 color:white;
 }
-.template-card:hover{
-transform:translateY(-4px) scale(1.03);
-border-color:var(--primary);
-}
-.template-card.active{
-border-color:var(--primary);
-background:rgba(59,130,246,.3);
+
+/* NAV BAR */
+.navbar{
+background:rgba(255,255,255,.06);
+backdrop-filter:blur(15px);
+border-bottom:1px solid rgba(255,255,255,.2);
+box-shadow:0 20px 60px rgba(0,0,0,.6);
 }
 
-.resume-frame{
-border-radius:22px;
+/* Main Container */
+.builder-container{ margin-top:120px; }
+
+/* LIQUID GLASS PANEL */
+.panel{
+background:linear-gradient(145deg,rgba(255,255,255,.2),rgba(255,255,255,.05));
+border-radius:25px;
 padding:20px;
-background:linear-gradient(145deg,#020617,#111b3d);
-box-shadow:inset 0 0 35px rgba(0,0,0,.7);
+box-shadow:inset 0 0 80px rgba(255,255,255,.1),0 25px 80px rgba(0,0,0,.7);
+backdrop-filter:blur(25px);
+border:1px solid rgba(255,255,255,.25);
 }
 
+/* Titles */
+.panel h3,.panel h4,.panel h5{
+font-weight:800;
+letter-spacing:1px;
+background:linear-gradient(to right,#a5b4fc,#38bdf8);
+-webkit-background-clip:text;
+color:transparent;
+}
+
+/* TEMPLATE THUMBNAIL CARDS */
+.template-card{
+width: 140px;
+padding:10px;
+border-radius:16px;
+border:1px solid rgba(255,255,255,.3);
+cursor:pointer;
+background:rgba(255,255,255,.08);
+backdrop-filter:blur(14px);
+transition:.3s;
+color:white;
+text-align:center;
+}
+
+.template-thumb{
+width:100%;
+height:110px;
+border-radius:12px;
+background:white;
+box-shadow:0 0 15px rgba(0,0,0,.4);
+margin-bottom:6px;
+}
+
+.template-card:hover{
+transform:translateY(-4px) scale(1.05);
+box-shadow:0 0 25px rgba(59,130,246,.8);
+border-color:#38bdf8;
+}
+
+.template-card.active{
+background:rgba(56,189,248,.45);
+border-color:white;
+}
+
+/* Resume Frame */
+.resume-frame{
+border-radius:30px;
+padding:20px;
+background:linear-gradient(140deg,#020617,#0b1734,#020617);
+box-shadow:inset 0 0 40px rgba(0,0,0,.9);
+}
+
+/* Resume Preview Box */
 .resume{
 background:white;
-border-radius:12px;
-box-shadow:0 10px 40px rgba(0,0,0,.8);
+border-radius:18px;
+box-shadow:0 40px 80px rgba(0,0,0,.9);
+overflow:hidden;
 }
 
+/* 🔥 ANIMATION MAGIC */
 .page{
 padding:40px;
-font-size:14px;
-line-height:1.5;
 color:black;
+line-height:1.5;
+opacity:0;
+transform:translateY(15px);
+transition:all .4s ease;
+}
+.page.show{
+opacity:1;
+transform:translateY(0);
 }
 
-.heading-name{
-font-size:36px;
-font-weight:900;
-}
-.heading-contact{
-font-size:12px;
-opacity:.8;
-}
+/* Resume Text */
+.heading-name{font-size:35px;font-weight:900}
+.heading-contact{font-size:12px;opacity:.8}
+.section-title{font-weight:900;border-bottom:2px solid #000;margin:6px 0}
+.item{font-size:13px;margin:4px 0}
 
-.section-title{
-font-weight:900;
-border-bottom:2px solid #000;
-margin:10px 0;
+/* Buttons */
+.btn-glow{
+border-radius:14px;
+font-weight:800;
+background:#3b82f6;
+border:none;
+box-shadow:0 0 20px rgba(59,130,246,.9);
 }
-
-.item{
-margin-bottom:6px;
-font-size:13px;
-}
-
-button{
-border-radius:10px !important;
-font-weight:700 !important;
+.btn-glow:hover{
+transform:scale(1.02);
+box-shadow:0 0 35px rgba(59,130,246,1);
 }
 
 </style>
@@ -117,7 +143,9 @@ font-weight:700 !important;
 
 <nav class="navbar fixed-top">
 <div class="container">
-<span class="navbar-brand fw-bold text-light">🤖 Bot Craft Resume Studio — Premium Edition</span>
+<span class="navbar-brand fw-bold text-light">
+✨ Bot Craft Resume Studio — Liquid Glass Animated
+</span>
 </div>
 </nav>
 
@@ -128,20 +156,45 @@ font-weight:700 !important;
 <div class="col-md-5">
 <div class="panel">
 
-<h3 class="fw-bold mb-3">Choose Resume Layout</h3>
+<h3>Choose Resume Layout</h3>
 
-<div class="d-flex flex-wrap gap-2 mb-3">
-<div class="template-card active" onclick="setLayout('apollo',this)">Apollo</div>
-<div class="template-card" onclick="setLayout('classic',this)">Classic</div>
-<div class="template-card" onclick="setLayout('modern',this)">Modern</div>
-<div class="template-card" onclick="setLayout('sidebar',this)">Elegant Sidebar</div>
-<div class="template-card" onclick="setLayout('grid',this)">Professional Grid</div>
-<div class="template-card" onclick="setLayout('timeline',this)">Premium Timeline</div>
+<div class="d-flex flex-wrap gap-2 mb-2">
+
+<div class="template-card active" onclick="setLayout('apollo',this)">
+<div class="template-thumb" style="background:linear-gradient(#fff,#ddd);"></div>
+Apollo
 </div>
 
-<hr class="text-light">
+<div class="template-card" onclick="setLayout('classic',this)">
+<div class="template-thumb" style="background:linear-gradient(#fff,#bbb);"></div>
+Classic
+</div>
 
-<h4>Personal Details</h4>
+<div class="template-card" onclick="setLayout('modern',this)">
+<div class="template-thumb" style="background:linear-gradient(#fafafa,#ccc);"></div>
+Modern
+</div>
+
+<div class="template-card" onclick="setLayout('sidebar',this)">
+<div class="template-thumb" style="background:linear-gradient(#eaeaea,#bbb);"></div>
+Sidebar
+</div>
+
+<div class="template-card" onclick="setLayout('grid',this)">
+<div class="template-thumb" style="background:linear-gradient(#f4f4f4,#aaa);"></div>
+Grid
+</div>
+
+<div class="template-card" onclick="setLayout('timeline',this)">
+<div class="template-thumb" style="background:linear-gradient(#ffffff,#999);"></div>
+Timeline
+</div>
+
+</div>
+
+<hr>
+
+<h5>Personal</h5>
 <input id="first" class="form-control mb-2" placeholder="First Name">
 <input id="last" class="form-control mb-2" placeholder="Last Name">
 <input id="email" class="form-control mb-2" placeholder="Email">
@@ -174,7 +227,7 @@ font-weight:700 !important;
 
 <hr>
 
-<h4>Arrange Sections</h4>
+<h4>Reorder Sections</h4>
 <ul id="sectionOrder" class="list-group mb-3">
 <li class="list-group-item" data-sec="summary">Summary</li>
 <li class="list-group-item" data-sec="experience">Experience</li>
@@ -185,7 +238,7 @@ font-weight:700 !important;
 <li class="list-group-item" data-sec="skills">Skills</li>
 </ul>
 
-<button class="btn btn-primary w-100" onclick="preview()">Preview Resume</button>
+<button class="btn btn-glow w-100" onclick="preview()">Preview</button>
 <button class="btn btn-success w-100 mt-2" onclick="exportPDF()">Export PDF</button>
 <button class="btn btn-secondary w-100 mt-2" onclick="exportDOCX()">Export DOCX</button>
 
@@ -197,7 +250,7 @@ font-weight:700 !important;
 <div class="resume-frame">
 <div class="resume">
 <div class="page" id="resumePreview">
-Your live resume preview will appear here…
+Live Resume Preview…
 </div>
 </div>
 </div>
@@ -219,41 +272,45 @@ preview();
 }
 
 function addExp(){exp.innerHTML+=`
-<div class="border rounded p-2 mb-2 bg-white">
+<div class="border p-2 mb-2 bg-white rounded">
 <input class="form-control mb-1 c" placeholder="Company">
 <input class="form-control mb-1 r" placeholder="Role">
-<textarea class="form-control mb-1 d" placeholder="Achievements"></textarea>
+<textarea class="form-control mb-1 d"></textarea>
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
 </div>`;}
 
 function addEdu(){edu.innerHTML+=`
-<div class="border rounded p-2 mb-2 bg-white">
+<div class="border p-2 mb-2 bg-white rounded">
 <input class="form-control mb-1 school" placeholder="University">
 <input class="form-control mb-1 degree" placeholder="Degree">
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
 </div>`;}
 
 function addProject(){proj.innerHTML+=`
-<div class="border rounded p-2 mb-2 bg-white">
-<input class="form-control mb-1 title" placeholder="Project Title">
-<textarea class="form-control mb-1 desc" placeholder="Description"></textarea>
+<div class="border p-2 mb-2 bg-white rounded">
+<input class="form-control mb-1 title" placeholder="Project">
+<textarea class="form-control mb-1 desc"></textarea>
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
 </div>`;}
 
+/* Build Sections */
 function buildSections(){
-let expHTML="",eduHTML="",projHTML="";
+let exp="",eduHTML="",projHTML="";
 document.querySelectorAll("#exp>div").forEach(e=>{
-expHTML+=`<div class="item"><b>${e.querySelector(".c").value}</b> — ${e.querySelector(".r").value}<br>${e.querySelector(".d").value}</div>`;});
+exp+=`<div class="item"><b>${e.querySelector(".c").value}</b> — ${e.querySelector(".r").value}<br>${e.querySelector(".d").value}</div>`;
+});
 document.querySelectorAll("#edu>div").forEach(e=>{
-eduHTML+=`<div class="item"><b>${e.querySelector(".school").value}</b> — ${e.querySelector(".degree").value}</div>`;});
+eduHTML+=`<div class="item"><b>${e.querySelector(".school").value}</b> — ${e.querySelector(".degree").value}</div>`;
+});
 document.querySelectorAll("#proj>div").forEach(e=>{
-projHTML+=`<div class="item"><b>${e.querySelector(".title").value}</b><br>${e.querySelector(".desc").value}</div>`;});
+projHTML+=`<div class="item"><b>${e.querySelector(".title").value}</b><br>${e.querySelector(".desc").value}</div>`;
+});
 
 let html="";
 document.querySelectorAll("#sectionOrder li").forEach(li=>{
 let s=li.getAttribute("data-sec");
 if(s==="summary") html+=`<div class="section-title">Summary</div><p>${summary.value}</p>`;
-if(s==="experience") html+=`<div class="section-title">Experience</div>${expHTML}`;
+if(s==="experience") html+=`<div class="section-title">Experience</div>${exp}`;
 if(s==="education") html+=`<div class="section-title">Education</div>${eduHTML}`;
 if(s==="projects") html+=`<div class="section-title">Projects</div>${projHTML}`;
 if(s==="certifications") html+=`<div class="section-title">Certifications</div>${certifications.value}`;
@@ -263,6 +320,7 @@ if(s==="skills") html+=`<div class="section-title">Skills</div>${skills.value}`;
 return html;
 }
 
+/* Preview With Animation */
 function preview(){
 
 const name=`${first.value} ${last.value}`||"Your Name";
@@ -275,13 +333,13 @@ html=`<div class="heading-name">${name}</div><div class="heading-contact">${cont
 else if(layout==="classic")
 html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>${body}`;
 else if(layout==="modern")
-html=`<div style="border:2px solid black;border-radius:8px;padding:10px">
+html=`<div style='border:2px solid black;padding:10px;border-radius:8px'>
 <div class="heading-name">${name}</div>
 <div class="heading-contact">${contact}</div>
 </div>${body}`;
 else if(layout==="sidebar")
-html=`<div style="display:grid;grid-template-columns:1fr 2fr;gap:15px">
-<div style="background:#f4f4f4;padding:10px;border-radius:8px">
+html=`<div style="display:grid;grid-template-columns:1fr 2fr;gap:18px">
+<div style="background:#f6f6f6;padding:10px;border-radius:8px">
 <b>${name}</b><br>${contact}<br><br><b>Skills</b><br>${skills.value}</div>
 <div>${body}</div></div>`;
 else if(layout==="grid")
@@ -290,8 +348,16 @@ html=`<div class="heading-name">${name}</div><div class="heading-contact">${cont
 else if(layout==="timeline")
 html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>
 <div style="border-left:3px solid black;padding-left:10px">${body}</div>`;
-resumePreview.innerHTML=html;}
 
+const preview=document.getElementById("resumePreview");
+preview.classList.remove("show");
+setTimeout(()=>{
+preview.innerHTML=html;
+preview.classList.add("show");
+},150);
+}
+
+/* Export PDF */
 function exportPDF(){
 html2pdf().set({
 margin:10,
@@ -302,8 +368,9 @@ jsPDF:{unit:"mm",format:"a4"}
 }).from(resumePreview).save();
 }
 
+/* DOCX Export */
 async function exportDOCX(){
-const { Document,Packer,Paragraph,TextRun }=docx;
+const {Document,Packer,Paragraph,TextRun}=docx;
 const doc=new Document({
 sections:[{children:[
 new Paragraph({children:[new TextRun({text:`${first.value} ${last.value}`,bold:true,size:36})]}),
