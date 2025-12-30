@@ -136,15 +136,6 @@ transform:scale(1.02);
 box-shadow:0 0 35px rgba(59,130,246,1);
 }
 
-.toolbar button{
-padding:4px 8px;
-border-radius:6px;
-border:1px solid #ccc;
-margin-right:4px;
-background:#eee;
-cursor:pointer;
-}
-
 </style>
 </head>
 
@@ -211,31 +202,28 @@ Timeline
 <input id="loc" class="form-control mb-2" placeholder="Location">
 
 <h5>Summary</h5>
-<textarea id="summary" class="form-control mb-2" placeholder="Professional summary..."></textarea>
+<textarea id="summary" class="form-control mb-2"></textarea>
 
-<!---------------- EXPERIENCE (UPDATED) ---------------->
 <h5>Experience</h5>
 <div id="exp"></div>
 <button class="btn btn-outline-light mb-2 w-100" onclick="addExp()">+ Add Experience</button>
 
-<!---------------- EDUCATION (UPDATED) ---------------->
 <h5>Education</h5>
 <div id="edu"></div>
 <button class="btn btn-outline-light mb-2 w-100" onclick="addEdu()">+ Add Education</button>
 
-<!---------------- PROJECTS (UPDATED) ---------------->
 <h5>Projects</h5>
 <div id="proj"></div>
 <button class="btn btn-outline-light mb-2 w-100" onclick="addProject()">+ Add Project</button>
 
 <h5>Certifications</h5>
-<textarea id="certifications" class="form-control mb-2" placeholder="Certification list..."></textarea>
+<textarea id="certifications" class="form-control mb-2"></textarea>
 
 <h5>Languages</h5>
-<textarea id="languages" class="form-control mb-2" placeholder="Languages known..."></textarea>
+<textarea id="languages" class="form-control mb-2"></textarea>
 
 <h5>Skills</h5>
-<textarea id="skills" class="form-control mb-2" placeholder="Technical skills..."></textarea>
+<textarea id="skills" class="form-control mb-2"></textarea>
 
 <hr>
 
@@ -283,153 +271,93 @@ e.classList.add("active");
 preview();
 }
 
-/******** EXPERIENCE UPDATED *********/
-function addExp(){
-exp.innerHTML+=`
+function addExp(){exp.innerHTML+=`
 <div class="border p-2 mb-2 bg-white rounded">
-
-<input class="form-control mb-1 c" placeholder="Company Name">
-<input class="form-control mb-1 r" placeholder="Role / Designation">
-<input class="form-control mb-1 l" placeholder="Location (City, Country)">
-
-<div class="d-flex gap-2 mb-1">
-<label>Start</label>
-<input type="month" class="form-control s">
-<label>End</label>
-<input type="month" class="form-control e">
-</div>
-
-<div class="form-check mb-1">
-<input class="form-check-input cur" type="checkbox" onchange="toggleCurrent(this)">
-<label>Currently Working</label>
-</div>
-
-<textarea class="form-control mb-1 d" placeholder="Responsibilities / Achievements..."></textarea>
-
+<input class="form-control mb-1 c" placeholder="Company">
+<input class="form-control mb-1 r" placeholder="Role">
+<textarea class="form-control mb-1 d"></textarea>
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
-</div>`;
-}
+</div>`;}
 
-function toggleCurrent(chk){
-chk.closest("div").parentElement.querySelector(".e").disabled=chk.checked;
-}
-
-/******** EDUCATION UPDATED *********/
-function addEdu(){
-edu.innerHTML+=`
+function addEdu(){edu.innerHTML+=`
 <div class="border p-2 mb-2 bg-white rounded">
-<input class="form-control mb-1 school" placeholder="University / College">
+<input class="form-control mb-1 school" placeholder="University">
 <input class="form-control mb-1 degree" placeholder="Degree">
-
-<div class="d-flex gap-2 mb-1">
-<label>Start</label>
-<input type="month" class="form-control estart">
-<label>End</label>
-<input type="month" class="form-control eend">
-</div>
-
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
-</div>`;
-}
+</div>`;}
 
-/******** PROJECTS UPDATED *********/
-function execCmd(cmd){document.execCommand(cmd,false,null);}
-
-function addProject(){
-proj.innerHTML+=`
+function addProject(){proj.innerHTML+=`
 <div class="border p-2 mb-2 bg-white rounded">
-
-<input class="form-control mb-1 title" placeholder="Project Title">
-
-<div class="toolbar">
-<button onclick="execCmd('bold')"><b>B</b></button>
-<button onclick="execCmd('italic')"><i>I</i></button>
-<button onclick="execCmd('insertUnorderedList')">•</button>
-</div>
-
-<div class="desc form-control mb-1" contenteditable="true" style="min-height:70px">
-Project description here...
-</div>
-
-<label><b>Roles & Responsibilities</b></label>
-
-<div class="roles form-control mb-1" contenteditable="true" style="min-height:70px">
-Add role bullet points here...
-</div>
-
+<input class="form-control mb-1 title" placeholder="Project">
+<textarea class="form-control mb-1 desc"></textarea>
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
-</div>`;
-}
+</div>`;}
 
-/******** BUILD *********/
+/* Build Sections */
 function buildSections(){
 let exp="",eduHTML="",projHTML="";
-
 document.querySelectorAll("#exp>div").forEach(e=>{
-const s=e.querySelector(".s").value;
-const en=e.querySelector(".cur").checked?"Present":e.querySelector(".e").value;
-
-exp+=`
-<div class="item">
-<b>${e.querySelector(".c").value}</b> — ${e.querySelector(".r").value}
-<br>${e.querySelector(".l").value}
-<br><small>${s} – ${en}</small>
-<br>${e.querySelector(".d").value}
-</div>`;
+exp+=`<div class="item"><b>${e.querySelector(".c").value}</b> — ${e.querySelector(".r").value}<br>${e.querySelector(".d").value}</div>`;
 });
-
 document.querySelectorAll("#edu>div").forEach(e=>{
-eduHTML+=`
-<div class="item">
-<b>${e.querySelector(".school").value}</b>
-<br>${e.querySelector(".degree").value}
-<br><small>${e.querySelector(".estart").value} – ${e.querySelector(".eend").value}</small>
-</div>`;
+eduHTML+=`<div class="item"><b>${e.querySelector(".school").value}</b> — ${e.querySelector(".degree").value}</div>`;
 });
-
 document.querySelectorAll("#proj>div").forEach(e=>{
-projHTML+=`
-<div class="item">
-<b>${e.querySelector(".title").value}</b><br>
-${e.querySelector(".desc").innerHTML}
-<br><b>Roles:</b>
-${e.querySelector(".roles").innerHTML}
-</div>`;
+projHTML+=`<div class="item"><b>${e.querySelector(".title").value}</b><br>${e.querySelector(".desc").value}</div>`;
 });
 
-return {exp,eduHTML,projHTML};
+let html="";
+document.querySelectorAll("#sectionOrder li").forEach(li=>{
+let s=li.getAttribute("data-sec");
+if(s==="summary") html+=`<div class="section-title">Summary</div><p>${summary.value}</p>`;
+if(s==="experience") html+=`<div class="section-title">Experience</div>${exp}`;
+if(s==="education") html+=`<div class="section-title">Education</div>${eduHTML}`;
+if(s==="projects") html+=`<div class="section-title">Projects</div>${projHTML}`;
+if(s==="certifications") html+=`<div class="section-title">Certifications</div>${certifications.value}`;
+if(s==="languages") html+=`<div class="section-title">Languages</div>${languages.value}`;
+if(s==="skills") html+=`<div class="section-title">Skills</div>${skills.value}`;
+});
+return html;
 }
 
-/******** PREVIEW *********/
+/* Preview With Animation */
 function preview(){
 
 const name=`${first.value} ${last.value}`||"Your Name";
 const contact=`${email.value} | ${phone.value} | ${loc.value}`;
-const {exp,eduHTML,projHTML}=buildSections();
+const body=buildSections();
 
 let html="";
-let body="";
-
-document.querySelectorAll("#sectionOrder li").forEach(li=>{
-let s=li.getAttribute("data-sec");
-if(s==="summary") body+=`<div class="section-title">Summary</div>${summary.value}`;
-if(s==="experience") body+=`<div class="section-title">Experience</div>${exp}`;
-if(s==="education") body+=`<div class="section-title">Education</div>${eduHTML}`;
-if(s==="projects") body+=`<div class="section-title">Projects</div>${projHTML}`;
-if(s==="certifications") body+=`<div class="section-title">Certifications</div>${certifications.value}`;
-if(s==="languages") body+=`<div class="section-title">Languages</div>${languages.value}`;
-if(s==="skills") body+=`<div class="section-title">Skills</div>${skills.value}`;
-});
-
-html=`<div class="heading-name">${name}</div>
-<div class="heading-contact">${contact}</div><hr>${body}`;
+if(layout==="apollo")
+html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div><hr>${body}`;
+else if(layout==="classic")
+html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>${body}`;
+else if(layout==="modern")
+html=`<div style='border:2px solid black;padding:10px;border-radius:8px'>
+<div class="heading-name">${name}</div>
+<div class="heading-contact">${contact}</div>
+</div>${body}`;
+else if(layout==="sidebar")
+html=`<div style="display:grid;grid-template-columns:1fr 2fr;gap:18px">
+<div style="background:#f6f6f6;padding:10px;border-radius:8px">
+<b>${name}</b><br>${contact}<br><br><b>Skills</b><br>${skills.value}</div>
+<div>${body}</div></div>`;
+else if(layout==="grid")
+html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${body}</div>`;
+else if(layout==="timeline")
+html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>
+<div style="border-left:3px solid black;padding-left:10px">${body}</div>`;
 
 const preview=document.getElementById("resumePreview");
 preview.classList.remove("show");
-setTimeout(()=>{preview.innerHTML=html;preview.classList.add("show");},150);
+setTimeout(()=>{
+preview.innerHTML=html;
+preview.classList.add("show");
+},150);
 }
 
-/******** EXPORT PDF *********/
+/* Export PDF */
 function exportPDF(){
 html2pdf().set({
 margin:10,
@@ -440,7 +368,7 @@ jsPDF:{unit:"mm",format:"a4"}
 }).from(resumePreview).save();
 }
 
-/******** DOCX *********/
+/* DOCX Export */
 async function exportDOCX(){
 const {Document,Packer,Paragraph,TextRun}=docx;
 const doc=new Document({
@@ -455,7 +383,6 @@ a.href=URL.createObjectURL(blob);
 a.download="resume.docx";
 a.click();
 }
-
 </script>
 
 </body>
