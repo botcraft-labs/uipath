@@ -4,6 +4,7 @@
 <title>Bot Craft Resume Studio</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<!-- Frameworks -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -12,91 +13,111 @@
 <style>
 
 :root{
- --primary:#2563eb;
- --panel:#ffffff;
- --bg:#f3f4f8;
- --text:#0f172a;
-}
-
-body.dark{
- --primary:#38bdf8;
- --panel:#0b1220;
- --bg:#020617;
- --text:#e5e7eb;
+ --primary:#3b82f6;
+ --bg:#0b1121;
+ --panel:rgba(255,255,255,.08);
+ --text:#fff;
 }
 
 body{
-background:var(--bg);
+background:linear-gradient(120deg,#020617,#0f172a,#020617);
+background-attachment:fixed;
 font-family:"Segoe UI",Arial;
 color:var(--text);
-transition:0.3s;
 }
 
 .navbar{
-background:#0f172a !important;
-box-shadow:0 10px 30px rgba(0,0,0,.3);
+background:rgba(0,0,0,.6);
+backdrop-filter:blur(12px);
+border-bottom:1px solid rgba(255,255,255,.1);
 }
 
 .builder-container{
-margin-top:110px;
+margin-top:120px;
 }
 
 .panel{
 background:var(--panel);
 padding:18px;
-border-radius:18px;
-box-shadow:0 30px 60px rgba(0,0,0,.12);
-transition:0.3s;
+border-radius:20px;
+box-shadow:0 20px 60px rgba(0,0,0,.4);
+backdrop-filter:blur(14px);
+border:1px solid rgba(255,255,255,.15);
 }
 
 .template-card{
 padding:12px 16px;
-border:2px solid rgba(0,0,0,.2);
+border:1px solid rgba(255,255,255,.2);
 border-radius:14px;
 cursor:pointer;
 font-weight:600;
-background:white;
+background:rgba(255,255,255,.1);
+backdrop-filter:blur(10px);
 transition:0.25s;
+color:white;
+}
+.template-card:hover{
+transform:translateY(-4px) scale(1.03);
+border-color:var(--primary);
 }
 .template-card.active{
 border-color:var(--primary);
-background:#e5edff;
+background:rgba(59,130,246,.3);
 }
 
 .resume-frame{
-border-radius:18px;
-padding:18px;
-background:#0f172a;
-box-shadow:inset 0 0 25px rgba(0,0,0,.6);
+border-radius:22px;
+padding:20px;
+background:linear-gradient(145deg,#020617,#111b3d);
+box-shadow:inset 0 0 35px rgba(0,0,0,.7);
 }
 
 .resume{
 background:white;
 border-radius:12px;
-box-shadow:0 10px 40px rgba(0,0,0,.4);
+box-shadow:0 10px 40px rgba(0,0,0,.8);
 }
 
 .page{
 padding:40px;
 font-size:14px;
 line-height:1.5;
+color:black;
 }
 
-.heading-name{font-size:34px;font-weight:900}
-.heading-contact{font-size:12px;opacity:.8}
-.section-title{font-weight:900;border-bottom:2px solid #000;margin:12px 0 6px 0}
-.item{margin-bottom:8px;font-size:13px}
-.sidebar-box{background:#f1f5ff;padding:10px;border-radius:8px}
+.heading-name{
+font-size:36px;
+font-weight:900;
+}
+.heading-contact{
+font-size:12px;
+opacity:.8;
+}
+
+.section-title{
+font-weight:900;
+border-bottom:2px solid #000;
+margin:10px 0;
+}
+
+.item{
+margin-bottom:6px;
+font-size:13px;
+}
+
+button{
+border-radius:10px !important;
+font-weight:700 !important;
+}
 
 </style>
 </head>
 
 <body>
 
-<nav class="navbar fixed-top navbar-dark">
-<div class="container d-flex justify-content-between">
-<span class="navbar-brand fw-bold">🤖 Bot Craft Resume Studio</span>
-<button class="btn btn-warning" onclick="document.body.classList.toggle('dark')">Light / Dark</button>
+<nav class="navbar fixed-top">
+<div class="container">
+<span class="navbar-brand fw-bold text-light">🤖 Bot Craft Resume Studio — Premium Edition</span>
 </div>
 </nav>
 
@@ -107,21 +128,20 @@ line-height:1.5;
 <div class="col-md-5">
 <div class="panel">
 
-<h4>Choose Resume Layout</h4>
-<div class="d-flex flex-wrap gap-2 mb-2">
+<h3 class="fw-bold mb-3">Choose Resume Layout</h3>
 
+<div class="d-flex flex-wrap gap-2 mb-3">
 <div class="template-card active" onclick="setLayout('apollo',this)">Apollo</div>
 <div class="template-card" onclick="setLayout('classic',this)">Classic</div>
 <div class="template-card" onclick="setLayout('modern',this)">Modern</div>
 <div class="template-card" onclick="setLayout('sidebar',this)">Elegant Sidebar</div>
 <div class="template-card" onclick="setLayout('grid',this)">Professional Grid</div>
 <div class="template-card" onclick="setLayout('timeline',this)">Premium Timeline</div>
-
 </div>
 
-<hr>
+<hr class="text-light">
 
-<h5>Personal</h5>
+<h4>Personal Details</h4>
 <input id="first" class="form-control mb-2" placeholder="First Name">
 <input id="last" class="form-control mb-2" placeholder="Last Name">
 <input id="email" class="form-control mb-2" placeholder="Email">
@@ -133,15 +153,15 @@ line-height:1.5;
 
 <h5>Experience</h5>
 <div id="exp"></div>
-<button class="btn btn-outline-primary mb-2 w-100" onclick="addExp()">+ Add Experience</button>
+<button class="btn btn-outline-light mb-2 w-100" onclick="addExp()">+ Add Experience</button>
 
 <h5>Education</h5>
 <div id="edu"></div>
-<button class="btn btn-outline-primary mb-2 w-100" onclick="addEdu()">+ Add Education</button>
+<button class="btn btn-outline-light mb-2 w-100" onclick="addEdu()">+ Add Education</button>
 
 <h5>Projects</h5>
 <div id="proj"></div>
-<button class="btn btn-outline-primary mb-2 w-100" onclick="addProject()">+ Add Project</button>
+<button class="btn btn-outline-light mb-2 w-100" onclick="addProject()">+ Add Project</button>
 
 <h5>Certifications</h5>
 <textarea id="certifications" class="form-control mb-2"></textarea>
@@ -154,7 +174,7 @@ line-height:1.5;
 
 <hr>
 
-<h5>Reorder Sections</h5>
+<h4>Arrange Sections</h4>
 <ul id="sectionOrder" class="list-group mb-3">
 <li class="list-group-item" data-sec="summary">Summary</li>
 <li class="list-group-item" data-sec="experience">Experience</li>
@@ -165,7 +185,7 @@ line-height:1.5;
 <li class="list-group-item" data-sec="skills">Skills</li>
 </ul>
 
-<button class="btn btn-dark w-100" onclick="preview()">Preview</button>
+<button class="btn btn-primary w-100" onclick="preview()">Preview Resume</button>
 <button class="btn btn-success w-100 mt-2" onclick="exportPDF()">Export PDF</button>
 <button class="btn btn-secondary w-100 mt-2" onclick="exportDOCX()">Export DOCX</button>
 
@@ -177,7 +197,7 @@ line-height:1.5;
 <div class="resume-frame">
 <div class="resume">
 <div class="page" id="resumePreview">
-Start building your resume…
+Your live resume preview will appear here…
 </div>
 </div>
 </div>
@@ -187,6 +207,7 @@ Start building your resume…
 </div>
 
 <script>
+
 let layout="apollo";
 Sortable.create(sectionOrder,{animation:150});
 
@@ -198,24 +219,24 @@ preview();
 }
 
 function addExp(){exp.innerHTML+=`
-<div class="border rounded p-2 mb-2">
+<div class="border rounded p-2 mb-2 bg-white">
 <input class="form-control mb-1 c" placeholder="Company">
 <input class="form-control mb-1 r" placeholder="Role">
-<textarea class="form-control mb-1 d" placeholder="Achievements / Work"></textarea>
+<textarea class="form-control mb-1 d" placeholder="Achievements"></textarea>
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
 </div>`;}
 
 function addEdu(){edu.innerHTML+=`
-<div class="border rounded p-2 mb-2">
-<input class="form-control mb-1 school" placeholder="College">
+<div class="border rounded p-2 mb-2 bg-white">
+<input class="form-control mb-1 school" placeholder="University">
 <input class="form-control mb-1 degree" placeholder="Degree">
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
 </div>`;}
 
 function addProject(){proj.innerHTML+=`
-<div class="border rounded p-2 mb-2">
+<div class="border rounded p-2 mb-2 bg-white">
 <input class="form-control mb-1 title" placeholder="Project Title">
-<textarea class="form-control mb-1 desc"></textarea>
+<textarea class="form-control mb-1 desc" placeholder="Description"></textarea>
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
 </div>`;}
 
@@ -238,7 +259,10 @@ if(s==="projects") html+=`<div class="section-title">Projects</div>${projHTML}`;
 if(s==="certifications") html+=`<div class="section-title">Certifications</div>${certifications.value}`;
 if(s==="languages") html+=`<div class="section-title">Languages</div>${languages.value}`;
 if(s==="skills") html+=`<div class="section-title">Skills</div>${skills.value}`;
-});return html;}
+});
+return html;
+}
+
 function preview(){
 
 const name=`${first.value} ${last.value}`||"Your Name";
@@ -251,16 +275,18 @@ html=`<div class="heading-name">${name}</div><div class="heading-contact">${cont
 else if(layout==="classic")
 html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>${body}`;
 else if(layout==="modern")
-html=`<div style='border:2px solid black;padding:10px;border-radius:8px'>
+html=`<div style="border:2px solid black;border-radius:8px;padding:10px">
 <div class="heading-name">${name}</div>
-<div class="heading-contact">${contact}</div></div>${body}`;
+<div class="heading-contact">${contact}</div>
+</div>${body}`;
 else if(layout==="sidebar")
-html=`<div style="display:grid;grid-template-columns:1fr 2fr;gap:20px">
-<div class="sidebar-box"><b>${name}</b><br>${contact}<br><br>${skills.value}</div>
+html=`<div style="display:grid;grid-template-columns:1fr 2fr;gap:15px">
+<div style="background:#f4f4f4;padding:10px;border-radius:8px">
+<b>${name}</b><br>${contact}<br><br><b>Skills</b><br>${skills.value}</div>
 <div>${body}</div></div>`;
 else if(layout==="grid")
 html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${body}</div>`;
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${body}</div>`;
 else if(layout==="timeline")
 html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>
 <div style="border-left:3px solid black;padding-left:10px">${body}</div>`;
