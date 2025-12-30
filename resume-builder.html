@@ -8,120 +8,138 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@700&family=Montserrat:wght@700&family=Fira+Code:wght@400;700&display=swap');
-    :root { --glass: rgba(255, 255, 255, 0.1); --border: rgba(255, 255, 255, 0.2); --accent: #38bdf8; --neon: 0 0 10px rgba(56, 189, 248, 0.6), inset 0 0 5px rgba(56, 189, 248, 0.2); }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@700&family=Montserrat:wght@700&family=Fira+Code:wght@400;700&family=Quicksand:wght@600&display=swap');
+    :root { --glass: rgba(255, 255, 255, 0.1); --border: rgba(255, 255, 255, 0.2); --accent: #38bdf8; --neon: 0 0 10px rgba(56, 189, 248, 0.6); }
     body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at top right, #1e293b, #020617); min-height: 100vh; color: #f8fafc; padding-top: 80px; }
     .glass-panel { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 25px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-    .glass-btn { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(8px); border: 1px solid var(--border); color: white; transition: all 0.3s ease; font-weight: 600; border-radius: 8px; }
-    .glass-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); transform: translateY(-1px); }
-    .glass-btn-danger { border-color: rgba(239, 68, 68, 0.4); }
-    .glass-btn-danger:hover { color: #f87171; border-color: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); }
+    .glass-btn { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(8px); border: 1px solid var(--border); color: white; transition: 0.3s; font-weight: 600; border-radius: 8px; font-size: 0.8rem; }
+    .glass-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: var(--accent); box-shadow: 0 0 15px var(--accent); transform: translateY(-1px); }
     .form-control, .rich-editor { background: rgba(255,255,255,0.05) !important; border: 1px solid var(--accent) !important; color: rgba(255, 255, 255, 0.7) !important; box-shadow: var(--neon); transition: 0.3s; }
-    .form-control:focus, .rich-editor:focus { background: rgba(255,255,255,0.1) !important; box-shadow: 0 0 20px rgba(56, 189, 248, 0.9), inset 0 0 8px rgba(56, 189, 248, 0.4); outline: none; }
-    .form-control::placeholder { color: rgba(255, 255, 255, 0.5) !important; opacity: 1; }
-    .resume-preview { background: white; color: #1e293b; border-radius: 8px; min-height: 1120px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); font-size: 0.9rem; transition: opacity 0.2s ease; overflow-wrap: break-word; position: relative; }
-    
-    /* Page Break Logic */
-    .sec-item { page-break-inside: avoid; break-inside: avoid; margin-bottom: 1.5rem; display: block; }
-    .section-header { border-bottom: 2px solid #334155; margin: 15px 0 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; page-break-after: avoid; }
-    
-    .rich-editor { min-height: 60px; padding: 10px; border-radius: 5px; }
+    .form-control:focus, .rich-editor:focus { box-shadow: 0 0 20px var(--accent); outline: none; color: rgba(255, 255, 255, 0.9) !important; }
+    .form-control::placeholder { color: rgba(255, 255, 255, 0.4) !important; }
+    .resume-preview { background: white; color: #1e293b; border-radius: 8px; min-height: 1120px; padding: 45px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); font-size: 0.9rem; overflow-wrap: break-word; }
+    .sec-item { page-break-inside: avoid; margin-bottom: 1.2rem; }
+    .section-header { border-bottom: 2px solid #334155; margin: 15px 0 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+    .rich-editor { min-height: 50px; padding: 8px; border-radius: 5px; font-size: 0.85rem; }
     .toolbar { display: flex; gap: 2px; margin-bottom: 4px; }
-    .toolbar button { padding: 2px 8px; font-size: 0.7rem; background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--border); border-radius: 4px; transition: 0.2s; }
-    .toolbar button:hover { background: rgba(255,255,255,0.2); color: var(--accent); }
-    .template-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .template-btn { border: 1px solid var(--border); cursor: pointer; padding: 8px; border-radius: 8px; text-align: center; transition: 0.2s; background: rgba(255,255,255,0.05); font-size: 0.7rem; color: #cbd5e1; }
-    .template-btn.active { border-color: var(--accent); background: rgba(56,189,248,0.2); color: white; box-shadow: var(--neon); }
-    .entry-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 12px; margin-bottom: 12px; }
-    label { font-size: 0.7rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 3px; display: block; text-shadow: 0 0 5px rgba(148, 163, 184, 0.3); }
+    .toolbar button { padding: 1px 6px; font-size: 0.65rem; background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--border); border-radius: 4px; }
+    .template-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .template-btn { border: 1px solid var(--border); cursor: pointer; padding: 6px; border-radius: 8px; text-align: center; background: rgba(255,255,255,0.05); font-size: 0.65rem; color: #cbd5e1; transition: 0.2s; }
+    .template-btn.active { border-color: var(--accent); background: rgba(56,189,248,0.2); box-shadow: var(--neon); color:white; }
+    .entry-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 12px; margin-bottom: 12px; position: relative; }
+    label { font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; display: block; }
+    #photo-preview-container { width: 70px; height: 70px; border-radius: 10px; border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.2); }
+    #photo-preview-container img { width: 100%; height: 100%; object-fit: cover; }
+    .config-section { margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
 </style>
 </head>
 <body>
+
 <nav class="navbar fixed-top bg-dark border-bottom border-secondary">
     <div class="container-fluid px-4">
         <span class="navbar-brand text-info fw-bold">✨ BOT CRAFT STUDIO</span>
         <div class="d-flex gap-2">
-            <button class="btn btn-sm glass-btn glass-btn-danger px-3" onclick="resetForm()">Reset All</button>
-            <button class="btn btn-sm glass-btn px-4" style="background: rgba(56, 189, 248, 0.2)" onclick="exportPDF()">Download PDF</button>
+            <button class="btn glass-btn" onclick="exportJSON()">Save Project</button>
+            <button class="btn glass-btn" onclick="document.getElementById('importInput').click()">Load</button>
+            <input type="file" id="importInput" style="display:none" onchange="importJSON(event)">
+            <button class="btn glass-btn-danger glass-btn px-3" onclick="resetForm()">Reset</button>
+            <button class="btn glass-btn px-4" style="background: rgba(56, 189, 248, 0.2)" onclick="exportPDF()">Download PDF</button>
         </div>
     </div>
 </nav>
+
 <div class="container-fluid px-4">
     <div class="row g-4">
         <div class="col-lg-5" style="height: calc(100vh - 100px); overflow-y: auto;">
             <div class="glass-panel">
-                <div class="mb-4">
+                <div class="config-section">
+                    <div class="row g-2">
+                        <div class="col-4"><label>Accent</label><input type="color" class="form-control p-1" value="#38bdf8" oninput="updateAccent(this.value)"></div>
+                        <div class="col-4"><label>Font Color</label><input type="color" id="fontColor" class="form-control p-1" value="#1e293b" oninput="liveUpdate()"></div>
+                        <div class="col-4"><label>Paper Color</label><input type="color" id="bgColor" class="form-control p-1" value="#ffffff" oninput="liveUpdate()"></div>
+                    </div>
+                </div>
+
+                <div class="config-section">
                     <label>Layout Style</label>
                     <div class="template-grid">
                         <div class="template-btn active" onclick="setStyle('apollo', this)">Apollo</div>
                         <div class="template-btn" onclick="setStyle('classic', this)">Classic</div>
                         <div class="template-btn" onclick="setStyle('modern', this)">Modern</div>
                         <div class="template-btn" onclick="setStyle('sidebar', this)">Sidebar</div>
-                        <div class="template-btn" onclick="setStyle('grid', this)">Grid</div>
-                        <div class="template-btn" onclick="setStyle('timeline', this)">Timeline</div>
                         <div class="template-btn" onclick="setStyle('executive', this)">Executive</div>
-                        <div class="template-btn" onclick="setStyle('creative', this)">Creative</div>
                         <div class="template-btn" onclick="setStyle('midnight', this)">Midnight</div>
-                        <div class="template-btn" onclick="setStyle('elegant', this)">Elegant</div>
+                        <div class="template-btn" onclick="setStyle('creative', this)">Creative</div>
                         <div class="template-btn" onclick="setStyle('tech', this)">Tech</div>
-                        <div class="template-btn" onclick="setStyle('compact', this)">Compact</div>
-                        <div class="template-btn" onclick="setStyle('minimalist', this)">Minimalist</div>
+                        <div class="template-btn" onclick="setStyle('timeline', this)">Timeline</div>
+                        <div class="template-btn" onclick="setStyle('grid', this)">Grid</div>
+                        <div class="template-btn" onclick="setStyle('optimism', this)">Optimism</div>
+                        <div class="template-btn" onclick="setStyle('startup', this)">Startup</div>
+                        <div class="template-btn" onclick="setStyle('bold', this)">Bold</div>
+                        <div class="template-btn" onclick="setStyle('minimal', this)">Minimal</div>
+                        <div class="template-btn" onclick="setStyle('elegant', this)">Elegant</div>
+                        <div class="template-btn" onclick="setStyle('monochrome', this)">Mono</div>
+                        <div class="template-btn" onclick="setStyle('aura', this)">Aura</div>
+                        <div class="template-btn" onclick="setStyle('clean', this)">Clean</div>
                     </div>
                 </div>
+
+                <div class="config-section">
+                    <label>Photo</label>
+                    <div class="d-flex gap-2 align-items-center">
+                        <div id="photo-preview-container"><img id="profileImg" src="" style="display:none"><span id="photo-placeholder">+</span></div>
+                        <input type="file" class="form-control" accept="image/*" onchange="handleImage(this)">
+                    </div>
+                </div>
+
                 <div class="row g-2">
                     <div class="col-6"><label>First Name</label><input id="fn" class="form-control" placeholder="FIRST NAME" oninput="liveUpdate()"></div>
                     <div class="col-6"><label>Last Name</label><input id="ln" class="form-control" placeholder="LAST NAME" oninput="liveUpdate()"></div>
                 </div>
-                <div class="mt-2"><label>Email & Phone</label>
+                <div class="mt-2"><label>Contact</label>
                     <div class="row g-2">
                         <div class="col-6"><input id="em" class="form-control" placeholder="EMAIL" oninput="liveUpdate()"></div>
                         <div class="col-6"><input id="ph" class="form-control" placeholder="PHONE" oninput="liveUpdate()"></div>
                     </div>
-                </div>
-                <div class="mt-2"><label>Location & Socials</label>
-                    <input id="lc" class="form-control mb-1" placeholder="CITY, COUNTRY" oninput="liveUpdate()">
-                    <div class="row g-2">
-                        <div class="col-6"><input id="li" class="form-control" placeholder="LINKEDIN URL" oninput="liveUpdate()"></div>
-                        <div class="col-6"><input id="gh" class="form-control" placeholder="GITHUB URL" oninput="liveUpdate()"></div>
+                    <div class="row g-2 mt-1">
+                        <div class="col-6"><input id="li" class="form-control" placeholder="LINKEDIN" oninput="liveUpdate()"></div>
+                        <div class="col-6"><input id="gh" class="form-control" placeholder="GITHUB/PORTFOLIO" oninput="liveUpdate()"></div>
                     </div>
                 </div>
-                <div class="mt-4">
+
+                <div class="mt-3">
                     <label>Summary</label>
-                    <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('italic')">I</button><button onclick="format('insertUnorderedList')">•</button></div>
-                    <div id="sm" contenteditable="true" class="rich-editor" data-placeholder="Professional overview..." oninput="liveUpdate()"></div>
-                </div>
-                <div class="mt-4 d-flex justify-content-between align-items-center"><h6 class="text-info m-0">Experience</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addExp()">+ Add</button></div>
-                <div id="exp-container" class="mt-2"></div>
-                <div class="mt-4 d-flex justify-content-between align-items-center"><h6 class="text-info m-0">Education</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addEdu()">+ Add</button></div>
-                <div id="edu-container" class="mt-2"></div>
-                <div class="mt-4 d-flex justify-content-between align-items-center"><h6 class="text-info m-0">Projects</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addProj()">+ Add</button></div>
-                <div id="proj-container" class="mt-2"></div>
-                <div class="mt-4"><label>Roles & Responsibilities</label>
                     <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('insertUnorderedList')">•</button></div>
-                    <div id="roles" contenteditable="true" class="rich-editor" data-placeholder="Define core responsibilities..." oninput="liveUpdate()"></div>
+                    <div id="sm" contenteditable="true" class="rich-editor" data-placeholder="Brief professional bio..." oninput="liveUpdate()"></div>
                 </div>
-                <div class="mt-4"><label>Skills</label>
-                    <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('insertUnorderedList')">•</button></div>
-                    <div id="sk" contenteditable="true" class="rich-editor" data-placeholder="Technical skills, software..." oninput="liveUpdate()"></div>
-                </div>
-                <div class="mt-4"><label>Certifications</label>
-                    <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('insertUnorderedList')">•</button></div>
-                    <div id="cert" contenteditable="true" class="rich-editor" data-placeholder="AWS, PMP, Professional Certs..." oninput="liveUpdate()"></div>
-                </div>
-                <div class="mt-4"><label>Languages</label>
-                    <div id="lang" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div>
-                </div>
-                <div class="mt-4 p-3 bg-dark rounded border border-secondary">
-                    <label class="mb-2">Section Order</label>
+
+                <div class="mt-3 d-flex justify-content-between align-items-center"><h6 class="text-info m-0 small">Experience</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addExp()">+ Add</button></div>
+                <div id="exp-container" class="mt-1"></div>
+
+                <div class="mt-3 d-flex justify-content-between align-items-center"><h6 class="text-info m-0 small">Education</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addEdu()">+ Add</button></div>
+                <div id="edu-container" class="mt-1"></div>
+
+                <div class="mt-3 d-flex justify-content-between align-items-center"><h6 class="text-info m-0 small">Projects</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addProj()">+ Add</button></div>
+                <div id="proj-container" class="mt-1"></div>
+
+                <div class="mt-3"><label>Skills</label><div id="sk" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div></div>
+                <div class="mt-3"><label>Certifications</label><div id="cert" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div></div>
+                <div class="mt-3"><label>Languages</label><div id="lang" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div></div>
+
+                <div class="mt-3 d-flex justify-content-between align-items-center"><h6 class="text-info m-0 small">References</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addRef()">+ Add</button></div>
+                <div id="ref-container" class="mt-1"></div>
+
+                <div class="mt-4 p-2 bg-dark rounded border border-secondary">
+                    <label class="mb-1">Drag to Reorder</label>
                     <ul id="section-sort" class="list-group">
-                        <li class="list-group-item bg-transparent text-white border-secondary small" data-id="summary">Summary</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary small" data-id="experience">Experience</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary small" data-id="education">Education</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary small" data-id="projects">Projects</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary small" data-id="roles">Roles</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary small" data-id="skills">Skills</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary small" data-id="certifications">Certifications</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary small" data-id="languages">Languages</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="summary">Summary</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="experience">Experience</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="education">Education</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="projects">Projects</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="skills">Skills</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="certifications">Certifications</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="languages">Languages</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="references">References</li>
                     </ul>
                 </div>
             </div>
@@ -129,8 +147,10 @@
         <div class="col-lg-7"><div id="resume-target" class="resume-preview"></div></div>
     </div>
 </div>
+
 <script>
     let currentStyle = 'apollo';
+    let base64Photo = "";
     Sortable.create(document.getElementById('section-sort'), { animation: 150, onEnd: liveUpdate });
     
     function setStyle(s, el) {
@@ -140,30 +160,50 @@
         liveUpdate();
     }
     
+    function updateAccent(val) {
+        document.documentElement.style.setProperty('--accent', val);
+        document.documentElement.style.setProperty('--neon', `0 0 10px ${val}99`);
+        liveUpdate();
+    }
+
     function format(cmd) { document.execCommand(cmd, false, null); liveUpdate(); }
+    
+    function handleImage(input) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                base64Photo = e.target.result;
+                document.getElementById('profileImg').src = base64Photo;
+                document.getElementById('profileImg').style.display = "block";
+                document.getElementById('photo-placeholder').style.display = "none";
+                liveUpdate();
+            };
+            reader.readAsDataURL(file);
+        }
+    }
     
     function addExp() {
         const id = Date.now();
         const html = `<div class="entry-card" id="exp-${id}">
             <input class="form-control mb-1 fw-bold exp-co" placeholder="COMPANY" oninput="liveUpdate()">
-            <input class="form-control mb-1 exp-ro" placeholder="JOB ROLE" oninput="liveUpdate()">
+            <input class="form-control mb-1 exp-ro" placeholder="ROLE" oninput="liveUpdate()">
             <div class="row g-1 mb-1"><div class="col"><input type="month" class="form-control exp-sd" oninput="liveUpdate()"></div><div class="col"><input type="month" class="form-control exp-ed" oninput="liveUpdate()"></div></div>
-            <div class="form-check mb-1"><input class="form-check-input exp-cw" type="checkbox" onchange="toggleEnd(this)"><label class="form-check-label text-light small">Present</label></div>
-            <div contenteditable="true" class="rich-editor exp-de" data-placeholder="KEY ACHIEVEMENTS" oninput="liveUpdate()"></div>
-            <button class="btn btn-sm glass-btn glass-btn-danger mt-2 w-100" onclick="removeEl('exp-${id}')">Remove</button>
+            <div contenteditable="true" class="rich-editor exp-de" oninput="liveUpdate()"></div>
+            <button class="btn btn-sm glass-btn glass-btn-danger mt-1 w-100" onclick="removeEl('exp-${id}')">Remove</button>
         </div>`;
         document.getElementById('exp-container').insertAdjacentHTML('beforeend', html);
         liveUpdate();
     }
-    
+
     function addEdu() {
         const id = Date.now();
         const html = `<div class="entry-card" id="edu-${id}">
             <input class="form-control mb-1 fw-bold edu-sc" placeholder="UNIVERSITY" oninput="liveUpdate()">
             <input class="form-control mb-1 edu-dg" placeholder="DEGREE" oninput="liveUpdate()">
             <div class="row g-1 mb-1"><div class="col"><input type="month" class="form-control edu-sd" oninput="liveUpdate()"></div><div class="col"><input type="month" class="form-control edu-ed" oninput="liveUpdate()"></div></div>
-            <div contenteditable="true" class="rich-editor edu-ac" data-placeholder="ACHIEVEMENTS / GPA" oninput="liveUpdate()"></div>
-            <button class="btn btn-sm glass-btn glass-btn-danger mt-2 w-100" onclick="removeEl('edu-${id}')">Remove</button>
+            <div contenteditable="true" class="rich-editor edu-ac" oninput="liveUpdate()"></div>
+            <button class="btn btn-sm glass-btn glass-btn-danger mt-1 w-100" onclick="removeEl('edu-${id}')">Remove</button>
         </div>`;
         document.getElementById('edu-container').insertAdjacentHTML('beforeend', html);
         liveUpdate();
@@ -173,69 +213,78 @@
         const id = Date.now();
         const html = `<div class="entry-card" id="prj-${id}">
             <input class="form-control mb-1 fw-bold prj-ti" placeholder="PROJECT TITLE" oninput="liveUpdate()">
-            <div class="row g-1 mb-1"><div class="col"><input type="month" class="form-control prj-sd" oninput="liveUpdate()"></div><div class="col"><input type="month" class="form-control prj-ed" oninput="liveUpdate()"></div></div>
-            <div contenteditable="true" class="rich-editor prj-de" data-placeholder="PROJECT DETAILS" oninput="liveUpdate()"></div>
-            <button class="btn btn-sm glass-btn glass-btn-danger mt-2 w-100" onclick="removeEl('prj-${id}')">Remove</button>
+            <input class="form-control mb-1 prj-lk" placeholder="LIVE LINK / REPO" oninput="liveUpdate()">
+            <div contenteditable="true" class="rich-editor prj-de" oninput="liveUpdate()"></div>
+            <button class="btn btn-sm glass-btn glass-btn-danger mt-1 w-100" onclick="removeEl('prj-${id}')">Remove</button>
         </div>`;
         document.getElementById('proj-container').insertAdjacentHTML('beforeend', html);
         liveUpdate();
     }
+
+    function addRef() {
+        const id = Date.now();
+        const html = `<div class="entry-card" id="ref-${id}">
+            <input class="form-control mb-1 fw-bold ref-na" placeholder="NAME" oninput="liveUpdate()">
+            <input class="form-control mb-1 ref-ti" placeholder="TITLE / COMPANY" oninput="liveUpdate()">
+            <input class="form-control mb-1 ref-em" placeholder="EMAIL / PHONE" oninput="liveUpdate()">
+            <button class="btn btn-sm glass-btn glass-btn-danger mt-1 w-100" onclick="removeEl('ref-${id}')">Remove</button>
+        </div>`;
+        document.getElementById('ref-container').insertAdjacentHTML('beforeend', html);
+        liveUpdate();
+    }
     
-    function toggleEnd(cb) { cb.parentElement.previousElementSibling.querySelector('.exp-ed').disabled = cb.checked; liveUpdate(); }
     function removeEl(id) { document.getElementById(id).remove(); liveUpdate(); }
-    function resetForm() { if(confirm("Clear all data?")) location.reload(); }
-    function hasValue(el) { return el && el.innerText.replace(/\u200B/g, '').trim().length > 0; }
+    function resetForm() { if(confirm("Wipe all data?")) location.reload(); }
+    function hasV(el) { return el && el.innerText.trim().length > 0; }
     
-    function getSections(textColor) {
+    function getSections(headerColor) {
         const order = Array.from(document.querySelectorAll('#section-sort li')).map(li => li.dataset.id);
+        const hStyle = `color:${headerColor}; border-color:${headerColor}33`;
         let html = '';
         order.forEach(id => {
-            const headerColor = textColor || '#0f172a';
-            const hStyle = `color:${headerColor}; border-color:${headerColor}33`;
-            if (id === 'summary' && hasValue(document.getElementById('sm'))) {
-                html += `<div class="sec-item"><div class="section-header" style="${hStyle}">SUMMARY</div>${document.getElementById('sm').innerHTML}</div>`;
-            }
+            if (id === 'summary' && hasV(document.getElementById('sm'))) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">SUMMARY</div>${document.getElementById('sm').innerHTML}</div>`;
             if (id === 'experience') {
-                const items = Array.from(document.querySelectorAll('#exp-container .entry-card')).filter(el => el.querySelector('.exp-co').value.trim() || el.querySelector('.exp-ro').value.trim() || hasValue(el.querySelector('.exp-de')));
+                const items = Array.from(document.querySelectorAll('#exp-container .entry-card')).filter(e => e.querySelector('.exp-co').value);
                 if (items.length) {
                     html += `<div class="sec-item"><div class="section-header" style="${hStyle}">EXPERIENCE</div>`;
                     items.forEach(el => {
-                        html += `<div class="sec-item" style="margin-bottom:12px;"><div style="display:flex; justify-content:space-between;"><strong>${el.querySelector('.exp-ro').value}</strong><span>${el.querySelector('.exp-sd').value || '...'} — ${el.querySelector('.exp-cw').checked ? 'Present' : (el.querySelector('.exp-ed').value || '...')}</span></div><div style="font-style:italic; opacity:0.8;">${el.querySelector('.exp-co').value}</div><div>${el.querySelector('.exp-de').innerHTML}</div></div>`;
+                        html += `<div class="sec-item"><div style="display:flex; justify-content:space-between;"><strong>${el.querySelector('.exp-ro').value}</strong><span>${el.querySelector('.exp-sd').value} — ${el.querySelector('.exp-ed').value || 'Present'}</span></div><div style="opacity:0.8;">${el.querySelector('.exp-co').value}</div><div>${el.querySelector('.exp-de').innerHTML}</div></div>`;
                     });
                     html += `</div>`;
                 }
             }
             if (id === 'education') {
-                const items = Array.from(document.querySelectorAll('#edu-container .entry-card')).filter(el => el.querySelector('.edu-sc').value.trim() || el.querySelector('.edu-dg').value.trim());
+                const items = Array.from(document.querySelectorAll('#edu-container .entry-card')).filter(e => e.querySelector('.edu-sc').value);
                 if (items.length) {
                     html += `<div class="sec-item"><div class="section-header" style="${hStyle}">EDUCATION</div>`;
                     items.forEach(el => {
-                        html += `<div class="sec-item" style="margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><strong>${el.querySelector('.edu-sc').value}</strong><span>${el.querySelector('.edu-sd').value} — ${el.querySelector('.edu-ed').value}</span></div><div style="font-style:italic; opacity:0.8;">${el.querySelector('.edu-dg').value}</div><div>${el.querySelector('.edu-ac').innerHTML}</div></div>`;
+                        html += `<div class="sec-item"><div style="display:flex; justify-content:space-between;"><strong>${el.querySelector('.edu-sc').value}</strong><span>${el.querySelector('.edu-sd').value} — ${el.querySelector('.edu-ed').value || 'Present'}</span></div><div style="opacity:0.8;">${el.querySelector('.edu-dg').value}</div><div>${el.querySelector('.edu-ac').innerHTML}</div></div>`;
                     });
                     html += `</div>`;
                 }
             }
             if (id === 'projects') {
-                const items = Array.from(document.querySelectorAll('#proj-container .entry-card')).filter(el => el.querySelector('.prj-ti').value.trim() || hasValue(el.querySelector('.prj-de')));
+                const items = Array.from(document.querySelectorAll('#proj-container .entry-card')).filter(e => e.querySelector('.prj-ti').value);
                 if (items.length) {
                     html += `<div class="sec-item"><div class="section-header" style="${hStyle}">PROJECTS</div>`;
                     items.forEach(el => {
-                        html += `<div class="sec-item" style="margin-bottom:10px;"><strong>${el.querySelector('.prj-ti').value}</strong><span style="font-size:0.8rem; opacity:0.7;">${el.querySelector('.prj-sd').value ? ' | ' + el.querySelector('.prj-sd').value + ' — ' + el.querySelector('.prj-ed').value : ''}</span><div>${el.querySelector('.prj-de').innerHTML}</div></div>`;
+                        html += `<div class="sec-item"><strong>${el.querySelector('.prj-ti').value}</strong> ${el.querySelector('.prj-lk').value ? `<small>(${el.querySelector('.prj-lk').value})</small>` : ''}<div>${el.querySelector('.prj-de').innerHTML}</div></div>`;
                     });
                     html += `</div>`;
                 }
             }
-            if (id === 'roles' && hasValue(document.getElementById('roles'))) {
-                html += `<div class="sec-item"><div class="section-header" style="${hStyle}">ROLES</div>${document.getElementById('roles').innerHTML}</div>`;
-            }
-            if (id === 'skills' && hasValue(document.getElementById('sk'))) {
-                html += `<div class="sec-item"><div class="section-header" style="${hStyle}">SKILLS</div>${document.getElementById('sk').innerHTML}</div>`;
-            }
-            if (id === 'certifications' && hasValue(document.getElementById('cert'))) {
-                html += `<div class="sec-item"><div class="section-header" style="${hStyle}">CERTIFICATIONS</div>${document.getElementById('cert').innerHTML}</div>`;
-            }
-            if (id === 'languages' && hasValue(document.getElementById('lang'))) {
-                html += `<div class="sec-item"><div class="section-header" style="${hStyle}">LANGUAGES</div>${document.getElementById('lang').innerHTML}</div>`;
+            if (id === 'skills' && hasV(document.getElementById('sk'))) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">SKILLS</div>${document.getElementById('sk').innerHTML}</div>`;
+            if (id === 'certifications' && hasV(document.getElementById('cert'))) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">CERTIFICATIONS</div>${document.getElementById('cert').innerHTML}</div>`;
+            if (id === 'languages' && hasV(document.getElementById('lang'))) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">LANGUAGES</div>${document.getElementById('lang').innerHTML}</div>`;
+            if (id === 'references') {
+                const items = Array.from(document.querySelectorAll('#ref-container .entry-card')).filter(e => e.querySelector('.ref-na').value);
+                if (items.length) {
+                    html += `<div class="sec-item"><div class="section-header" style="${hStyle}">REFERENCES</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">`;
+                    items.forEach(el => {
+                        html += `<div><strong>${el.querySelector('.ref-na').value}</strong><br><small>${el.querySelector('.ref-ti').value}</small><br><small>${el.querySelector('.ref-em').value}</small></div>`;
+                    });
+                    html += `</div></div>`;
+                }
             }
         });
         return html;
@@ -243,61 +292,73 @@
     
     function liveUpdate() {
         const target = document.getElementById('resume-target');
-        const fn = document.getElementById('fn').value || 'NAME';
-        const ln = document.getElementById('ln').value || '';
-        const contactArr = [document.getElementById('em').value, document.getElementById('ph').value, document.getElementById('lc').value, document.getElementById('li').value, document.getElementById('gh').value].filter(v => v);
-        const contactHtml = `<div style="font-size:0.8rem; color:#64748b; margin-top:5px;">${contactArr.join(' | ')}</div>`;
-        target.style = ''; target.className = 'resume-preview';
-        let textColor = '#1e293b';
+        const fCol = document.getElementById('fontColor').value;
+        const bCol = document.getElementById('bgColor').value;
+        const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+        target.style.color = fCol;
+        target.style.backgroundColor = bCol;
+        target.style.fontFamily = "'Inter', sans-serif";
+        target.style.textAlign = 'left';
+        target.style.display = 'block';
+
+        const fn = document.getElementById('fn').value || 'YOUR';
+        const ln = document.getElementById('ln').value || 'NAME';
+        const contact = [document.getElementById('em').value, document.getElementById('ph').value, document.getElementById('li').value, document.getElementById('gh').value].filter(v=>v).join(' | ');
+        const photo = base64Photo ? `<img src="${base64Photo}" id="res-photo" style="width:80px; height:80px; object-fit:cover; border:2px solid ${accent};">` : "";
+
         if (currentStyle === 'apollo') {
-            target.style.fontFamily = "'Playfair Display', serif"; target.style.textAlign = 'center';
-            target.innerHTML = `<h1 style="font-weight:900; margin:0;">${fn} ${ln}</h1>${contactHtml}<br>${getSections()}`;
+            target.style.textAlign = 'center'; target.style.fontFamily = "'Playfair Display', serif";
+            target.innerHTML = `${photo ? `<div style="margin-bottom:10px">${photo}</div>` : ''}<h1 style="margin:0; font-weight:900;">${fn} ${ln}</h1><div style="opacity:0.7;">${contact}</div><br>${getSections(fCol)}`;
+            if(photo) document.getElementById('res-photo').style.borderRadius = "50%";
         } else if (currentStyle === 'classic') {
-            target.style.fontFamily = 'serif';
-            target.innerHTML = `<h1 style="margin:0;">${fn} ${ln}</h1>${contactHtml}<hr style="border-top:2px solid #333">${getSections()}`;
+            target.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div><h1>${fn} ${ln}</h1><div>${contact}</div></div>${photo}</div><hr>${getSections(fCol)}`;
         } else if (currentStyle === 'modern') {
-            target.innerHTML = `<div style="background:#1e293b; color:white; padding:30px; margin:-40px -40px 30px -40px; border-radius:8px 8px 0 0;"><h1 style="margin:0;">${fn} ${ln}</h1><div>${contactArr.join(' • ')}</div></div>${getSections()}`;
+            target.innerHTML = `<div style="background:${fCol}; color:${bCol}; padding:25px; margin:-45px -45px 25px -45px; display:flex; gap:20px; align-items:center;">${photo}<div><h1 style="margin:0;">${fn} ${ln}</h1><div>${contact}</div></div></div>${getSections(fCol)}`;
         } else if (currentStyle === 'sidebar') {
-            target.style.display = 'grid'; target.style.gridTemplateColumns = '220px 1fr'; target.style.gap = '30px';
-            target.innerHTML = `<div style="background:#f1f5f9; padding:20px; border-radius:8px; height:100%; border-right:1px solid #e2e8f0;"><h2 style="font-weight:800;">${fn}<br>${ln}</h2><hr>${contactArr.join('<br>')}</div><div>${getSections()}</div>`;
-        } else if (currentStyle === 'grid') {
-            target.innerHTML = `<h1 style="text-align:right;">${fn} ${ln}</h1><div style="text-align:right;">${contactHtml}</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:25px; margin-top:20px;">${getSections()}</div>`;
-        } else if (currentStyle === 'timeline') {
-            target.innerHTML = `<h1>${fn} ${ln}</h1><div style="border-left:3px solid #cbd5e1; padding-left:25px; margin-top:25px;">${getSections()}</div>`;
-        } else if (currentStyle === 'executive') {
-            textColor = '#0c4a6e'; target.style.color = textColor;
-            target.innerHTML = `<div style="border-left:8px solid ${textColor}; padding-left:20px;"><h1 style="font-family:'Playfair Display'; margin:0;">${fn} ${ln}</h1><div style="text-transform:uppercase; letter-spacing:2px; font-size:0.7rem; opacity:0.8;">Executive Profile | ${document.getElementById('lc').value}</div></div><br>${getSections(textColor)}`;
-        } else if (currentStyle === 'creative') {
-            textColor = '#4338ca'; target.style.fontFamily = "'Montserrat', sans-serif";
-            target.innerHTML = `<div style="background:linear-gradient(to right, #4338ca, #6366f1); color:white; padding:30px; border-radius:15px; margin-bottom:20px;"><h1>${fn} ${ln}</h1><div>${document.getElementById('em').value} | ${document.getElementById('ph').value}</div></div>${getSections(textColor)}`;
+            target.style.display = 'grid'; target.style.gridTemplateColumns = '180px 1fr'; target.style.gap = '25px';
+            target.innerHTML = `<div style="border-right:1px solid ${fCol}33; padding-right:15px; text-align:center;">${photo}<h2 style="font-weight:800; margin-top:10px;">${fn}</h2>${contact}</div><div>${getSections(fCol)}</div>`;
         } else if (currentStyle === 'midnight') {
-            target.style.background = '#0f172a'; target.style.color = '#f1f5f9'; textColor = '#38bdf8';
-            target.innerHTML = `<h1 style="color:#38bdf8;">${fn} ${ln}</h1><div style="opacity:0.7;">${contactArr.join(' | ')}</div><br>${getSections(textColor)}`;
-        } else if (currentStyle === 'elegant') {
-            textColor = '#4a044e'; target.style.fontFamily = "'Playfair Display', serif"; target.style.color = textColor;
-            target.innerHTML = `<div style="text-align:center; padding:20px; border:1px solid #d8b4fe; margin-bottom:20px;"><h1>${fn} ${ln}</h1><div style="letter-spacing:3px; font-size:0.8rem;">${contactArr.join('  •  ')}</div></div>${getSections(textColor)}`;
+            target.style.backgroundColor = '#0f172a'; target.style.color = '#f1f5f9';
+            target.innerHTML = `<div style="display:flex; justify-content:space-between;"><div><h1 style="color:${accent};">${fn} ${ln}</h1><div>${contact}</div></div>${photo}</div><br>${getSections(accent)}`;
+        } else if (currentStyle === 'creative') {
+            target.style.fontFamily = "'Montserrat', sans-serif";
+            target.innerHTML = `<div style="background:linear-gradient(45deg, ${accent}, ${fCol}); color:${bCol}; padding:30px; margin:-45px -45px 25px -45px; text-align:right;">${photo}<h1>${fn} ${ln}</h1><div>${contact}</div></div>${getSections(fCol)}`;
         } else if (currentStyle === 'tech') {
-            target.style.fontFamily = "'Fira Code', monospace"; target.style.background = '#000'; target.style.color = '#00ff41'; textColor = '#00ff41';
-            target.innerHTML = `<div>&gt; USER: ${fn}_${ln}</div><div>&gt; CONTACT: ${contactArr.join(' / ')}</div><hr style="border-color:#00ff41">${getSections(textColor)}`;
-        } else if (currentStyle === 'compact') {
-            target.style.fontSize = '0.75rem'; target.style.padding = '25px';
-            target.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom:2px solid #000; padding-bottom:5px;"><h1>${fn} ${ln}</h1><div>${contactHtml}</div></div>${getSections()}`;
-        } else if (currentStyle === 'minimalist') {
-            target.style.padding = '60px'; textColor = '#71717a';
-            target.innerHTML = `<h2 style="font-weight:300; letter-spacing:5px; margin-bottom:5px;">${fn} ${ln}</h2><div style="font-size:0.7rem; color:#a1a1aa; margin-bottom:40px;">${contactArr.join(' / ')}</div>${getSections(textColor)}`;
+            target.style.fontFamily = "'Fira Code', monospace"; target.style.background = "#000"; target.style.color = "#00ff41";
+            target.innerHTML = `<div>> USER: ${fn}_${ln}</div><div>> ADDR: ${contact}</div><hr style="border-color:#00ff41">${getSections("#00ff41")}`;
+        } else if (currentStyle === 'timeline') {
+            target.innerHTML = `<div style="display:flex; align-items:center; gap:20px;">${photo}<h1>${fn} ${ln}</h1></div><div style="border-left:2px solid ${accent}; padding-left:20px; margin-top:20px;">${getSections(fCol)}</div>`;
+        } else if (currentStyle === 'grid') {
+            target.innerHTML = `<div style="display:grid; grid-template-columns:1fr 1fr; border-bottom:2px solid ${accent}; padding-bottom:10px; margin-bottom:20px;"><div><h1>${fn} ${ln}</h1></div><div style="text-align:right;">${contact}</div></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:30px;">${getSections(fCol)}</div>`;
+        } else if (currentStyle === 'optimism') {
+            target.style.fontFamily = "'Quicksand', sans-serif"; target.style.borderRadius = "40px";
+            target.innerHTML = `<div style="background:${accent}22; padding:30px; border-radius:30px; margin-bottom:20px; text-align:center;">${photo}<h1>${fn} ${ln}</h1><p>${contact}</p></div>${getSections(fCol)}`;
+            if(photo) document.getElementById('res-photo').style.borderRadius = "20px";
+        } else if (currentStyle === 'startup') {
+            target.innerHTML = `<div style="border-bottom:5px solid ${accent}; padding-bottom:10px; margin-bottom:30px;"><h1 style="font-size:3rem; font-weight:800; letter-spacing:-2px;">${fn}</h1><h2 style="opacity:0.6;">${ln}</h2><p>${contact}</p></div>${getSections(fCol)}`;
+        } else if (currentStyle === 'bold') {
+            target.innerHTML = `<div style="border:10px solid ${fCol}; padding:20px; margin-bottom:20px;"><h1 style="font-size:4rem; line-height:1; font-weight:900;">${fn}<br>${ln}</h1><p>${contact}</p></div>${getSections(fCol)}`;
+        } else if (currentStyle === 'minimal') {
+            target.style.fontSize = "0.75rem"; target.style.padding = "80px";
+            target.innerHTML = `<div style="margin-bottom:50px;"><h2>${fn} ${ln}</h2><p style="opacity:0.5;">${contact}</p></div>${getSections(fCol)}`;
+        } else if (currentStyle === 'elegant') {
+            target.style.fontFamily = "'Playfair Display', serif";
+            target.innerHTML = `<div style="text-align:center; border:1px solid ${fCol}33; padding:40px; margin-bottom:30px;"><h1>${fn} ${ln}</h1><div style="letter-spacing:4px; font-size:0.7rem;">${contact.toUpperCase()}</div></div>${getSections(fCol)}`;
+        } else if (currentStyle === 'monochrome') {
+            target.style.backgroundColor = "#000"; target.style.color = "#fff";
+            target.innerHTML = `<h1 style="font-size:4rem; border-bottom:10px solid #fff;">${fn}</h1><p>${contact}</p>${getSections("#fff")}`;
+        } else if (currentStyle === 'aura') {
+            target.innerHTML = `<div style="box-shadow: 0 0 50px ${accent}33; padding:20px; border-radius:15px;"><h1>${fn} ${ln}</h1><p>${contact}</p></div><br>${getSections(fCol)}`;
+        } else if (currentStyle === 'clean') {
+            target.innerHTML = `<div style="display:flex; align-items:baseline; gap:10px; border-bottom:1px solid #ddd; padding-bottom:5px; margin-bottom:20px;"><h1>${fn} ${ln}</h1><p style="font-size:0.8rem; margin-left:auto;">${contact}</p></div>${getSections(fCol)}`;
+        } else if (currentStyle === 'executive') {
+            target.innerHTML = `<div style="border-left:8px solid ${accent}; padding-left:20px; display:flex; justify-content:space-between;"><div><h1 style="margin:0;">${fn} ${ln}</h1><div style="text-transform:uppercase;">Director Profile</div></div>${photo}</div><br>${getSections(fCol)}`;
         }
     }
     
-    function exportPDF() {
-        const opt = { 
-            margin: 10, 
-            filename: 'resume.pdf', 
-            html2canvas: { scale: 2 }, 
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-        };
-        html2pdf().set(opt).from(document.getElementById('resume-target')).save();
-    }
+    function exportPDF() { html2pdf().set({ margin: 10, filename: 'resume.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4' }, pagebreak: { mode: 'avoid-all' } }).from(document.getElementById('resume-target')).save(); }
+    function exportJSON() { const d = { fn: fn.value, ln: ln.value, em: em.value, ph: ph.value, li: li.value, gh: gh.value, sm: sm.innerHTML, sk: sk.innerHTML, cert: cert.innerHTML, lang: lang.innerHTML, accent: document.querySelector('input[type="color"]').value, fontCol: fontColor.value, bgCol: bgColor.value, style: currentStyle, photo: base64Photo }; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(d)], {type: 'application/json'})); a.download = `resume_save.json`; a.click(); }
+    function importJSON(e) { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = (re) => { const d = JSON.parse(re.target.result); fn.value=d.fn||""; ln.value=d.ln||""; em.value=d.em||""; ph.value=d.ph||""; li.value=d.li||""; gh.value=d.gh||""; sm.innerHTML=d.sm||""; sk.innerHTML=d.sk||""; cert.innerHTML=d.cert||""; lang.innerHTML=d.lang||""; if(d.accent) updateAccent(d.accent); if(d.fontCol) fontColor.value=d.fontCol; if(d.bgCol) bgColor.value=d.bgCol; if(d.photo) { base64Photo=d.photo; profileImg.src=base64Photo; profileImg.style.display="block"; document.getElementById('photo-placeholder').style.display="none"; } liveUpdate(); }; r.readAsText(f); }
     window.onload = () => { addExp(); liveUpdate(); };
 </script>
 </body>
