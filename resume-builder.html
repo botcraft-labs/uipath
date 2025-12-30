@@ -19,8 +19,12 @@
     .form-control, .rich-editor { background: rgba(255,255,255,0.05) !important; border: 1px solid var(--accent) !important; color: rgba(255, 255, 255, 0.7) !important; box-shadow: var(--neon); transition: 0.3s; }
     .form-control:focus, .rich-editor:focus { background: rgba(255,255,255,0.1) !important; box-shadow: 0 0 20px rgba(56, 189, 248, 0.9), inset 0 0 8px rgba(56, 189, 248, 0.4); outline: none; }
     .form-control::placeholder { color: rgba(255, 255, 255, 0.5) !important; opacity: 1; }
-    .resume-preview { background: white; color: #1e293b; border-radius: 8px; min-height: 1120px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); font-size: 0.9rem; transition: all 0.3s ease; overflow-wrap: break-word; }
-    .section-header { border-bottom: 2px solid #334155; margin: 15px 0 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+    .resume-preview { background: white; color: #1e293b; border-radius: 8px; min-height: 1120px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); font-size: 0.9rem; transition: opacity 0.2s ease; overflow-wrap: break-word; position: relative; }
+    
+    /* Page Break Logic */
+    .sec-item { page-break-inside: avoid; break-inside: avoid; margin-bottom: 1.5rem; display: block; }
+    .section-header { border-bottom: 2px solid #334155; margin: 15px 0 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; page-break-after: avoid; }
+    
     .rich-editor { min-height: 60px; padding: 10px; border-radius: 5px; }
     .toolbar { display: flex; gap: 2px; margin-bottom: 4px; }
     .toolbar button { padding: 2px 8px; font-size: 0.7rem; background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--border); border-radius: 4px; transition: 0.2s; }
@@ -84,7 +88,7 @@
                 <div class="mt-4">
                     <label>Summary</label>
                     <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('italic')">I</button><button onclick="format('insertUnorderedList')">•</button></div>
-                    <div id="sm" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div>
+                    <div id="sm" contenteditable="true" class="rich-editor" data-placeholder="Professional overview..." oninput="liveUpdate()"></div>
                 </div>
                 <div class="mt-4 d-flex justify-content-between align-items-center"><h6 class="text-info m-0">Experience</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addExp()">+ Add</button></div>
                 <div id="exp-container" class="mt-2"></div>
@@ -94,11 +98,11 @@
                 <div id="proj-container" class="mt-2"></div>
                 <div class="mt-4"><label>Roles & Responsibilities</label>
                     <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('insertUnorderedList')">•</button></div>
-                    <div id="roles" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div>
+                    <div id="roles" contenteditable="true" class="rich-editor" data-placeholder="Define core responsibilities..." oninput="liveUpdate()"></div>
                 </div>
                 <div class="mt-4"><label>Skills & Certifications</label>
                     <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('insertUnorderedList')">•</button></div>
-                    <div id="sk" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div>
+                    <div id="sk" contenteditable="true" class="rich-editor" data-placeholder="JavaScript, Python, AWS..." oninput="liveUpdate()"></div>
                 </div>
                 <div class="mt-4"><label>Languages</label>
                     <div id="lang" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div>
@@ -123,13 +127,16 @@
 <script>
     let currentStyle = 'apollo';
     Sortable.create(document.getElementById('section-sort'), { animation: 150, onEnd: liveUpdate });
+    
     function setStyle(s, el) {
         currentStyle = s;
         document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
         liveUpdate();
     }
+    
     function format(cmd) { document.execCommand(cmd, false, null); liveUpdate(); }
+    
     function addExp() {
         const id = Date.now();
         const html = `<div class="entry-card" id="exp-${id}">
@@ -141,7 +148,9 @@
             <button class="btn btn-sm glass-btn glass-btn-danger mt-2 w-100" onclick="removeEl('exp-${id}')">Remove</button>
         </div>`;
         document.getElementById('exp-container').insertAdjacentHTML('beforeend', html);
+        liveUpdate();
     }
+    
     function addEdu() {
         const id = Date.now();
         const html = `<div class="entry-card" id="edu-${id}">
@@ -152,7 +161,9 @@
             <button class="btn btn-sm glass-btn glass-btn-danger mt-2 w-100" onclick="removeEl('edu-${id}')">Remove</button>
         </div>`;
         document.getElementById('edu-container').insertAdjacentHTML('beforeend', html);
+        liveUpdate();
     }
+    
     function addProj() {
         const id = Date.now();
         const html = `<div class="entry-card" id="prj-${id}">
@@ -162,11 +173,14 @@
             <button class="btn btn-sm glass-btn glass-btn-danger mt-2 w-100" onclick="removeEl('prj-${id}')">Remove</button>
         </div>`;
         document.getElementById('proj-container').insertAdjacentHTML('beforeend', html);
+        liveUpdate();
     }
+    
     function toggleEnd(cb) { cb.parentElement.previousElementSibling.querySelector('.exp-ed').disabled = cb.checked; liveUpdate(); }
     function removeEl(id) { document.getElementById(id).remove(); liveUpdate(); }
     function resetForm() { if(confirm("Clear all data?")) location.reload(); }
-    function hasValue(el) { return el && el.innerText.trim().length > 0; }
+    function hasValue(el) { return el && el.innerText.replace(/\u200B/g, '').trim().length > 0; }
+    
     function getSections(textColor) {
         const order = Array.from(document.querySelectorAll('#section-sort li')).map(li => li.dataset.id);
         let html = '';
@@ -181,8 +195,7 @@
                 if (items.length) {
                     html += `<div class="sec-item"><div class="section-header" style="${hStyle}">EXPERIENCE</div>`;
                     items.forEach(el => {
-                        const date = `${el.querySelector('.exp-sd').value || '...'} — ${el.querySelector('.exp-cw').checked ? 'Present' : (el.querySelector('.exp-ed').value || '...')}`;
-                        html += `<div style="margin-bottom:12px;"><div style="display:flex; justify-content:space-between;"><strong>${el.querySelector('.exp-ro').value}</strong><span>${date}</span></div><div style="font-style:italic; opacity:0.8;">${el.querySelector('.exp-co').value}</div><div>${el.querySelector('.exp-de').innerHTML}</div></div>`;
+                        html += `<div class="sec-item" style="margin-bottom:12px;"><div style="display:flex; justify-content:space-between;"><strong>${el.querySelector('.exp-ro').value}</strong><span>${el.querySelector('.exp-sd').value || '...'} — ${el.querySelector('.exp-cw').checked ? 'Present' : (el.querySelector('.exp-ed').value || '...')}</span></div><div style="font-style:italic; opacity:0.8;">${el.querySelector('.exp-co').value}</div><div>${el.querySelector('.exp-de').innerHTML}</div></div>`;
                     });
                     html += `</div>`;
                 }
@@ -192,7 +205,7 @@
                 if (items.length) {
                     html += `<div class="sec-item"><div class="section-header" style="${hStyle}">EDUCATION</div>`;
                     items.forEach(el => {
-                        html += `<div style="margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><strong>${el.querySelector('.edu-sc').value}</strong><span>${el.querySelector('.edu-sd').value} — ${el.querySelector('.edu-ed').value}</span></div><div style="font-style:italic; opacity:0.8;">${el.querySelector('.edu-dg').value}</div><div>${el.querySelector('.edu-ac').innerHTML}</div></div>`;
+                        html += `<div class="sec-item" style="margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><strong>${el.querySelector('.edu-sc').value}</strong><span>${el.querySelector('.edu-sd').value} — ${el.querySelector('.edu-ed').value}</span></div><div style="font-style:italic; opacity:0.8;">${el.querySelector('.edu-dg').value}</div><div>${el.querySelector('.edu-ac').innerHTML}</div></div>`;
                     });
                     html += `</div>`;
                 }
@@ -202,8 +215,7 @@
                 if (items.length) {
                     html += `<div class="sec-item"><div class="section-header" style="${hStyle}">PROJECTS</div>`;
                     items.forEach(el => {
-                        const pdate = el.querySelector('.prj-sd').value ? ` | ${el.querySelector('.prj-sd').value} — ${el.querySelector('.prj-ed').value}` : '';
-                        html += `<div style="margin-bottom:10px;"><strong>${el.querySelector('.prj-ti').value}</strong><span style="font-size:0.8rem; opacity:0.7;">${pdate}</span><div>${el.querySelector('.prj-de').innerHTML}</div></div>`;
+                        html += `<div class="sec-item" style="margin-bottom:10px;"><strong>${el.querySelector('.prj-ti').value}</strong><span style="font-size:0.8rem; opacity:0.7;">${el.querySelector('.prj-sd').value ? ' | ' + el.querySelector('.prj-sd').value + ' — ' + el.querySelector('.prj-ed').value : ''}</span><div>${el.querySelector('.prj-de').innerHTML}</div></div>`;
                     });
                     html += `</div>`;
                 }
@@ -220,6 +232,7 @@
         });
         return html;
     }
+    
     function liveUpdate() {
         const target = document.getElementById('resume-target');
         const fn = document.getElementById('fn').value || 'NAME';
@@ -266,8 +279,15 @@
             target.innerHTML = `<h2 style="font-weight:300; letter-spacing:5px; margin-bottom:5px;">${fn} ${ln}</h2><div style="font-size:0.7rem; color:#a1a1aa; margin-bottom:40px;">${contactArr.join(' / ')}</div>${getSections(textColor)}`;
         }
     }
+    
     function exportPDF() {
-        const opt = { margin: 10, filename: 'resume.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+        const opt = { 
+            margin: 10, 
+            filename: 'resume.pdf', 
+            html2canvas: { scale: 2 }, 
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
         html2pdf().set(opt).from(document.getElementById('resume-target')).save();
     }
     window.onload = () => { addExp(); liveUpdate(); };
