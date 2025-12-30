@@ -1,34 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Pro Resume Builder - Bot Craft Labs</title>
+<title>Professional Resume Builder</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-body{background:#f4f6fb;font-family:"Segoe UI"}
+body{background:#f5f6fa;font-family:"Segoe UI"}
 .navbar{font-weight:700}
-.builder{margin-top:80px}
+.container-area{margin-top:80px}
 .panel{background:white;padding:18px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.08)}
 .section-title{font-weight:700;margin-top:15px}
-.button-add{margin:6px 0}
-.resume-preview{
- background:white;padding:35px;border-radius:12px;
- border-top:6px solid #0d6efd;
- box-shadow:0 10px 25px rgba(0,0,0,0.08)
+
+.template-card{
+padding:12px;border:2px solid #ddd;border-radius:12px;
+cursor:pointer;background:white;font-weight:600;transition:0.3s
 }
-.resume-section{margin-bottom:12px}
-.resume-heading{font-weight:800;font-size:20px;color:#0d6efd;border-bottom:1px solid #ddd}
-.name-header{font-size:34px;font-weight:900;color:#0d6efd}
-.title-header{font-size:17px;color:#666}
-hr{margin:8px 0}
+.template-card:hover{border-color:black;transform:translateY(-2px)}
+.template-card.active{border-color:black;background:#f1f1f1}
+
+.resume{
+background:white;padding:35px;border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+min-height:100%;color:black!important
+}
+.resume *{color:black!important}
+.resume-line{border:1px solid #000;margin:6px 0}
+.resume-title{font-size:30px;font-weight:900}
+.resume-sub{font-size:16px;font-weight:500}
+.section-head{font-weight:900;font-size:16px;border-bottom:1px solid #000;margin-top:10px}
+.item{margin-bottom:8px}
 .page-break{page-break-before:always}
-.template-apollo .name-header{text-transform:none}
-.template-terra .resume-heading{text-transform:uppercase}
-.template-modern .resume-heading{letter-spacing:2px}
+
+/* Templates */
+/* Apollo */
+.template-apollo .resume-title{text-transform:none}
+.template-apollo .section-head{letter-spacing:0}
+/* Terra */
+.template-terra .resume-title{text-transform:uppercase;font-weight:1000}
+.template-terra .section-head{text-transform:uppercase}
+/* Aurora */
+.template-aurora{border:2px solid #000}
+/* Dawn */
+.template-dawn .resume-title{letter-spacing:1px}
+/* Orion */
+.template-orion .resume-title{font-size:32px}
+/* Luna */
+.template-luna{background:#fafafa}
 </style>
 </head>
 
@@ -36,126 +57,143 @@ hr{margin:8px 0}
 
 <nav class="navbar navbar-dark bg-dark fixed-top">
 <div class="container">
-<span class="navbar-brand">🤖 Bot Craft Labs – Professional Resume Builder</span>
+<span class="navbar-brand">🤖 Bot Craft Labs — Professional Resume Studio</span>
 </div>
 </nav>
 
-<div class="container builder">
-
+<div class="container container-area">
 <div class="row">
 
-<!-- LEFT PANEL -->
+<!-- LEFT -->
 <div class="col-md-5">
 <div class="panel">
 
-<h4>Resume Builder</h4>
+<h4>Choose Template</h4>
+
+<p>ATS safe professional formats:</p>
+
+<h6>Recommended</h6>
+<div class="d-flex flex-wrap gap-2" id="templateGallery"></div>
+
+<hr>
+
+<h5>Resume Builder</h5>
 
 <div class="section-title">Personal Details</div>
 <input id="first" class="form-control mb-2" placeholder="First Name">
 <input id="last" class="form-control mb-2" placeholder="Last Name">
 <input id="email" class="form-control mb-2" placeholder="Email">
-<input id="phone" class="form-control mb-2" placeholder="Phone">
-<input id="location" class="form-control mb-2" placeholder="Current Location">
+<input id="phone" class="form-control mb-2" placeholder="Phone Number">
+<input id="loc" class="form-control mb-2" placeholder="Location">
 
 <div class="section-title">Summary</div>
-<textarea id="summary" class="form-control mb-2"></textarea>
+<textarea id="summary" class="form-control mb-2" rows="3"></textarea>
 
 <div class="section-title">Experience</div>
 <div id="experience"></div>
-<button class="btn btn-outline-primary button-add" onclick="addExperience()">+ Add Experience</button>
+<button class="btn btn-outline-dark mb-2" onclick="addExperience()">+ Add Experience</button>
 
 <div class="section-title">Projects</div>
 <div id="projects"></div>
-<button class="btn btn-outline-primary button-add" onclick="addProject()">+ Add Project</button>
+<button class="btn btn-outline-dark mb-2" onclick="addProject()">+ Add Project</button>
 
 <div class="section-title">Skills</div>
 <input id="skills" class="form-control mb-2" placeholder="Comma separated">
 
-<div class="section-title">Roles & Responsibilities</div>
-<textarea id="roles" class="form-control mb-2"></textarea>
-
 <div class="section-title">Certifications</div>
 <div id="certs"></div>
-<button class="btn btn-outline-primary button-add" onclick="addCert()">+ Add Certification</button>
+<button class="btn btn-outline-dark mb-2" onclick="addCert()">+ Add Certification</button>
 
 <div class="section-title">Languages</div>
-<input id="langs" class="form-control mb-2" placeholder="English, Hindi...">
+<input id="langs" class="form-control mb-2" placeholder="English, Hindi">
 
 <div class="section-title">Education</div>
 <div id="edu"></div>
-<button class="btn btn-outline-primary button-add" onclick="addEdu()">+ Add Education</button>
+<button class="btn btn-outline-dark mb-2" onclick="addEdu()">+ Add Education</button>
 
 <hr>
-<button class="btn btn-primary w-100" onclick="generateResume()">Generate Resume</button>
+<button class="btn btn-dark w-100" onclick="generate()">Generate Resume</button>
 <button class="btn btn-success w-100 mt-2" onclick="downloadPDF()">Download PDF</button>
 
 </div>
 </div>
 
-<!-- PREVIEW -->
+<!-- RIGHT -->
 <div class="col-md-7">
-<div class="resume-preview template-apollo" id="resume">
+<div class="resume template-apollo" id="resume">
 
-<div id="page1">
+<div id="dragArea">
 
-<div class="name-header" id="outName">Your Name</div>
-<div class="title-header" id="outContact"></div>
+<section class="resume-sec" id="sec-header">
+<div class="resume-title" id="outName">YOUR NAME</div>
+<div class="resume-sub" id="outContact"></div>
+<div class="resume-line"></div>
+</section>
 
-<div class="resume-section">
-<div class="resume-heading">SUMMARY</div>
+<section class="resume-sec" id="sec-summary">
+<div class="section-head">Summary</div>
 <p id="outSummary"></p>
-</div>
+</section>
 
-<div class="resume-section">
-<div class="resume-heading">EXPERIENCE</div>
+<section class="resume-sec" id="sec-exp">
+<div class="section-head">Experience</div>
 <div id="outExperience"></div>
-</div>
+</section>
 
-<div class="resume-section">
-<div class="resume-heading">PROJECTS</div>
+<section class="resume-sec" id="sec-projects">
+<div class="section-head">Projects</div>
 <div id="outProjects"></div>
-</div>
+</section>
 
-</div>
-
-<div class="page-break"></div>
-
-<div id="page2">
-
-<div class="resume-section">
-<div class="resume-heading">EDUCATION</div>
+<section class="resume-sec" id="sec-edu">
+<div class="section-head">Education</div>
 <div id="outEdu"></div>
-</div>
+</section>
 
-<div class="resume-section">
-<div class="resume-heading">CERTIFICATIONS</div>
+<section class="resume-sec" id="sec-certs">
+<div class="section-head">Certifications</div>
 <div id="outCerts"></div>
-</div>
+</section>
 
-<div class="resume-section">
-<div class="resume-heading">ROLES & RESPONSIBILITIES</div>
-<p id="outRoles"></p>
-</div>
-
-<div class="resume-section">
-<div class="resume-heading">SKILLS</div>
+<section class="resume-sec" id="sec-skills">
+<div class="section-head">Skills</div>
 <p id="outSkills"></p>
-</div>
+</section>
 
-<div class="resume-section">
-<div class="resume-heading">LANGUAGES</div>
+<section class="resume-sec" id="sec-lang">
+<div class="section-head">Languages</div>
 <p id="outLangs"></p>
-</div>
+</section>
 
 </div>
 
 </div>
 </div>
-
 </div>
 </div>
 
 <script>
+
+const templates=["Apollo","Terra","Aurora","Dawn","Orion","Luna"];
+
+function buildTemplateGallery(){
+templates.forEach(t=>{
+let div=document.createElement("div");
+div.className="template-card";
+div.innerText=t;
+div.onclick=()=>applyTemplate(t.toLowerCase(),div);
+document.getElementById("templateGallery").appendChild(div);
+});
+document.querySelector(".template-card").classList.add("active");
+}
+
+function applyTemplate(t,el){
+document.querySelectorAll(".template-card").forEach(c=>c.classList.remove("active"));
+el.classList.add("active");
+document.getElementById("resume").className=`resume template-${t}`;
+}
+
+/* ----------- ADD BLOCKS ----------- */
 
 function block(html,target){
 let div=document.createElement("div");
@@ -168,96 +206,105 @@ block(`
 <div class="border p-2 mb-2">
 <input class="form-control mb-1 ex-company" placeholder="Company">
 <input class="form-control mb-1 ex-role" placeholder="Role / Designation">
-<input class="form-control mb-1 ex-duration" placeholder="Start - End or Currently Working">
-<textarea class="form-control mb-1 ex-desc" placeholder="Description"></textarea>
+<input class="form-control mb-1 ex-duration" placeholder="Start - End / Current">
+<textarea class="form-control mb-1 ex-desc" placeholder="Responsibilities"></textarea>
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
-</div>
-`,"experience")
+</div>`,"experience");
 }
 
 function addProject(){
 block(`
 <div class="border p-2 mb-2">
-<input class="form-control mb-1 pr-title" placeholder="Project Name">
+<input class="form-control mb-1 pr-name" placeholder="Project Title">
 <textarea class="form-control mb-1 pr-desc" placeholder="Description"></textarea>
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
-</div>
-`,"projects")
+</div>`,"projects");
 }
 
 function addCert(){
 block(`
 <div class="border p-2 mb-2">
 <input class="form-control mb-1 c-name" placeholder="Certification Name">
-<input class="form-control mb-1 c-org" placeholder="Provider (UiPath, Microsoft)">
-<input class="form-control mb-1 c-date" placeholder="Issued / Expiry">
+<input class="form-control mb-1 c-org" placeholder="Provider">
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
-</div>
-`,"certs")
+</div>`,"certs");
 }
 
 function addEdu(){
 block(`
 <div class="border p-2 mb-2">
 <input class="form-control mb-1 e-degree" placeholder="Degree">
-<input class="form-control mb-1 e-inst" placeholder="University / College">
-<input class="form-control mb-1 e-year" placeholder="Passing Year">
+<input class="form-control mb-1 e-inst" placeholder="University">
+<input class="form-control mb-1 e-year" placeholder="Year">
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
-</div>
-`,"edu")
+</div>`,"edu");
 }
 
-function generateResume(){
+/* ----------- DRAG REORDER ----------- */
+Sortable.create(dragArea,{animation:200});
 
-document.getElementById("outName").innerText =
-(first.value+" "+last.value).trim() || "Your Name";
+/* ----------- GENERATE ----------- */
 
-document.getElementById("outContact").innerText =
-`${email.value} | ${phone.value} | ${location.value}`;
+function generate(){
 
+outName.innerText=(first.value+" "+last.value).trim() || "YOUR NAME";
+outContact.innerText=`${email.value} | ${phone.value} | ${loc.value}`;
 outSummary.innerText=summary.value;
-outRoles.innerText=roles.value;
 outSkills.innerText=skills.value;
 outLangs.innerText=langs.value;
 
-let exHtml="";
+/* Experience */
+let eHTML="";
 document.querySelectorAll("#experience>div").forEach(e=>{
-exHtml+=`
-<p><b>${e.querySelector(".ex-company").value}</b> - ${e.querySelector(".ex-role").value}
-<br><small>${e.querySelector(".ex-duration").value}</small>
-<br>${e.querySelector(".ex-desc").value}</p>`
-})
-outExperience.innerHTML=exHtml;
+eHTML+=`
+<div class="item">
+<b>${e.querySelector(".ex-company").value}</b> — ${e.querySelector(".ex-role").value}
+<br>
+<small>${e.querySelector(".ex-duration").value}</small>
+<br>${e.querySelector(".ex-desc").value}
+</div>`;
+});
+outExperience.innerHTML=eHTML;
 
-let pHtml="";
+/* Projects */
+let pHTML="";
 document.querySelectorAll("#projects>div").forEach(e=>{
-pHtml+=`
-<p><b>${e.querySelector(".pr-title").value}</b>
-<br>${e.querySelector(".pr-desc").value}</p>`
-})
-outProjects.innerHTML=pHtml;
+pHTML+=`
+<div class="item">
+<b>${e.querySelector(".pr-name").value}</b>
+<br>${e.querySelector(".pr-desc").value}
+</div>`;
+});
+outProjects.innerHTML=pHTML;
 
-let cHtml="";
+/* Certifications */
+let cHTML="";
 document.querySelectorAll("#certs>div").forEach(e=>{
-cHtml+=`
-<p>${e.querySelector(".c-name").value} - ${e.querySelector(".c-org").value}
-<br><small>${e.querySelector(".c-date").value}</small></p>`
-})
-outCerts.innerHTML=cHtml;
+cHTML+=`<div class="item">${e.querySelector(".c-name").value} — ${e.querySelector(".c-org").value}</div>`;
+});
+outCerts.innerHTML=cHTML;
 
-let eHtml="";
+/* Education */
+let edHTML="";
 document.querySelectorAll("#edu>div").forEach(e=>{
-eHtml+=`
-<p><b>${e.querySelector(".e-degree").value}</b>
+edHTML+=`
+<div class="item">
+<b>${e.querySelector(".e-degree").value}</b>
 <br>${e.querySelector(".e-inst").value}
-<br><small>${e.querySelector(".e-year").value}</small></p>`
-})
-outEdu.innerHTML=eHtml;
+<br>${e.querySelector(".e-year").value}
+</div>`;
+});
+outEdu.innerHTML=edHTML;
+
 }
 
+/* ----------- PDF ----------- */
 function downloadPDF(){
 html2pdf().from(resume).save("resume.pdf");
 }
+
+/* INIT */
+buildTemplateGallery();
 
 </script>
 
