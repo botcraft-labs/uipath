@@ -100,9 +100,13 @@
                     <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('insertUnorderedList')">•</button></div>
                     <div id="roles" contenteditable="true" class="rich-editor" data-placeholder="Define core responsibilities..." oninput="liveUpdate()"></div>
                 </div>
-                <div class="mt-4"><label>Skills & Certifications</label>
+                <div class="mt-4"><label>Skills</label>
                     <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('insertUnorderedList')">•</button></div>
-                    <div id="sk" contenteditable="true" class="rich-editor" data-placeholder="JavaScript, Python, AWS..." oninput="liveUpdate()"></div>
+                    <div id="sk" contenteditable="true" class="rich-editor" data-placeholder="Technical skills, software..." oninput="liveUpdate()"></div>
+                </div>
+                <div class="mt-4"><label>Certifications</label>
+                    <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('insertUnorderedList')">•</button></div>
+                    <div id="cert" contenteditable="true" class="rich-editor" data-placeholder="AWS, PMP, Professional Certs..." oninput="liveUpdate()"></div>
                 </div>
                 <div class="mt-4"><label>Languages</label>
                     <div id="lang" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div>
@@ -116,6 +120,7 @@
                         <li class="list-group-item bg-transparent text-white border-secondary small" data-id="projects">Projects</li>
                         <li class="list-group-item bg-transparent text-white border-secondary small" data-id="roles">Roles</li>
                         <li class="list-group-item bg-transparent text-white border-secondary small" data-id="skills">Skills</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary small" data-id="certifications">Certifications</li>
                         <li class="list-group-item bg-transparent text-white border-secondary small" data-id="languages">Languages</li>
                     </ul>
                 </div>
@@ -225,6 +230,9 @@
             }
             if (id === 'skills' && hasValue(document.getElementById('sk'))) {
                 html += `<div class="sec-item"><div class="section-header" style="${hStyle}">SKILLS</div>${document.getElementById('sk').innerHTML}</div>`;
+            }
+            if (id === 'certifications' && hasValue(document.getElementById('cert'))) {
+                html += `<div class="sec-item"><div class="section-header" style="${hStyle}">CERTIFICATIONS</div>${document.getElementById('cert').innerHTML}</div>`;
             }
             if (id === 'languages' && hasValue(document.getElementById('lang'))) {
                 html += `<div class="sec-item"><div class="section-header" style="${hStyle}">LANGUAGES</div>${document.getElementById('lang').innerHTML}</div>`;
