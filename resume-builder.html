@@ -30,7 +30,6 @@ cursor:pointer;font-weight:600;background:white;transition:0.3s
 
 .section-title{font-weight:900;border-bottom:1px solid #000;margin-bottom:8px}
 .item{margin-bottom:10px}
-
 .timeline-item{border-left:3px solid black;padding-left:10px;margin-bottom:10px}
 .two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:25px}
 
@@ -195,10 +194,11 @@ d.innerHTML=`
 proj.appendChild(d);
 }
 
-// PREVIEW + BUILD HTML SHARED
+// BUILD SECTIONS (Preview + Export)
 function buildSections(){
 
 let expHTML="", eduHTML="", projHTML="";
+
 document.querySelectorAll("#exp>div").forEach(e=>{
  const s=e.querySelector(".s").value;
  const en=e.querySelector(".cur").checked?"Present":e.querySelector(".e").value;
@@ -213,6 +213,16 @@ document.querySelectorAll("#proj>div").forEach(e=>{
  projHTML+=`<div class="item"><b>${e.querySelector(".title").value}</b><br>${e.querySelector(".desc").value}</div>`;
 });
 
+return {expHTML,eduHTML,projHTML};
+}
+
+// PREVIEW FIXED
+function preview(){
+
+const name = `${first.value} ${last.value}`.trim() || "Your Name";
+const contact = `${email.value} | ${phone.value} | ${loc.value}`;
+const {expHTML,eduHTML,projHTML} = buildSections();
+
 let sectionsHTML="";
 document.querySelectorAll("#sectionOrder li").forEach(li=>{
  let sec=li.getAttribute("data-sec");
@@ -225,37 +235,43 @@ document.querySelectorAll("#sectionOrder li").forEach(li=>{
  if(sec==="skills") sectionsHTML+=`<div class="section-title">Skills</div>${skills.value}`;
 });
 
-return sectionsHTML;
+// TEMPLATE ENGINE
+let html="";
+
+if(template==="apollo"){
+ html = `
+ <div class="heading-name">${name}</div>
+ <div class="heading-contact">${contact}</div>
+ <hr>
+ <div class="two-col">
+   <div>${sectionsHTML}</div>
+   <div></div>
+ </div>`;
+}
+else if(template==="terra"){
+ html = `
+ <div class="heading-name">${name}</div>
+ <div class="heading-contact">${contact}</div>
+ <div class="section-title">Timeline Resume</div>
+ ${sectionsHTML}`;
+}
+else{
+ html = `
+ <div class="heading-name">${name}</div>
+ <div class="heading-contact">${contact}</div>
+ ${sectionsHTML}`;
 }
 
-function preview(){
-const name = `${first.value} ${last.value}`.trim()||"Your Name";
-const contact = `${email.value} | ${phone.value} | ${loc.value}`;
-document.getElementById("resumePreview").innerHTML=
-`<div class="heading-name">${name}</div>
-<div class="heading-contact">${contact}</div>${buildSections()}`;
+resumePreview.innerHTML = html;
 }
 
+// EXPORT FIXED
 function exportPDF(){
 
 const name = `${first.value} ${last.value}`.trim();
-if(!name){alert("Enter name");return;}
+if(!name){ alert("Enter name"); return; }
 
-const payload={
- template,
- resume:{
-  name: `${first.value} ${last.value}`,
-  contact: `${email.value} | ${phone.value} | ${loc.value}`,
-  summary: summary.value,
-  experience: buildSections().match(/Experience([\s\S]*)Education/)? "" : "",
-  education:"",projects:"",certifications:certifications.value,
-  languages:languages.value,
-  skills:skills.value
- }
-};
-
-payload.resume.summary=summary.value;
-payload.resume.experience=document.getElementById("resumePreview").innerHTML;
+const {expHTML,eduHTML,projHTML} = buildSections();
 
 fetch(BACKEND_URL,{
  method:"POST",
@@ -266,8 +282,9 @@ fetch(BACKEND_URL,{
    name: `${first.value} ${last.value}`,
    contact: `${email.value} | ${phone.value} | ${loc.value}`,
    summary: summary.value,
-   experience: buildSections(),
-   education:"",projects:"",
+   experience: expHTML,
+   education: eduHTML,
+   projects: projHTML,
    certifications: certifications.value,
    languages: languages.value,
    skills: skills.value
@@ -280,7 +297,11 @@ fetch(BACKEND_URL,{
  link.href=URL.createObjectURL(file);
  link.download="resume.pdf";
  link.click();
+})
+.catch(()=>{
+ alert("PDF export failed. Backend not reachable.");
 });
+
 }
 
 </script>
