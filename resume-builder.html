@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
 <style>
 
@@ -24,27 +25,14 @@ cursor:pointer;font-weight:600;background:white;transition:0.3s
 .template-card:hover{transform:translateY(-2px)}
 .template-card.active{border-color:black;background:#f0f0f0}
 
-.resume{
-background:white;border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,.1)
-}
+.resume{background:white;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,.1)}
 .page{padding:35px}
 
 .section-title{font-weight:900;border-bottom:1px solid #000;margin-bottom:8px}
-
 .item{margin-bottom:10px}
 
-.timeline-item{
-border-left:3px solid black;
-padding-left:10px;
-margin-bottom:10px
-}
-
-.two-col{
-display:grid;
-grid-template-columns:1.3fr 1fr;
-gap:25px
-}
+.timeline-item{border-left:3px solid black;padding-left:10px;margin-bottom:10px}
+.two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:25px}
 
 .heading-name{font-size:30px;font-weight:900}
 .heading-contact{font-size:15px}
@@ -54,7 +42,6 @@ gap:25px
 
 <body>
 
-<!-- Navbar -->
 <nav class="navbar navbar-dark bg-dark fixed-top">
 <div class="container">
 <span class="navbar-brand">🤖 Bot Craft Labs — Resume Studio</span>
@@ -64,26 +51,23 @@ gap:25px
 <div class="container container-area">
 <div class="row">
 
-<!-- LEFT PANEL -->
+<!-- LEFT -->
 <div class="col-md-5">
 <div class="panel">
 
 <h4>Select Template</h4>
-
 <div class="d-flex gap-2 flex-wrap" id="templates">
 
-<!-- Original Templates -->
-<div class="template-card active" onclick="selectTemplate('apollo',this)">Apollo (Corporate 2-Column)</div>
-<div class="template-card" onclick="selectTemplate('terra',this)">Terra (Timeline)</div>
-<div class="template-card" onclick="selectTemplate('aurora',this)">Aurora (Classic)</div>
+<div class="template-card active" onclick="selectTemplate('apollo',this)">Apollo</div>
+<div class="template-card" onclick="selectTemplate('terra',this)">Terra</div>
+<div class="template-card" onclick="selectTemplate('aurora',this)">Aurora</div>
 
-<!-- 🔥 New Premium Templates -->
-<div class="template-card" onclick="selectTemplate('vega',this)">Vega (Sidebar)</div>
-<div class="template-card" onclick="selectTemplate('luna',this)">Luna (Modern)</div>
-<div class="template-card" onclick="selectTemplate('orion',this)">Orion (Corporate)</div>
-<div class="template-card" onclick="selectTemplate('celeste',this)">Celeste (Executive)</div>
-<div class="template-card" onclick="selectTemplate('nova',this)">Nova (Minimal)</div>
-<div class="template-card" onclick="selectTemplate('atlas',this)">Atlas (Bold)</div>
+<div class="template-card" onclick="selectTemplate('vega',this)">Vega</div>
+<div class="template-card" onclick="selectTemplate('luna',this)">Luna</div>
+<div class="template-card" onclick="selectTemplate('orion',this)">Orion</div>
+<div class="template-card" onclick="selectTemplate('celeste',this)">Celeste</div>
+<div class="template-card" onclick="selectTemplate('nova',this)">Nova</div>
+<div class="template-card" onclick="selectTemplate('atlas',this)">Atlas</div>
 
 </div>
 
@@ -103,21 +87,47 @@ gap:25px
 <div id="exp"></div>
 <button class="btn btn-outline-dark mb-2" onclick="addExp()">+ Add Experience</button>
 
+<h5>Education</h5>
+<div id="edu"></div>
+<button class="btn btn-outline-dark mb-2" onclick="addEdu()">+ Add Education</button>
+
+<h5>Projects</h5>
+<div id="proj"></div>
+<button class="btn btn-outline-dark mb-2" onclick="addProject()">+ Add Project</button>
+
+<h5>Certifications</h5>
+<textarea id="certifications" class="form-control mb-2"></textarea>
+
+<h5>Languages</h5>
+<textarea id="languages" class="form-control mb-2"></textarea>
+
 <h5>Skills</h5>
-<input id="skills" class="form-control mb-2" placeholder="Comma separated">
+<input id="skills" class="form-control mb-2">
 
 <hr>
+
+<h5>Arrange Sections</h5>
+<ul id="sectionOrder" class="list-group mb-3">
+<li class="list-group-item" data-sec="summary">Summary</li>
+<li class="list-group-item" data-sec="experience">Experience</li>
+<li class="list-group-item" data-sec="education">Education</li>
+<li class="list-group-item" data-sec="projects">Projects</li>
+<li class="list-group-item" data-sec="certifications">Certifications</li>
+<li class="list-group-item" data-sec="languages">Languages</li>
+<li class="list-group-item" data-sec="skills">Skills</li>
+</ul>
+
 <button class="btn btn-dark w-100" onclick="preview()">Preview</button>
 <button class="btn btn-success w-100 mt-2" onclick="exportPDF()">Export PDF</button>
 
 </div>
 </div>
 
-<!-- RIGHT PREVIEW -->
+<!-- RIGHT -->
 <div class="col-md-7">
 <div class="resume">
 <div class="page" id="resumePreview">
-Select a template and start entering details…
+Select template and fill details…
 </div>
 </div>
 </div>
@@ -127,11 +137,10 @@ Select a template and start entering details…
 
 <script>
 
-// ================= CONFIG =================
 const BACKEND_URL = "https://uipath-qv9m.onrender.com/export";
 
-// ========= TEMPLATE HANDLER =========
 let template="apollo";
+Sortable.create(sectionOrder,{animation:150});
 
 function selectTemplate(t,el){
 template=t;
@@ -140,114 +149,137 @@ el.classList.add("active");
 preview();
 }
 
-// ========= EXPERIENCE BUILDER =========
+// EXPERIENCE
 function addExp(){
 let d=document.createElement("div");
 d.className="border p-2 mb-2";
-
 d.innerHTML=`
 <input class="form-control mb-1 c" placeholder="Company">
-<input class="form-control mb-1 r" placeholder="Role / Designation">
-
+<input class="form-control mb-1 r" placeholder="Role">
 <div class="d-flex gap-2 mb-1">
 <input type="date" class="form-control s">
 <input type="date" class="form-control e">
 </div>
-
 <div class="form-check mb-1">
 <input class="form-check-input cur" type="checkbox">
-<label class="form-check-label">Currently Working</label>
+<label>Currently Working</label>
 </div>
-
-<textarea class="form-control mb-1 d" placeholder="Responsibilities / Work Done"></textarea>
-
-<button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
-`;
-document.getElementById("exp").appendChild(d);
+<textarea class="form-control mb-1 d"></textarea>
+<button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>`;
+exp.appendChild(d);
 }
 
-// ========= PREVIEW (Frontend Only) =========
-function preview(){
+// EDUCATION
+function addEdu(){
+let d=document.createElement("div");
+d.className="border p-2 mb-2";
+d.innerHTML=`
+<input class="form-control mb-1 school" placeholder="University">
+<input class="form-control mb-1 degree" placeholder="Degree">
+<div class="d-flex gap-2 mb-1">
+<input type="date" class="form-control start">
+<input type="date" class="form-control end">
+</div>
+<button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>`;
+edu.appendChild(d);
+}
 
-const name = `${first.value} ${last.value}`.trim() || "Your Name";
-const contact = `${email.value} | ${phone.value} | ${loc.value}`;
-const summaryText = summary.value;
-const skillsText = skills.value;
+// PROJECTS
+function addProject(){
+let d=document.createElement("div");
+d.className="border p-2 mb-2";
+d.innerHTML=`
+<input class="form-control mb-1 title" placeholder="Project Title">
+<textarea class="form-control mb-1 desc"></textarea>
+<button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>`;
+proj.appendChild(d);
+}
 
-let exHTML="";
+// PREVIEW + BUILD HTML SHARED
+function buildSections(){
+
+let expHTML="", eduHTML="", projHTML="";
 document.querySelectorAll("#exp>div").forEach(e=>{
-const start=e.querySelector(".s").value;
-const end=e.querySelector(".cur").checked ? "Present" : e.querySelector(".e").value;
-const block = `
-<div class="${template==='terra'?'timeline-item':'item'}">
-<b>${e.querySelector(".c").value}</b> — ${e.querySelector(".r").value}
-<br>
-<small>${start} ➝ ${end}</small>
-<br>${e.querySelector(".d").value}
-</div>`;
-exHTML+=block;
+ const s=e.querySelector(".s").value;
+ const en=e.querySelector(".cur").checked?"Present":e.querySelector(".e").value;
+ expHTML+=`<div class="item"><b>${e.querySelector(".c").value}</b> — ${e.querySelector(".r").value}<br><small>${s} ➝ ${en}</small><br>${e.querySelector(".d").value}</div>`;
 });
 
-/* -------- Template Preview Logic (same preview look for new templates) -------- */
+document.querySelectorAll("#edu>div").forEach(e=>{
+ eduHTML+=`<div class="item"><b>${e.querySelector(".school").value}</b> — ${e.querySelector(".degree").value}<br><small>${e.querySelector(".start").value} ➝ ${e.querySelector(".end").value}</small></div>`;
+});
 
-document.getElementById("resumePreview").innerHTML=`
-<div class="heading-name">${name}</div>
-<div class="heading-contact">${contact}</div>
+document.querySelectorAll("#proj>div").forEach(e=>{
+ projHTML+=`<div class="item"><b>${e.querySelector(".title").value}</b><br>${e.querySelector(".desc").value}</div>`;
+});
 
-<div class="section-title">Summary</div>
-<p>${summaryText}</p>
+let sectionsHTML="";
+document.querySelectorAll("#sectionOrder li").forEach(li=>{
+ let sec=li.getAttribute("data-sec");
+ if(sec==="summary") sectionsHTML+=`<div class="section-title">Summary</div><p>${summary.value}</p>`;
+ if(sec==="experience") sectionsHTML+=`<div class="section-title">Experience</div>${expHTML}`;
+ if(sec==="education") sectionsHTML+=`<div class="section-title">Education</div>${eduHTML}`;
+ if(sec==="projects") sectionsHTML+=`<div class="section-title">Projects</div>${projHTML}`;
+ if(sec==="certifications") sectionsHTML+=`<div class="section-title">Certifications</div>${certifications.value}`;
+ if(sec==="languages") sectionsHTML+=`<div class="section-title">Languages</div>${languages.value}`;
+ if(sec==="skills") sectionsHTML+=`<div class="section-title">Skills</div>${skills.value}`;
+});
 
-<div class="section-title">Experience</div>
-${exHTML}
-
-<div class="section-title">Skills</div>
-<p>${skillsText}</p>`;
+return sectionsHTML;
 }
 
-// ========= EXPORT TO BACKEND =========
+function preview(){
+const name = `${first.value} ${last.value}`.trim()||"Your Name";
+const contact = `${email.value} | ${phone.value} | ${loc.value}`;
+document.getElementById("resumePreview").innerHTML=
+`<div class="heading-name">${name}</div>
+<div class="heading-contact">${contact}</div>${buildSections()}`;
+}
+
 function exportPDF(){
 
 const name = `${first.value} ${last.value}`.trim();
-if(!name){ alert("Enter name first"); return; }
+if(!name){alert("Enter name");return;}
 
-let experienceHTML="";
-document.querySelectorAll("#exp>div").forEach(e=>{
-const start=e.querySelector(".s").value;
-const end=e.querySelector(".cur").checked ? "Present" : e.querySelector(".e").value;
-experienceHTML+=`
-<div class="item">
-<b>${e.querySelector(".c").value}</b> — ${e.querySelector(".r").value}
-<br>
-<small>${start} ➝ ${end}</small>
-<br>${e.querySelector(".d").value}
-</div>`;
-});
-
-const payload = {
+const payload={
  template,
  resume:{
-   name: `${first.value} ${last.value}`,
-   contact: `${email.value} | ${phone.value} | ${loc.value}`,
-   summary: summary.value,
-   experience: experienceHTML,
-   skills: skills.value
+  name: `${first.value} ${last.value}`,
+  contact: `${email.value} | ${phone.value} | ${loc.value}`,
+  summary: summary.value,
+  experience: buildSections().match(/Experience([\s\S]*)Education/)? "" : "",
+  education:"",projects:"",certifications:certifications.value,
+  languages:languages.value,
+  skills:skills.value
  }
 };
+
+payload.resume.summary=summary.value;
+payload.resume.experience=document.getElementById("resumePreview").innerHTML;
 
 fetch(BACKEND_URL,{
  method:"POST",
  headers:{"Content-Type":"application/json"},
- body:JSON.stringify(payload)
+ body:JSON.stringify({
+  template,
+  resume:{
+   name: `${first.value} ${last.value}`,
+   contact: `${email.value} | ${phone.value} | ${loc.value}`,
+   summary: summary.value,
+   experience: buildSections(),
+   education:"",projects:"",
+   certifications: certifications.value,
+   languages: languages.value,
+   skills: skills.value
+  }
+ })
 })
-.then(res=>res.blob())
+.then(r=>r.blob())
 .then(file=>{
  const link=document.createElement("a");
  link.href=URL.createObjectURL(file);
  link.download="resume.pdf";
  link.click();
-})
-.catch(()=>{
- alert("Backend not reachable. Start server or update BACKEND_URL");
 });
 }
 
