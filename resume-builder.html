@@ -96,7 +96,7 @@
                     <div class="col-6"><label>First Name</label><input id="fn" class="form-control" placeholder="FIRST NAME" oninput="liveUpdate()"></div>
                     <div class="col-6"><label>Last Name</label><input id="ln" class="form-control" placeholder="LAST NAME" oninput="liveUpdate()"></div>
                 </div>
-                <div class="mt-2"><label>Contact</label>
+                <div class="mt-2"><label>Contact Info</label>
                     <div class="row g-2">
                         <div class="col-6"><input id="em" class="form-control" placeholder="EMAIL" oninput="liveUpdate()"></div>
                         <div class="col-6"><input id="ph" class="form-control" placeholder="PHONE" oninput="liveUpdate()"></div>
@@ -122,6 +122,12 @@
                 <div class="mt-3 d-flex justify-content-between align-items-center"><h6 class="text-info m-0 small">Projects</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addProj()">+ Add</button></div>
                 <div id="proj-container" class="mt-1"></div>
 
+                <div class="mt-3">
+                    <label>Roles & Responsibilities</label>
+                    <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('insertUnorderedList')">•</button></div>
+                    <div id="roles" contenteditable="true" class="rich-editor" data-placeholder="Define core responsibilities across your career..." oninput="liveUpdate()"></div>
+                </div>
+
                 <div class="mt-3"><label>Skills</label><div id="sk" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div></div>
                 <div class="mt-3"><label>Certifications</label><div id="cert" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div></div>
                 <div class="mt-3"><label>Languages</label><div id="lang" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div></div>
@@ -130,12 +136,13 @@
                 <div id="ref-container" class="mt-1"></div>
 
                 <div class="mt-4 p-2 bg-dark rounded border border-secondary">
-                    <label class="mb-1">Drag to Reorder</label>
+                    <label class="mb-1">Order</label>
                     <ul id="section-sort" class="list-group">
                         <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="summary">Summary</li>
                         <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="experience">Experience</li>
                         <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="education">Education</li>
                         <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="projects">Projects</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="roles">Roles</li>
                         <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="skills">Skills</li>
                         <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="certifications">Certifications</li>
                         <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="languages">Languages</li>
@@ -188,6 +195,7 @@
         const html = `<div class="entry-card" id="exp-${id}">
             <input class="form-control mb-1 fw-bold exp-co" placeholder="COMPANY" oninput="liveUpdate()">
             <input class="form-control mb-1 exp-ro" placeholder="ROLE" oninput="liveUpdate()">
+            <input class="form-control mb-1 exp-lo" placeholder="LOCATION" oninput="liveUpdate()">
             <div class="row g-1 mb-1"><div class="col"><input type="month" class="form-control exp-sd" oninput="liveUpdate()"></div><div class="col"><input type="month" class="form-control exp-ed" oninput="liveUpdate()"></div></div>
             <div contenteditable="true" class="rich-editor exp-de" oninput="liveUpdate()"></div>
             <button class="btn btn-sm glass-btn glass-btn-danger mt-1 w-100" onclick="removeEl('exp-${id}')">Remove</button>
@@ -213,6 +221,7 @@
         const id = Date.now();
         const html = `<div class="entry-card" id="prj-${id}">
             <input class="form-control mb-1 fw-bold prj-ti" placeholder="PROJECT TITLE" oninput="liveUpdate()">
+            <input class="form-control mb-1 prj-ro" placeholder="ROLE IN PROJECT" oninput="liveUpdate()">
             <input class="form-control mb-1 prj-lk" placeholder="LIVE LINK / REPO" oninput="liveUpdate()">
             <div contenteditable="true" class="rich-editor prj-de" oninput="liveUpdate()"></div>
             <button class="btn btn-sm glass-btn glass-btn-danger mt-1 w-100" onclick="removeEl('prj-${id}')">Remove</button>
@@ -234,7 +243,7 @@
     }
     
     function removeEl(id) { document.getElementById(id).remove(); liveUpdate(); }
-    function resetForm() { if(confirm("Wipe all data?")) location.reload(); }
+    function resetForm() { if(confirm("Clear data?")) location.reload(); }
     function hasV(el) { return el && el.innerText.trim().length > 0; }
     
     function getSections(headerColor) {
@@ -248,7 +257,7 @@
                 if (items.length) {
                     html += `<div class="sec-item"><div class="section-header" style="${hStyle}">EXPERIENCE</div>`;
                     items.forEach(el => {
-                        html += `<div class="sec-item"><div style="display:flex; justify-content:space-between;"><strong>${el.querySelector('.exp-ro').value}</strong><span>${el.querySelector('.exp-sd').value} — ${el.querySelector('.exp-ed').value || 'Present'}</span></div><div style="opacity:0.8;">${el.querySelector('.exp-co').value}</div><div>${el.querySelector('.exp-de').innerHTML}</div></div>`;
+                        html += `<div class="sec-item"><div style="display:flex; justify-content:space-between;"><strong>${el.querySelector('.exp-ro').value}</strong><span>${el.querySelector('.exp-sd').value} — ${el.querySelector('.exp-ed').value || 'Present'}</span></div><div style="opacity:0.8;">${el.querySelector('.exp-co').value} | ${el.querySelector('.exp-lo').value}</div><div>${el.querySelector('.exp-de').innerHTML}</div></div>`;
                     });
                     html += `</div>`;
                 }
@@ -268,16 +277,19 @@
                 if (items.length) {
                     html += `<div class="sec-item"><div class="section-header" style="${hStyle}">PROJECTS</div>`;
                     items.forEach(el => {
-                        html += `<div class="sec-item"><strong>${el.querySelector('.prj-ti').value}</strong> ${el.querySelector('.prj-lk').value ? `<small>(${el.querySelector('.prj-lk').value})</small>` : ''}<div>${el.querySelector('.prj-de').innerHTML}</div></div>`;
+                        const link = el.querySelector('.prj-lk').value;
+                        const prole = el.querySelector('.prj-ro').value;
+                        html += `<div class="sec-item"><div style="display:flex; justify-content:space-between;"><strong>${el.querySelector('.prj-ti').value}</strong><span>${prole}</span></div> ${link ? '<small style="opacity:0.6;">('+link+')</small>' : ''}<div>${el.querySelector('.prj-de').innerHTML}</div></div>`;
                     });
                     html += `</div>`;
                 }
             }
+            if (id === 'roles' && hasV(document.getElementById('roles'))) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">ROLES & RESPONSIBILITIES</div>${document.getElementById('roles').innerHTML}</div>`;
             if (id === 'skills' && hasV(document.getElementById('sk'))) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">SKILLS</div>${document.getElementById('sk').innerHTML}</div>`;
             if (id === 'certifications' && hasV(document.getElementById('cert'))) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">CERTIFICATIONS</div>${document.getElementById('cert').innerHTML}</div>`;
             if (id === 'languages' && hasV(document.getElementById('lang'))) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">LANGUAGES</div>${document.getElementById('lang').innerHTML}</div>`;
             if (id === 'references') {
-                const items = Array.from(document.querySelectorAll('#ref-container .entry-card')).filter(e => e.querySelector('.ref-na').value);
+                const items = Array.from(document.querySelectorAll('#ref-container .entry-card'));
                 if (items.length) {
                     html += `<div class="sec-item"><div class="section-header" style="${hStyle}">REFERENCES</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">`;
                     items.forEach(el => {
@@ -304,7 +316,7 @@
         const fn = document.getElementById('fn').value || 'YOUR';
         const ln = document.getElementById('ln').value || 'NAME';
         const contact = [document.getElementById('em').value, document.getElementById('ph').value, document.getElementById('li').value, document.getElementById('gh').value].filter(v=>v).join(' | ');
-        const photo = base64Photo ? `<img src="${base64Photo}" id="res-photo" style="width:80px; height:80px; object-fit:cover; border:2px solid ${accent};">` : "";
+        const photo = base64Photo ? `<img src="${base64Photo}" id="res-photo" style="width:80px; height:80px; object-fit:cover; border:2px solid ${accent}; margin-bottom:10px;">` : "";
 
         if (currentStyle === 'apollo') {
             target.style.textAlign = 'center'; target.style.fontFamily = "'Playfair Display', serif";
@@ -320,6 +332,8 @@
         } else if (currentStyle === 'midnight') {
             target.style.backgroundColor = '#0f172a'; target.style.color = '#f1f5f9';
             target.innerHTML = `<div style="display:flex; justify-content:space-between;"><div><h1 style="color:${accent};">${fn} ${ln}</h1><div>${contact}</div></div>${photo}</div><br>${getSections(accent)}`;
+        } else if (currentStyle === 'executive') {
+            target.innerHTML = `<div style="border-left:8px solid ${accent}; padding-left:20px; display:flex; justify-content:space-between;"><div><h1 style="margin:0;">${fn} ${ln}</h1><div style="text-transform:uppercase;">Overview</div></div>${photo}</div><br>${getSections(fCol)}`;
         } else if (currentStyle === 'creative') {
             target.style.fontFamily = "'Montserrat', sans-serif";
             target.innerHTML = `<div style="background:linear-gradient(45deg, ${accent}, ${fCol}); color:${bCol}; padding:30px; margin:-45px -45px 25px -45px; text-align:right;">${photo}<h1>${fn} ${ln}</h1><div>${contact}</div></div>${getSections(fCol)}`;
@@ -351,14 +365,12 @@
             target.innerHTML = `<div style="box-shadow: 0 0 50px ${accent}33; padding:20px; border-radius:15px;"><h1>${fn} ${ln}</h1><p>${contact}</p></div><br>${getSections(fCol)}`;
         } else if (currentStyle === 'clean') {
             target.innerHTML = `<div style="display:flex; align-items:baseline; gap:10px; border-bottom:1px solid #ddd; padding-bottom:5px; margin-bottom:20px;"><h1>${fn} ${ln}</h1><p style="font-size:0.8rem; margin-left:auto;">${contact}</p></div>${getSections(fCol)}`;
-        } else if (currentStyle === 'executive') {
-            target.innerHTML = `<div style="border-left:8px solid ${accent}; padding-left:20px; display:flex; justify-content:space-between;"><div><h1 style="margin:0;">${fn} ${ln}</h1><div style="text-transform:uppercase;">Director Profile</div></div>${photo}</div><br>${getSections(fCol)}`;
         }
     }
     
     function exportPDF() { html2pdf().set({ margin: 10, filename: 'resume.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4' }, pagebreak: { mode: 'avoid-all' } }).from(document.getElementById('resume-target')).save(); }
-    function exportJSON() { const d = { fn: fn.value, ln: ln.value, em: em.value, ph: ph.value, li: li.value, gh: gh.value, sm: sm.innerHTML, sk: sk.innerHTML, cert: cert.innerHTML, lang: lang.innerHTML, accent: document.querySelector('input[type="color"]').value, fontCol: fontColor.value, bgCol: bgColor.value, style: currentStyle, photo: base64Photo }; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(d)], {type: 'application/json'})); a.download = `resume_save.json`; a.click(); }
-    function importJSON(e) { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = (re) => { const d = JSON.parse(re.target.result); fn.value=d.fn||""; ln.value=d.ln||""; em.value=d.em||""; ph.value=d.ph||""; li.value=d.li||""; gh.value=d.gh||""; sm.innerHTML=d.sm||""; sk.innerHTML=d.sk||""; cert.innerHTML=d.cert||""; lang.innerHTML=d.lang||""; if(d.accent) updateAccent(d.accent); if(d.fontCol) fontColor.value=d.fontCol; if(d.bgCol) bgColor.value=d.bgCol; if(d.photo) { base64Photo=d.photo; profileImg.src=base64Photo; profileImg.style.display="block"; document.getElementById('photo-placeholder').style.display="none"; } liveUpdate(); }; r.readAsText(f); }
+    function exportJSON() { const d = { fn: document.getElementById('fn').value, ln: document.getElementById('ln').value, em: document.getElementById('em').value, ph: document.getElementById('ph').value, li: document.getElementById('li').value, gh: document.getElementById('gh').value, sm: document.getElementById('sm').innerHTML, sk: document.getElementById('sk').innerHTML, cert: document.getElementById('cert').innerHTML, accent: document.querySelector('input[type="color"]').value, fontCol: document.getElementById('fontColor').value, bgCol: document.getElementById('bgColor').value, style: currentStyle, photo: base64Photo }; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(d)], {type: 'application/json'})); a.download = `resume_save.json`; a.click(); }
+    function importJSON(e) { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = (re) => { const d = JSON.parse(re.target.result); document.getElementById('fn').value = d.fn || ""; document.getElementById('ln').value = d.ln || ""; document.getElementById('em').value = d.em || ""; document.getElementById('ph').value = d.ph || ""; if(d.accent) updateAccent(d.accent); if(d.fontCol) document.getElementById('fontColor').value = d.fontCol; if(d.bgCol) document.getElementById('bgColor').value = d.bgCol; if(d.photo) { base64Photo = d.photo; document.getElementById('profileImg').src = base64Photo; document.getElementById('profileImg').style.display = "block"; document.getElementById('photo-placeholder').style.display = "none"; } liveUpdate(); }; r.readAsText(f); }
     window.onload = () => { addExp(); liveUpdate(); };
 </script>
 </body>
