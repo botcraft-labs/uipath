@@ -15,7 +15,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
 *{font-family:'Poppins',sans-serif}
 
-/* Background */
+/* Background Universe */
 body{
 background:radial-gradient(circle at top,#0ea5e9,transparent 40%),
 linear-gradient(120deg,#020617,#0f172a,#020617);
@@ -31,9 +31,10 @@ border-bottom:1px solid rgba(255,255,255,.2);
 box-shadow:0 20px 60px rgba(0,0,0,.6);
 }
 
+/* Main Container */
 .builder-container{ margin-top:120px; }
 
-/* Glass Panel */
+/* LIQUID GLASS PANEL */
 .panel{
 background:linear-gradient(145deg,rgba(255,255,255,.2),rgba(255,255,255,.05));
 border-radius:25px;
@@ -52,9 +53,9 @@ background:linear-gradient(to right,#a5b4fc,#38bdf8);
 color:transparent;
 }
 
-/* Template Cards */
+/* TEMPLATE THUMBNAIL CARDS */
 .template-card{
-width:140px;
+width: 140px;
 padding:10px;
 border-radius:16px;
 border:1px solid rgba(255,255,255,.3);
@@ -65,12 +66,26 @@ transition:.3s;
 color:white;
 text-align:center;
 }
+
 .template-thumb{
-width:100%;height:110px;border-radius:12px;background:white;
-box-shadow:0 0 15px rgba(0,0,0,.4);margin-bottom:6px;
+width:100%;
+height:110px;
+border-radius:12px;
+background:white;
+box-shadow:0 0 15px rgba(0,0,0,.4);
+margin-bottom:6px;
 }
-.template-card:hover{transform:translateY(-4px) scale(1.05);border-color:#38bdf8}
-.template-card.active{background:rgba(56,189,248,.45);border-color:white}
+
+.template-card:hover{
+transform:translateY(-4px) scale(1.05);
+box-shadow:0 0 25px rgba(59,130,246,.8);
+border-color:#38bdf8;
+}
+
+.template-card.active{
+background:rgba(56,189,248,.45);
+border-color:white;
+}
 
 /* Resume Frame */
 .resume-frame{
@@ -79,22 +94,46 @@ padding:20px;
 background:linear-gradient(140deg,#020617,#0b1734,#020617);
 box-shadow:inset 0 0 40px rgba(0,0,0,.9);
 }
-.resume{background:white;border-radius:18px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.9)}
-.page{padding:40px;color:black;line-height:1.5;opacity:0;transform:translateY(15px);transition:.4s}
-.page.show{opacity:1;transform:translateY(0)}
 
+/* Resume Preview Box */
+.resume{
+background:white;
+border-radius:18px;
+box-shadow:0 40px 80px rgba(0,0,0,.9);
+overflow:hidden;
+}
+
+/* 🔥 ANIMATION MAGIC */
+.page{
+padding:40px;
+color:black;
+line-height:1.5;
+opacity:0;
+transform:translateY(15px);
+transition:all .4s ease;
+}
+.page.show{
+opacity:1;
+transform:translateY(0);
+}
+
+/* Resume Text */
 .heading-name{font-size:35px;font-weight:900}
 .heading-contact{font-size:12px;opacity:.8}
 .section-title{font-weight:900;border-bottom:2px solid #000;margin:6px 0}
 .item{font-size:13px;margin:4px 0}
 
-.toolbar button{
-padding:4px 8px;
-border-radius:6px;
-border:1px solid #ccc;
-margin-right:4px;
-background:#eee;
-cursor:pointer;
+/* Buttons */
+.btn-glow{
+border-radius:14px;
+font-weight:800;
+background:#3b82f6;
+border:none;
+box-shadow:0 0 20px rgba(59,130,246,.9);
+}
+.btn-glow:hover{
+transform:scale(1.02);
+box-shadow:0 0 35px rgba(59,130,246,1);
 }
 
 </style>
@@ -120,23 +159,37 @@ cursor:pointer;
 <h3>Choose Resume Layout</h3>
 
 <div class="d-flex flex-wrap gap-2 mb-2">
+
 <div class="template-card active" onclick="setLayout('apollo',this)">
-<div class="template-thumb"></div>Apollo</div>
+<div class="template-thumb" style="background:linear-gradient(#fff,#ddd);"></div>
+Apollo
+</div>
 
 <div class="template-card" onclick="setLayout('classic',this)">
-<div class="template-thumb"></div>Classic</div>
+<div class="template-thumb" style="background:linear-gradient(#fff,#bbb);"></div>
+Classic
+</div>
 
 <div class="template-card" onclick="setLayout('modern',this)">
-<div class="template-thumb"></div>Modern</div>
+<div class="template-thumb" style="background:linear-gradient(#fafafa,#ccc);"></div>
+Modern
+</div>
 
 <div class="template-card" onclick="setLayout('sidebar',this)">
-<div class="template-thumb"></div>Sidebar</div>
+<div class="template-thumb" style="background:linear-gradient(#eaeaea,#bbb);"></div>
+Sidebar
+</div>
 
 <div class="template-card" onclick="setLayout('grid',this)">
-<div class="template-thumb"></div>Grid</div>
+<div class="template-thumb" style="background:linear-gradient(#f4f4f4,#aaa);"></div>
+Grid
+</div>
 
 <div class="template-card" onclick="setLayout('timeline',this)">
-<div class="template-thumb"></div>Timeline</div>
+<div class="template-thumb" style="background:linear-gradient(#ffffff,#999);"></div>
+Timeline
+</div>
+
 </div>
 
 <hr>
@@ -145,26 +198,32 @@ cursor:pointer;
 <input id="first" class="form-control mb-2" placeholder="First Name">
 <input id="last" class="form-control mb-2" placeholder="Last Name">
 <input id="email" class="form-control mb-2" placeholder="Email">
-<input id="phone" class="form-control mb-2" placeholder="Phone Number">
-<input id="loc" class="form-control mb-2" placeholder="Current Location">
+<input id="phone" class="form-control mb-2" placeholder="Phone">
+<input id="loc" class="form-control mb-2" placeholder="Location">
 
 <h5>Summary</h5>
-<textarea id="summary" class="form-control mb-2" placeholder="Professional summary..."></textarea>
+<textarea id="summary" class="form-control mb-2"></textarea>
 
-<!-------- EXPERIENCE -------->
 <h5>Experience</h5>
 <div id="exp"></div>
 <button class="btn btn-outline-light mb-2 w-100" onclick="addExp()">+ Add Experience</button>
 
-<!-------- EDUCATION -------->
 <h5>Education</h5>
 <div id="edu"></div>
 <button class="btn btn-outline-light mb-2 w-100" onclick="addEdu()">+ Add Education</button>
 
-<!-------- PROJECTS -------->
 <h5>Projects</h5>
 <div id="proj"></div>
 <button class="btn btn-outline-light mb-2 w-100" onclick="addProject()">+ Add Project</button>
+
+<h5>Certifications</h5>
+<textarea id="certifications" class="form-control mb-2"></textarea>
+
+<h5>Languages</h5>
+<textarea id="languages" class="form-control mb-2"></textarea>
+
+<h5>Skills</h5>
+<textarea id="skills" class="form-control mb-2"></textarea>
 
 <hr>
 
@@ -174,11 +233,14 @@ cursor:pointer;
 <li class="list-group-item" data-sec="experience">Experience</li>
 <li class="list-group-item" data-sec="education">Education</li>
 <li class="list-group-item" data-sec="projects">Projects</li>
+<li class="list-group-item" data-sec="certifications">Certifications</li>
+<li class="list-group-item" data-sec="languages">Languages</li>
 <li class="list-group-item" data-sec="skills">Skills</li>
 </ul>
 
-<button class="btn btn-primary w-100" onclick="preview()">Preview</button>
+<button class="btn btn-glow w-100" onclick="preview()">Preview</button>
 <button class="btn btn-success w-100 mt-2" onclick="exportPDF()">Export PDF</button>
+<button class="btn btn-secondary w-100 mt-2" onclick="exportDOCX()">Export DOCX</button>
 
 </div>
 </div>
@@ -202,160 +264,100 @@ Live Resume Preview…
 let layout="apollo";
 Sortable.create(sectionOrder,{animation:150});
 
-/******** EXPERIENCE ********/
-function addExp(){
-exp.innerHTML+=`
+function setLayout(l,e){
+layout=l;
+document.querySelectorAll(".template-card").forEach(x=>x.classList.remove("active"));
+e.classList.add("active");
+preview();
+}
+
+function addExp(){exp.innerHTML+=`
 <div class="border p-2 mb-2 bg-white rounded">
-
-<input class="form-control mb-1 c" placeholder="Company Name">
-<input class="form-control mb-1 r" placeholder="Designation / Role">
-<input class="form-control mb-1 l" placeholder="Location (City, Country)">
-
-<div class="d-flex gap-2 mb-1">
-<label>Start</label>
-<input type="month" class="form-control s">
-<label>End</label>
-<input type="month" class="form-control e">
-</div>
-
-<div class="form-check mb-1">
-<input class="form-check-input cur" type="checkbox" onchange="toggleCurrent(this)">
-<label>Currently Working</label>
-</div>
-
-<textarea class="form-control mb-1 d" placeholder="Responsibilities | Achievements..."></textarea>
-
+<input class="form-control mb-1 c" placeholder="Company">
+<input class="form-control mb-1 r" placeholder="Role">
+<textarea class="form-control mb-1 d"></textarea>
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
-</div>`;
-}
-function toggleCurrent(chk){
-chk.closest("div").parentElement.querySelector(".e").disabled=chk.checked;
-}
+</div>`;}
 
-/******** EDUCATION ********/
-function addEdu(){
-edu.innerHTML+=`
+function addEdu(){edu.innerHTML+=`
 <div class="border p-2 mb-2 bg-white rounded">
-<input class="form-control mb-1 school" placeholder="University / College">
+<input class="form-control mb-1 school" placeholder="University">
 <input class="form-control mb-1 degree" placeholder="Degree">
-<div class="d-flex gap-2 mb-1">
-<label>Start</label>
-<input type="month" class="form-control estart">
-<label>End</label>
-<input type="month" class="form-control eend">
-</div>
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
-</div>`;
-}
+</div>`;}
 
-/******** PROJECTS ********/
-function addProject(){
-proj.innerHTML+=`
+function addProject(){proj.innerHTML+=`
 <div class="border p-2 mb-2 bg-white rounded">
-
-<input class="form-control mb-1 title" placeholder="Project Title">
-
-<div class="toolbar">
-<button onclick="execCmd('bold')"><b>B</b></button>
-<button onclick="execCmd('italic')"><i>I</i></button>
-<button onclick="execCmd('insertUnorderedList')">•</button>
-</div>
-
-<div class="desc form-control mb-1" contenteditable="true" style="min-height:70px">
-Project description here...
-</div>
-
-<label><b>Roles & Responsibilities</b></label>
-
-<div class="roles form-control mb-1" contenteditable="true" style="min-height:70px">
-Add bullet roles here...
-</div>
-
+<input class="form-control mb-1 title" placeholder="Project">
+<textarea class="form-control mb-1 desc"></textarea>
 <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Delete</button>
-</div>`;
-}
-function execCmd(cmd){document.execCommand(cmd,false,null);}
+</div>`;}
 
-/******** BUILD ********/
+/* Build Sections */
 function buildSections(){
 let exp="",eduHTML="",projHTML="";
 document.querySelectorAll("#exp>div").forEach(e=>{
-const s=e.querySelector(".s").value;
-const en=e.querySelector(".cur").checked?"Present":e.querySelector(".e").value;
-exp+=`
-<div class="item">
-<b>${e.querySelector(".c").value}</b> — ${e.querySelector(".r").value}
-<br>${e.querySelector(".l").value}
-<br><small>${s} – ${en}</small>
-<br>${e.querySelector(".d").value}
-</div>`;
+exp+=`<div class="item"><b>${e.querySelector(".c").value}</b> — ${e.querySelector(".r").value}<br>${e.querySelector(".d").value}</div>`;
 });
-
 document.querySelectorAll("#edu>div").forEach(e=>{
-eduHTML+=`
-<div class="item">
-<b>${e.querySelector(".school").value}</b>
-<br>${e.querySelector(".degree").value}
-<br><small>${e.querySelector(".estart").value} – ${e.querySelector(".eend").value}</small>
-</div>`;
+eduHTML+=`<div class="item"><b>${e.querySelector(".school").value}</b> — ${e.querySelector(".degree").value}</div>`;
 });
-
 document.querySelectorAll("#proj>div").forEach(e=>{
-projHTML+=`
-<div class="item">
-<b>${e.querySelector(".title").value}</b><br>
-${e.querySelector(".desc").innerHTML}
-<br><b>Roles:</b>
-${e.querySelector(".roles").innerHTML}
-</div>`;
+projHTML+=`<div class="item"><b>${e.querySelector(".title").value}</b><br>${e.querySelector(".desc").value}</div>`;
 });
 
-return {exp,eduHTML,projHTML};
-}
-
-/******** PREVIEW ********/
-function preview(){
-const name=`${first.value} ${last.value}`||"Your Name";
-const contact=`${email.value} | ${phone.value} | ${loc.value}`;
-const {exp,eduHTML,projHTML}=buildSections();
-
-let html="";
-
-if(layout==="apollo")
-html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div><hr>
-${generateOrdered(exp,eduHTML,projHTML)}
-`;
-
-else if(layout==="sidebar")
-html=`<div style="display:grid;grid-template-columns:1fr 2fr;gap:18px">
-<div style="background:#f6f6f6;padding:10px;border-radius:8px">
-<b>${name}</b><br>${contact}<br><br><b>Skills</b><br>${skills.value}</div>
-<div>${generateOrdered(exp,eduHTML,projHTML)}</div></div>`;
-
-else
-html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>
-${generateOrdered(exp,eduHTML,projHTML)}
-`;
-
-const preview=document.getElementById("resumePreview");
-preview.classList.remove("show");
-setTimeout(()=>{preview.innerHTML=html;preview.classList.add("show");},150);
-}
-
-function generateOrdered(exp,eduHTML,projHTML){
 let html="";
 document.querySelectorAll("#sectionOrder li").forEach(li=>{
 let s=li.getAttribute("data-sec");
-if(s==="summary") html+=`<div class="section-title">Summary</div>${summary.value}`;
+if(s==="summary") html+=`<div class="section-title">Summary</div><p>${summary.value}</p>`;
 if(s==="experience") html+=`<div class="section-title">Experience</div>${exp}`;
 if(s==="education") html+=`<div class="section-title">Education</div>${eduHTML}`;
 if(s==="projects") html+=`<div class="section-title">Projects</div>${projHTML}`;
+if(s==="certifications") html+=`<div class="section-title">Certifications</div>${certifications.value}`;
+if(s==="languages") html+=`<div class="section-title">Languages</div>${languages.value}`;
 if(s==="skills") html+=`<div class="section-title">Skills</div>${skills.value}`;
 });
 return html;
 }
 
-/******** EXPORT PDF ********/
+/* Preview With Animation */
+function preview(){
+
+const name=`${first.value} ${last.value}`||"Your Name";
+const contact=`${email.value} | ${phone.value} | ${loc.value}`;
+const body=buildSections();
+
+let html="";
+if(layout==="apollo")
+html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div><hr>${body}`;
+else if(layout==="classic")
+html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>${body}`;
+else if(layout==="modern")
+html=`<div style='border:2px solid black;padding:10px;border-radius:8px'>
+<div class="heading-name">${name}</div>
+<div class="heading-contact">${contact}</div>
+</div>${body}`;
+else if(layout==="sidebar")
+html=`<div style="display:grid;grid-template-columns:1fr 2fr;gap:18px">
+<div style="background:#f6f6f6;padding:10px;border-radius:8px">
+<b>${name}</b><br>${contact}<br><br><b>Skills</b><br>${skills.value}</div>
+<div>${body}</div></div>`;
+else if(layout==="grid")
+html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${body}</div>`;
+else if(layout==="timeline")
+html=`<div class="heading-name">${name}</div><div class="heading-contact">${contact}</div>
+<div style="border-left:3px solid black;padding-left:10px">${body}</div>`;
+
+const preview=document.getElementById("resumePreview");
+preview.classList.remove("show");
+setTimeout(()=>{
+preview.innerHTML=html;
+preview.classList.add("show");
+},150);
+}
+
+/* Export PDF */
 function exportPDF(){
 html2pdf().set({
 margin:10,
@@ -366,13 +368,21 @@ jsPDF:{unit:"mm",format:"a4"}
 }).from(resumePreview).save();
 }
 
-function setLayout(l,e){
-layout=l;
-document.querySelectorAll(".template-card").forEach(x=>x.classList.remove("active"));
-e.classList.add("active");
-preview();
+/* DOCX Export */
+async function exportDOCX(){
+const {Document,Packer,Paragraph,TextRun}=docx;
+const doc=new Document({
+sections:[{children:[
+new Paragraph({children:[new TextRun({text:`${first.value} ${last.value}`,bold:true,size:36})]}),
+new Paragraph(`${email.value} | ${phone.value} | ${loc.value}`),
+new Paragraph(summary.value)
+]}]});
+const blob=await Packer.toBlob(doc);
+const a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="resume.docx";
+a.click();
 }
-
 </script>
 
 </body>
