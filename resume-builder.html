@@ -16,6 +16,11 @@
     .glass-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: var(--accent); box-shadow: 0 0 15px var(--accent); transform: translateY(-1px); }
     .form-control, .rich-editor { background: rgba(255,255,255,0.05) !important; border: 1px solid var(--accent) !important; color: rgba(255, 255, 255, 0.8) !important; box-shadow: var(--neon); transition: 0.3s; }
     .form-control:focus, .rich-editor:focus { box-shadow: 0 0 20px var(--accent); outline: none; }
+    
+    /* 50% Transparency Half White Placeholders */
+    .form-control::placeholder { color: rgba(255, 255, 255, 0.5) !important; opacity: 1; }
+    .rich-editor:empty:before { content: attr(data-placeholder); color: rgba(255, 255, 255, 0.5); font-style: italic; }
+
     .resume-preview { background: white; color: #1e293b; border-radius: 8px; min-height: 1123px; padding: 50px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; }
     .page-break-guide { position: absolute; left: 0; right: 0; height: 1px; border-top: 2px dashed #ff4757; opacity: 0.4; pointer-events: none; z-index: 100; }
     .page-break-guide::after { content: "✂ PAGE SPLIT"; position: absolute; right: 20px; top: -12px; font-size: 9px; font-weight: 800; background: #ff4757; color: white; padding: 2px 8px; border-radius: 4px; }
@@ -25,6 +30,7 @@
     .toolbar button { padding: 1px 6px; font-size: 0.65rem; background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--border); border-radius: 4px; }
     .entry-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 12px; margin-bottom: 12px; }
     label { font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; display: block; }
+    
     .gallery-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: none; padding: 40px; overflow-y: auto; backdrop-filter: blur(10px); }
     .template-card { background: #1e293b; border-radius: 12px; padding: 12px; cursor: pointer; transition: 0.3s; border: 1px solid var(--border); height: 100%; }
     .template-card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: var(--neon); }
@@ -72,8 +78,8 @@
                 </div>
 
                 <div class="row g-2">
-                    <div class="col-6"><label>First Name</label><input id="fn" class="form-control" placeholder="John" oninput="liveUpdate()"></div>
-                    <div class="col-6"><label>Last Name</label><input id="ln" class="form-control" placeholder="Doe" oninput="liveUpdate()"></div>
+                    <div class="col-6"><label>First Name</label><input id="fn" class="form-control" placeholder="FIRST NAME" oninput="liveUpdate()"></div>
+                    <div class="col-6"><label>Last Name</label><input id="ln" class="form-control" placeholder="LAST NAME" oninput="liveUpdate()"></div>
                 </div>
                 <div class="row g-2 mt-2">
                     <div class="col-12"><label>Contact</label>
@@ -83,7 +89,10 @@
                     </div>
                 </div>
 
-                <div class="mt-4"><label>Summary</label><div id="sm" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div></div>
+                <div class="mt-4"><label>Summary</label>
+                    <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('italic')">I</button><button onclick="format('insertUnorderedList')">•</button></div>
+                    <div id="sm" contenteditable="true" class="rich-editor" data-placeholder="Professional summary..." oninput="liveUpdate()"></div>
+                </div>
 
                 <div class="mt-4 d-flex justify-content-between align-items-center"><h6 class="text-info m-0 small">Experience</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addExp()">+ Add</button></div>
                 <div id="exp-container"></div>
@@ -94,10 +103,24 @@
                 <div class="mt-4 d-flex justify-content-between align-items-center"><h6 class="text-info m-0 small">Projects</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addProj()">+ Add</button></div>
                 <div id="proj-container"></div>
 
-                <div class="mt-4"><label>Roles & Responsibilities</label><div id="roles" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div></div>
-                <div class="mt-4"><label>Skills</label><div id="sk" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div></div>
-                <div class="mt-4"><label>Certifications</label><div id="cert" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div></div>
-                <div class="mt-4"><label>Languages</label><div id="lang" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div></div>
+                <div class="mt-4">
+                    <label>Roles & Responsibilities</label>
+                    <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('italic')">I</button><button onclick="format('insertUnorderedList')">•</button></div>
+                    <div id="roles" contenteditable="true" class="rich-editor" data-placeholder="List your core duties..." oninput="liveUpdate()"></div>
+                </div>
+
+                <div class="mt-4"><label>Skills</label>
+                    <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('insertUnorderedList')">•</button></div>
+                    <div id="sk" contenteditable="true" class="rich-editor" data-placeholder="Technical/soft skills..." oninput="liveUpdate()"></div>
+                </div>
+                <div class="mt-4"><label>Certifications</label>
+                    <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('insertUnorderedList')">•</button></div>
+                    <div id="cert" contenteditable="true" class="rich-editor" data-placeholder="Certificates..." oninput="liveUpdate()"></div>
+                </div>
+                <div class="mt-4"><label>Languages</label>
+                    <div class="toolbar"><button onclick="format('bold')">B</button></div>
+                    <div id="lang" contenteditable="true" class="rich-editor" data-placeholder="e.g. English, Spanish..." oninput="liveUpdate()"></div>
+                </div>
 
                 <div class="mt-4 d-flex justify-content-between align-items-center"><h6 class="text-info m-0 small">References</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addRef()">+ Add</button></div>
                 <div id="ref-container"></div>
@@ -142,7 +165,13 @@
         document.getElementById('gallery').style.display = 'block';
     }
     function closeGallery() { document.getElementById('gallery').style.display = 'none'; }
-    function updateAccent(val) { document.documentElement.style.setProperty('--accent', val); liveUpdate(); }
+    
+    function updateAccent(val) { 
+        document.documentElement.style.setProperty('--accent', val); 
+        document.documentElement.style.setProperty('--neon', `0 0 10px ${val}99`);
+        liveUpdate(); 
+    }
+    
     function removeEl(id) { document.getElementById(id).remove(); liveUpdate(); }
     function toggleEnd(cb) { cb.parentElement.previousElementSibling.querySelector('.date-end').disabled = cb.checked; liveUpdate(); }
 
@@ -155,7 +184,7 @@
                 <input class="form-control mb-1 exp-lo" placeholder="Location" oninput="liveUpdate()">
                 <div class="row g-1 mb-1"><div class="col"><input type="month" class="form-control date-start" oninput="liveUpdate()"></div><div class="col"><input type="month" class="form-control date-end" oninput="liveUpdate()"></div></div>
                 <div class="form-check mb-1"><input class="form-check-input" type="checkbox" onchange="toggleEnd(this)"><label class="form-check-label text-light small">Current</label></div>
-                <div contenteditable="true" class="rich-editor exp-de" oninput="liveUpdate()"></div>
+                <div contenteditable="true" class="rich-editor exp-de" data-placeholder="Achievements..." oninput="liveUpdate()"></div>
                 <button class="btn btn-sm glass-btn-danger mt-1 w-100" onclick="removeEl('exp-${id}')">Delete</button>
             </div>`);
     }
@@ -178,7 +207,7 @@
                 <input class="form-control mb-1 fw-bold prj-ti" placeholder="Project Title" oninput="liveUpdate()">
                 <input class="form-control mb-1 prj-ro" placeholder="Role in Project" oninput="liveUpdate()">
                 <input class="form-control mb-1 prj-lk" placeholder="Link" oninput="liveUpdate()">
-                <div contenteditable="true" class="rich-editor prj-de" oninput="liveUpdate()"></div>
+                <div contenteditable="true" class="rich-editor prj-de" data-placeholder="Overview..." oninput="liveUpdate()"></div>
                 <button class="btn btn-sm glass-btn-danger mt-1 w-100" onclick="removeEl('prj-${id}')">Delete</button>
             </div>`);
     }
@@ -199,7 +228,7 @@
         document.getElementById('custom-container').insertAdjacentHTML('beforeend', `
             <div class="entry-card" id="cust-${id}">
                 <input class="form-control mb-1 fw-bold cust-ti" placeholder="Section Title" oninput="updateSortList('${id}', this.value); liveUpdate()">
-                <div contenteditable="true" class="rich-editor cust-de" oninput="liveUpdate()"></div>
+                <div contenteditable="true" class="rich-editor cust-de" data-placeholder="Content..." oninput="liveUpdate()"></div>
                 <button class="btn btn-sm glass-btn-danger mt-1 w-100" onclick="removeCustom('${id}')">Delete</button>
             </div>`);
         document.getElementById('section-sort').insertAdjacentHTML('beforeend', `<li class="list-group-item bg-transparent text-info border-info py-1 small" data-id="cust-${id}" id="li-cust-${id}">New Section</li>`);
@@ -207,9 +236,11 @@
     function updateSortList(id, val) { document.getElementById('li-cust-'+id).innerText = val || "New Section"; }
     function removeCustom(id) { document.getElementById('li-cust-'+id).remove(); removeEl('cust-'+id); }
 
+    function format(cmd) { document.execCommand(cmd, false, null); liveUpdate(); }
+
     function getSections(fCol) {
         const order = Array.from(document.querySelectorAll('#section-sort li')).map(li => li.dataset.id);
-        const hStyle = `color:var(--accent); border-bottom:2px solid var(--accent); padding-bottom:4px; margin-bottom:12px;`;
+        const hStyle = `color:${fCol}; border-bottom:2px solid var(--accent); padding-bottom:4px; margin-bottom:12px;`;
         let html = '';
         order.forEach(id => {
             const hasC = (elId) => document.getElementById(elId) && document.getElementById(elId).innerText.trim().length > 0;
@@ -265,7 +296,8 @@
     function liveUpdate() {
         const target = document.getElementById('resume-target');
         const fCol = document.getElementById('fontColor').value;
-        target.style.backgroundColor = document.getElementById('bgColor').value;
+        const bCol = document.getElementById('bgColor').value;
+        target.style.backgroundColor = bCol;
         target.style.color = fCol;
         
         const header = `<div style="margin-bottom:30px; ${currentStyle==='apollo'?'text-align:center':''}">
