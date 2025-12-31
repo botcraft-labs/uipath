@@ -3,89 +3,125 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bot Craft Resume Studio - Pro Edition</title>
+<title>Bot Craft Resume Studio - Liquid Edition</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@700&family=Montserrat:wght@700&family=Fira+Code:wght@400;700&family=Quicksand:wght@600&display=swap');
-    :root { --glass: rgba(255, 255, 255, 0.1); --border: rgba(255, 255, 255, 0.2); --accent: #38bdf8; --neon: 0 0 10px rgba(56, 189, 248, 0.6); }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@700&family=Montserrat:wght@700&family=Fira+Code:wght@400;700&family=Quicksand:wght@600&family=Roboto:wght@400;700&family=Poppins:wght@400;700&family=Lora:wght@400;700&family=Open+Sans:wght@400;700&family=Dancing+Script:wght@700&display=swap');
+    :root { --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.15); --accent: #38bdf8; --neon: 0 0 15px rgba(56, 189, 248, 0.6); }
     body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at top right, #1e293b, #020617); min-height: 100vh; color: #f8fafc; padding-top: 80px; }
-    .glass-panel { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 25px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-    .glass-btn { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(8px); border: 1px solid var(--border); color: white; transition: 0.3s; font-weight: 600; border-radius: 8px; font-size: 0.8rem; }
-    .glass-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: var(--accent); box-shadow: 0 0 15px var(--accent); transform: translateY(-1px); }
-    .form-control, .rich-editor { background: rgba(255,255,255,0.05) !important; border: 1px solid var(--accent) !important; color: rgba(255, 255, 255, 0.8) !important; box-shadow: var(--neon); transition: 0.3s; }
-    .form-control:focus, .rich-editor:focus { box-shadow: 0 0 20px var(--accent); outline: none; }
     
-    /* 50% Transparency Half White Placeholders */
-    .form-control::placeholder { color: rgba(255, 255, 255, 0.5) !important; opacity: 1; }
-    .rich-editor:empty:before { content: attr(data-placeholder); color: rgba(255, 255, 255, 0.5); font-style: italic; pointer-events: none; }
+    .glass-panel { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid var(--border); border-radius: 24px; padding: 25px; box-shadow: 0 15px 45px rgba(0,0,0,0.4); }
+    .glass-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); color: white; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-weight: 600; border-radius: 12px; font-size: 0.8rem; }
+    .glass-btn:hover { border-color: var(--accent); box-shadow: var(--neon); transform: translateY(-2px); color: var(--accent); background: rgba(255, 255, 255, 0.1); }
+    
+    .glass-select { background: rgba(0,0,0,0.4) !important; border: 1.5px solid var(--accent) !important; color: white !important; cursor: pointer; border-radius: 10px; padding: 8px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") !important; background-repeat: no-repeat !important; background-position: right 12px center !important; }
+    .glass-select option { background: #111827; color: white; }
 
-    .resume-preview { background: white; color: #1e293b; border-radius: 8px; min-height: 1123px; padding: 50px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; }
-    .page-break-guide { position: absolute; left: 0; right: 0; height: 1px; border-top: 2px dashed #ff4757; opacity: 0.4; pointer-events: none; z-index: 100; }
-    .page-break-guide::after { content: "✂ PAGE SPLIT"; position: absolute; right: 20px; top: -12px; font-size: 9px; font-weight: 800; background: #ff4757; color: white; padding: 2px 8px; border-radius: 4px; }
+    /* Input Borders Mapped to Accent with Neon Glow */
+    .form-control, .rich-editor { background: rgba(0,0,0,0.3) !important; border: 1.5px solid var(--accent) !important; color: white !important; transition: 0.3s; border-radius: 12px; }
+    .form-control::placeholder { color: rgba(255, 255, 255, 0.5) !important; opacity: 1; }
+    .rich-editor:empty:before { content: attr(data-placeholder); color: rgba(255, 255, 255, 0.5); font-style: italic; }
+    .form-control:focus, .rich-editor:focus { box-shadow: var(--neon) !important; outline: none; background: rgba(0,0,0,0.4) !important; }
+
+    .resume-preview { background: white; color: #1e293b; border-radius: 4px; min-height: 1123px; padding: 50px; box-shadow: 0 30px 80px rgba(0,0,0,0.6); position: relative; transition: 0.4s; overflow: hidden; }
+    .page-break-guide { position: absolute; left: 0; right: 0; height: 1px; border-top: 2px dashed #ff4757; opacity: 0.3; pointer-events: none; }
+    .page-break-guide::after { content: "✂ PAGE BOUNDARY"; position: absolute; right: 20px; top: -12px; font-size: 8px; font-weight: 800; background: #ff4757; color: white; padding: 2px 6px; border-radius: 4px; }
     
     .section-header { border-bottom: 2px solid #334155; margin: 15px 0 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-    .rich-editor { min-height: 50px; padding: 8px; border-radius: 5px; font-size: 0.85rem; background: white !important; color: black !important; }
-    .config-panel .rich-editor { background: rgba(255,255,255,0.05) !important; color: white !important; }
-
-    .toolbar { display: flex; gap: 2px; margin-bottom: 4px; }
-    .toolbar button { padding: 1px 6px; font-size: 0.65rem; background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--border); border-radius: 4px; }
-    .entry-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 12px; margin-bottom: 12px; }
-    label { font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; display: block; }
+    .rich-editor { min-height: 50px; padding: 12px; border-radius: 8px; font-size: 0.85rem; background: white !important; color: black !important; }
+    .config-panel .rich-editor { background: rgba(0,0,0,0.3) !important; color: white !important; }
+    .toolbar { display: flex; gap: 4px; margin-bottom: 8px; }
+    .toolbar button { background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: white; border-radius: 6px; width: 30px; height: 30px; font-size: 0.75rem; transition: 0.2s; }
+    .toolbar button:hover { background: var(--accent); color: black; border-color: var(--accent); }
     
-    .gallery-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: none; padding: 40px; overflow-y: auto; backdrop-filter: blur(10px); }
-    .template-card { background: #1e293b; border-radius: 12px; padding: 12px; cursor: pointer; transition: 0.3s; border: 1px solid var(--border); height: 100%; }
-    .template-card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: var(--neon); }
-    .preview-box { height: 140px; background: #f8fafc; border-radius: 4px; margin-bottom: 8px; position: relative; overflow: hidden; padding: 10px; display: flex; flex-direction: column; gap: 4px; }
-    .mini-line { height: 3px; background: #e2e8f0; border-radius: 1px; width: 100%; }
-    .mini-dot { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; position: absolute; top: 10px; right: 10px; opacity: 0.5; }
-    .mini-head { height: 6px; background: #475569; width: 50%; border-radius: 1px; }
-
-    #photo-preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); margin-bottom: 15px; display: none; }
+    .entry-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 18px; border-radius: 20px; margin-bottom: 15px; position: relative; }
+    label { font-size: 0.65rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; display: block; letter-spacing: 0.5px; }
+    
+    .gallery-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.98); z-index: 5000; display: none; padding: 40px; overflow-y: auto; backdrop-filter: blur(30px); }
+    .template-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 22px; padding: 20px; cursor: pointer; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; position: relative; }
+    .template-card:hover { border-color: var(--accent); transform: scale(1.06) translateY(-8px); box-shadow: var(--neon); background: rgba(255, 255, 255, 0.08); }
+    .preview-box { height: 140px; background: #fff; border-radius: 12px; margin-bottom: 12px; position: relative; overflow: hidden; padding: 12px; display: flex; flex-direction: column; gap: 5px; border: 1px solid rgba(0,0,0,0.1); }
+    .badge-cat { position: absolute; top: 10px; right: 10px; font-size: 9px; background: var(--accent); color: black; padding: 2px 8px; border-radius: 20px; font-weight: 900; }
 </style>
 </head>
 <body class="config-panel">
 
 <div id="gallery" class="gallery-overlay">
-    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
-        <h2 class="text-white m-0">Library <small class="text-info fs-6">Categorized Layouts</small></h2>
-        <button class="btn btn-outline-light btn-sm" onclick="closeGallery()">Close</button>
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-5 sticky-top bg-dark py-4 px-3" style="top:-40px; border-radius: 0 0 30px 30px; border: 1px solid var(--border); border-top: none;">
+            <h1 class="text-white m-0 fw-800">Design Vault <small class="text-info opacity-75 fs-6">100+ Pro Layouts</small></h1>
+            <button class="btn btn-outline-light rounded-pill px-5 fw-bold" onclick="closeGallery()">Return to Editor</button>
+        </div>
+        <div id="gallery-grid" class="row g-4"></div>
     </div>
-    <div id="gallery-content"></div>
 </div>
 
 <nav class="navbar fixed-top bg-dark border-bottom border-secondary">
     <div class="container-fluid px-4">
-        <span class="navbar-brand text-info fw-bold">✨ BOT CRAFT STUDIO</span>
+        <span class="navbar-brand text-info fw-800 tracking-wider">✨ BOT CRAFT STUDIO</span>
         <div class="d-flex gap-2">
-            <button class="btn glass-btn text-info" onclick="openGallery()">Template Library</button>
+            <button class="btn glass-btn text-info px-4 fw-bold" onclick="openGallery()">CHOOSE DESIGN</button>
             <button class="btn glass-btn" onclick="exportJSON()">Save</button>
             <button class="btn glass-btn" onclick="document.getElementById('importInput').click()">Load</button>
             <input type="file" id="importInput" style="display:none" onchange="importJSON(event)">
             <button class="btn glass-btn-danger glass-btn" onclick="resetForm()">Reset</button>
-            <button class="btn glass-btn px-4" style="background: var(--accent); color: #000" onclick="exportPDF()">Download PDF</button>
+            <button class="btn glass-btn px-4 fw-bold" style="background: var(--accent); color: #000" onclick="exportPDF()">Download PDF</button>
         </div>
     </div>
 </nav>
 
 <div class="container-fluid px-4">
     <div class="row g-4">
-        <div class="col-lg-5" style="height: calc(100vh - 100px); overflow-y: auto;">
+        <div class="col-lg-5" style="height: calc(100vh - 100px); overflow-y: auto; padding-bottom: 120px; padding-right: 15px;">
             <div class="glass-panel">
-                <div class="row g-2 mb-3">
-                    <div class="col-4"><label>Accent</label><input type="color" class="form-control p-1" value="#38bdf8" oninput="updateAccent(this.value)"></div>
+                <div class="row g-2 mb-4">
+                    <div class="col-4"><label>Theme Accent</label><input type="color" id="accentColor" class="form-control p-1" value="#38bdf8" oninput="updateAccent(this.value)"></div>
                     <div class="col-4"><label>Font Color</label><input type="color" id="fontColor" class="form-control p-1" value="#1e293b" oninput="liveUpdate()"></div>
-                    <div class="col-4"><label>Paper</label><input type="color" id="bgColor" class="form-control p-1" value="#ffffff" oninput="liveUpdate()"></div>
+                    <div class="col-4"><label>Paper Tone</label><input type="color" id="bgColor" class="form-control p-1" value="#ffffff" oninput="liveUpdate()"></div>
                 </div>
 
-                <div class="row g-2 mb-3">
-                    <div class="col-6">
-                        <label>Profile Photo</label>
-                        <input type="file" id="photo-input" class="form-control" accept="image/*" onchange="loadPhoto(event)">
+                <div class="mt-4 p-4 bg-dark bg-opacity-40 rounded-4 border border-secondary mb-4 shadow-lg">
+                    <h6 class="text-info mb-3 fw-bold small">TYPOGRAPHY & SPACING</h6>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label>Master Font Family</label>
+                            <select id="fontFamily" class="form-control glass-select" onchange="liveUpdate()">
+                                <optgroup label="Modern Minimal">
+                                    <option value="'Inter', sans-serif">Inter (Standard)</option>
+                                    <option value="'Poppins', sans-serif">Poppins (Playful)</option>
+                                    <option value="'Montserrat', sans-serif">Montserrat (Geometric)</option>
+                                    <option value="'Roboto', sans-serif">Roboto (Clean)</option>
+                                    <option value="'Open Sans', sans-serif">Open Sans (Friendly)</option>
+                                </optgroup>
+                                <optgroup label="Classic Academic">
+                                    <option value="'Playfair Display', serif">Playfair (Elegant)</option>
+                                    <option value="'Lora', serif">Lora (Sophisticated)</option>
+                                    <option value="'Georgia', serif">Georgia (Traditional)</option>
+                                </optgroup>
+                                <optgroup label="Technical & Code">
+                                    <option value="'Fira Code', monospace">Fira Code (Developer)</option>
+                                    <option value="'Courier New', monospace">Courier (Typewriter)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="col-6"><label>Title Scale</label><input type="range" id="titleSize" class="form-range" min="1.5" max="4.5" step="0.1" value="2.5" oninput="liveUpdate()"></div>
+                        <div class="col-6"><label>Body Scale</label><input type="range" id="contentSize" class="form-range" min="0.6" max="1.2" step="0.05" value="0.9" oninput="liveUpdate()"></div>
+                        <div class="col-6"><label>Line Height</label><input type="range" id="lineHeight" class="form-range" min="1" max="2.2" step="0.1" value="1.5" oninput="liveUpdate()"></div>
+                        <div class="col-6"><label>Letter Spacing</label><input type="range" id="letterSpacing" class="form-range" min="-1" max="3" step="0.2" value="0" oninput="liveUpdate()"></div>
                     </div>
-                    <div class="col-6 d-flex align-items-end">
-                        <button class="btn btn-sm glass-btn-danger w-100" onclick="removePhoto()">Remove Photo</button>
+                </div>
+
+                <div class="row g-2 mb-4">
+                    <div class="col-6"><label>Profile Media</label><input type="file" id="photo-input" class="form-control form-control-sm" accept="image/*" onchange="loadPhoto(event)"></div>
+                    <div class="col-3 d-flex align-items-end"><button class="btn btn-sm btn-outline-danger w-100" onclick="removePhoto()">Wipe</button></div>
+                    <div class="col-3 d-flex align-items-end">
+                        <select id="photoShape" class="form-control glass-select p-1" onchange="liveUpdate()">
+                            <option value="50%">Circle</option>
+                            <option value="12px">Rounded</option>
+                            <option value="0">Square</option>
+                        </select>
                     </div>
                 </div>
 
@@ -94,45 +130,35 @@
                     <div class="col-6"><label>Last Name</label><input id="ln" class="form-control" placeholder="LAST NAME" oninput="liveUpdate()"></div>
                 </div>
                 <div class="row g-2 mt-2">
-                    <div class="col-12"><label>Contact Details</label>
-                        <input id="em" class="form-control mb-1" placeholder="EMAIL ADDRESS" oninput="liveUpdate()">
-                        <input id="ph" class="form-control mb-1" placeholder="PHONE NUMBER" oninput="liveUpdate()">
-                        <input id="lc" class="form-control" placeholder="LOCATION (CITY, COUNTRY)" oninput="liveUpdate()">
+                    <div class="col-12"><label>Contact & Location</label>
+                        <input id="em" class="form-control mb-2" placeholder="EMAIL ADDRESS" oninput="liveUpdate()">
+                        <input id="ph" class="form-control mb-2" placeholder="PHONE NUMBER" oninput="liveUpdate()">
+                        <input id="lc" class="form-control" placeholder="CITY, COUNTRY" oninput="liveUpdate()">
                     </div>
                 </div>
 
                 <div class="mt-4"><label>Professional Summary</label>
                     <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('italic')">I</button><button onclick="format('insertUnorderedList')">•</button></div>
-                    <div id="sm" contenteditable="true" class="rich-editor" data-placeholder="Brief professional bio..." oninput="liveUpdate()"></div>
+                    <div id="sm" contenteditable="true" class="rich-editor" data-placeholder="Bio..." oninput="liveUpdate()"></div>
                 </div>
 
                 <div class="mt-4 d-flex justify-content-between align-items-center"><h6 class="text-info m-0 small">Experience</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addExp()">+ Add</button></div>
                 <div id="exp-container"></div>
 
-                <div class="mt-4 d-flex justify-content-between align-items-center"><h6 class="text-info m-0 small">Education</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addEdu()">+ Add</button></div>
-                <div id="edu-container"></div>
-
                 <div class="mt-4 d-flex justify-content-between align-items-center"><h6 class="text-info m-0 small">Projects</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addProj()">+ Add</button></div>
                 <div id="proj-container"></div>
 
-                <div class="mt-4">
-                    <label>Roles & Responsibilities</label>
-                    <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('italic')">I</button><button onclick="format('insertUnorderedList')">•</button></div>
-                    <div id="roles" contenteditable="true" class="rich-editor" data-placeholder="Detailed list of key responsibilities..." oninput="liveUpdate()"></div>
-                </div>
+                <div class="mt-4 d-flex justify-content-between align-items-center"><h6 class="text-info m-0 small">Education</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addEdu()">+ Add</button></div>
+                <div id="edu-container"></div>
 
-                <div class="mt-4"><label>Skills</label>
-                    <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('insertUnorderedList')">•</button></div>
-                    <div id="sk" contenteditable="true" class="rich-editor" data-placeholder="Core technologies, soft skills..." oninput="liveUpdate()"></div>
-                </div>
+                <div class="mt-4"><label>Skills</label><div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('insertUnorderedList')">•</button></div><div id="sk" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div></div>
 
                 <div class="mt-4 d-flex justify-content-between align-items-center"><h6 class="text-info m-0 small">Certifications</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addCert()">+ Add</button></div>
                 <div id="cert-container"></div>
 
-                <div class="mt-4"><label>Languages</label>
-                    <div class="toolbar"><button onclick="format('bold')">B</button></div>
-                    <div id="lang" contenteditable="true" class="rich-editor" data-placeholder="e.g. English (Native)..." oninput="liveUpdate()"></div>
-                </div>
+                <div class="mt-4"><label>Roles & Responsibilities</label><div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('italic')">I</button><button onclick="format('insertUnorderedList')">•</button></div><div id="roles" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div></div>
+
+                <div class="mt-4"><label>Languages</label><div class="toolbar"><button onclick="format('bold')">B</button></div><div id="lang" contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div></div>
 
                 <div class="mt-4 d-flex justify-content-between align-items-center"><h6 class="text-info m-0 small">References</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addRef()">+ Add</button></div>
                 <div id="ref-container"></div>
@@ -140,23 +166,23 @@
                 <div class="mt-4 d-flex justify-content-between align-items-center"><h6 class="text-warning m-0 small">Custom Section</h6><button class="btn btn-sm glass-btn py-0 px-2" onclick="addCustom()">+ Add</button></div>
                 <div id="custom-container"></div>
 
-                <div class="mt-4 p-2 bg-dark rounded border border-secondary">
-                    <label class="mb-1">Section Order</label>
-                    <ul id="section-sort" class="list-group">
-                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="summary">Summary</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="experience">Experience</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="education">Education</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="projects">Projects</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="roles">Roles</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="skills">Skills</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="certifications">Certifications</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="languages">Languages</li>
-                        <li class="list-group-item bg-transparent text-white border-secondary py-1 small" data-id="references">References</li>
+                <div class="mt-4 p-3 bg-dark rounded-4 border border-secondary shadow-sm">
+                    <label class="mb-2">Section Arrangement</label>
+                    <ul id="section-sort" class="list-group shadow-lg">
+                        <li class="list-group-item bg-transparent text-white border-secondary py-2 small" data-id="summary">Summary</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-2 small" data-id="experience">Experience</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-2 small" data-id="education">Education</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-2 small" data-id="projects">Projects</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-2 small" data-id="roles">Roles & Responsibilities</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-2 small" data-id="skills">Skills</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-2 small" data-id="certifications">Certifications</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-2 small" data-id="languages">Languages</li>
+                        <li class="list-group-item bg-transparent text-white border-secondary py-2 small" data-id="references">References</li>
                     </ul>
                 </div>
             </div>
         </div>
-        <div class="col-lg-7"><div id="resume-wrapper" style="height: calc(100vh - 100px); overflow-y: auto;"><div id="resume-target" class="resume-preview"></div></div></div>
+        <div class="col-lg-7"><div id="resume-wrapper" style="height: calc(100vh - 100px); overflow-y: auto; padding: 20px;"><div id="resume-target" class="resume-preview mx-auto"></div></div></div>
     </div>
 </div>
 
@@ -165,144 +191,100 @@
     let photoData = "";
     const sortable = Sortable.create(document.getElementById('section-sort'), { animation: 150, onEnd: liveUpdate });
     
-    function loadPhoto(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (re) => { photoData = re.target.result; liveUpdate(); };
-            reader.readAsDataURL(file);
-        }
-    }
+    function loadPhoto(e) { const f = e.target.files[0]; if (f) { const r = new FileReader(); r.onload = (re) => { photoData = re.target.result; liveUpdate(); }; r.readAsDataURL(f); } }
     function removePhoto() { photoData = ""; document.getElementById('photo-input').value = ""; liveUpdate(); }
 
     function openGallery() {
-        const content = document.getElementById('gallery-content');
-        const categories = {
-            'Professional': ['Apollo', 'Executive', 'Classic', 'Clean'],
-            'Stylish': ['Modern', 'Aura', 'Midnight', 'Elegant'],
-            'Tech & Innovation': ['Tech', 'Startup', 'Grid', 'Fira'],
-            'Minimalist': ['Minimal', 'Timeline', 'Mono', 'Base']
-        };
-        
+        const grid = document.getElementById('gallery-grid');
+        const categories = { 'Professional': ['Apollo', 'Executive', 'Classic', 'Clean'], 'Modern': ['Modern', 'Aura', 'Midnight', 'Elegant'], 'Tech': ['Tech', 'Startup', 'Grid', 'Fira'], 'Minimalist': ['Minimal', 'Timeline', 'Mono', 'Base'] };
+        const userName = (document.getElementById('fn').value || 'User Name');
         let html = '';
         Object.entries(categories).forEach(([cat, items]) => {
-            html += `<h4 class="text-info mt-4 mb-3">${cat}</h4><div class="row g-3">`;
-            for(let i=0; i<4; i++) {
-                const baseName = items[i % items.length];
-                const type = baseName.toLowerCase();
-                const accent = `hsl(${(i * 50) % 360}, 65%, 60%)`;
-                html += `<div class="col-6 col-md-3 col-lg-2">
-                    <div class="template-card" onclick="currentStyle='${type}'; liveUpdate(); closeGallery()">
-                        <div class="preview-box">
-                            <div class="mini-dot" style="background:${accent}"></div>
-                            <div class="mini-head" style="background:${accent}"></div>
-                            <div class="mini-line"></div><div class="mini-line" style="width:70%"></div>
-                        </div>
-                        <div class="text-center text-white-50 mt-1" style="font-size: 10px;">${baseName} v${i+1}</div>
-                    </div>
-                </div>`;
+            html += `<div class="col-12 mt-4"><h4 class="text-white border-start border-info ps-3" style="font-weight: 800;">${cat} Designs</h4></div>`;
+            for(let i=1; i<=25; i++) {
+                const type = items[i % items.length].toLowerCase();
+                const accent = `hsl(${(i * 15 + Object.keys(categories).indexOf(cat)*90) % 360}, 65%, 60%)`;
+                html += `<div class="col-6 col-md-3 col-lg-2"><div class="template-card" onclick="currentStyle='${type}'; liveUpdate(); closeGallery()"><span class="badge-cat">${cat.toUpperCase()}</span><div class="preview-box" style="border-top: 4px solid ${accent}"><div style="font-size:8px; font-weight:800; border-bottom:1px solid ${accent}; display:inline-block">${userName}</div><div style="height:2px; background:#e2e8f0; width:100%; margin-top:5px;"></div><div style="height:10px; background:${accent}11; margin-top:auto; width:100%;"></div></div><div class="text-center text-white mt-1" style="font-size: 11px; font-weight: 600;">${items[i % items.length]} v${i}</div></div></div>`;
             }
-            html += `</div>`;
         });
-        content.innerHTML = html;
+        grid.innerHTML = html;
         document.getElementById('gallery').style.display = 'block';
     }
 
     function closeGallery() { document.getElementById('gallery').style.display = 'none'; }
-    function updateAccent(val) { document.documentElement.style.setProperty('--accent', val); liveUpdate(); }
-    function removeEl(id) { document.getElementById(id).remove(); liveUpdate(); }
-    function toggleEnd(cb) { cb.parentElement.previousElementSibling.querySelector('.date-end').disabled = cb.checked; liveUpdate(); }
+    function updateAccent(val) { document.documentElement.style.setProperty('--accent', val); document.documentElement.style.setProperty('--neon', `0 0 15px ${val}99`); liveUpdate(); }
     function format(cmd) { document.execCommand(cmd, false, null); liveUpdate(); }
+    function removeEl(id) { document.getElementById(id).remove(); liveUpdate(); }
 
     function addExp() {
         const id = Date.now();
-        document.getElementById('exp-container').insertAdjacentHTML('beforeend', `
-            <div class="entry-card" id="exp-${id}">
-                <input class="form-control mb-1 fw-bold exp-co" placeholder="COMPANY" oninput="liveUpdate()">
-                <input class="form-control mb-1 exp-ro" placeholder="ROLE" oninput="liveUpdate()">
-                <input class="form-control mb-1 exp-lo" placeholder="LOCATION" oninput="liveUpdate()">
-                <div class="row g-1 mb-1"><div class="col"><input type="month" class="form-control date-start" oninput="liveUpdate()"></div><div class="col"><input type="month" class="form-control date-end" oninput="liveUpdate()"></div></div>
-                <div class="form-check mb-1"><input class="form-check-input" type="checkbox" onchange="toggleEnd(this)"><label class="form-check-label text-light small">Present</label></div>
-                <div contenteditable="true" class="rich-editor exp-de" data-placeholder="Key Achievements..." oninput="liveUpdate()"></div>
-                <button class="btn btn-sm glass-btn-danger mt-1 w-100" onclick="removeEl('exp-${id}')">Delete</button>
-            </div>`);
-    }
-
-    function addEdu() {
-        const id = Date.now();
-        document.getElementById('edu-container').insertAdjacentHTML('beforeend', `
-            <div class="entry-card" id="edu-${id}">
-                <input class="form-control mb-1 fw-bold edu-sc" placeholder="SCHOOL / UNIVERSITY" oninput="liveUpdate()">
-                <input class="form-control mb-1 edu-dg" placeholder="DEGREE / FIELD" oninput="liveUpdate()">
-                <div class="row g-1 mb-1">
-                    <div class="col"><label class="text-light-50 small">START DATE</label><input type="month" class="form-control date-start" oninput="liveUpdate()"></div>
-                    <div class="col"><label class="text-light-50 small">END DATE</label><input type="month" class="form-control date-end" oninput="liveUpdate()"></div>
-                </div>
-                <button class="btn btn-sm glass-btn-danger mt-1 w-100" onclick="removeEl('edu-${id}')">Delete</button>
-            </div>`);
+        document.getElementById('exp-container').insertAdjacentHTML('beforeend', `<div class="entry-card" id="exp-${id}">
+            <input class="form-control mb-1 fw-bold exp-co" placeholder="COMPANY" oninput="liveUpdate()">
+            <input class="form-control mb-1 exp-ro" placeholder="ROLE" oninput="liveUpdate()">
+            <input class="form-control mb-1 exp-lo" placeholder="LOCATION" oninput="liveUpdate()">
+            <div class="row g-1"><div class="col"><label>START</label><input type="month" class="form-control sd" oninput="liveUpdate()"></div><div class="col"><label>END</label><input type="month" class="form-control ed" oninput="liveUpdate()"></div></div>
+            <div contenteditable="true" class="rich-editor mt-2" data-placeholder="Key Achievements..." oninput="liveUpdate()"></div>
+            <button class="btn btn-sm btn-link text-danger w-100" onclick="removeEl('exp-${id}')">Delete Entry</button></div>`);
     }
 
     function addProj() {
         const id = Date.now();
-        document.getElementById('proj-container').insertAdjacentHTML('beforeend', `
-            <div class="entry-card" id="prj-${id}">
-                <input class="form-control mb-1 fw-bold prj-ti" placeholder="PROJECT TITLE" oninput="liveUpdate()">
-                <input class="form-control mb-1 prj-ro" placeholder="ROLE IN PROJECT" oninput="liveUpdate()">
-                <div contenteditable="true" class="rich-editor prj-de" data-placeholder="Project Details..." oninput="liveUpdate()"></div>
-                <button class="btn btn-sm glass-btn-danger mt-1 w-100" onclick="removeEl('prj-${id}')">Delete</button>
-            </div>`);
+        document.getElementById('proj-container').insertAdjacentHTML('beforeend', `<div class="entry-card" id="prj-${id}">
+            <input class="form-control mb-1 fw-bold prj-ti" placeholder="PROJECT TITLE" oninput="liveUpdate()">
+            <input class="form-control mb-1 prj-ro" placeholder="ROLE" oninput="liveUpdate()">
+            <div class="toolbar"><button onclick="format('bold')">B</button><button onclick="format('insertUnorderedList')">•</button></div>
+            <div contenteditable="true" class="rich-editor" data-placeholder="Details..." oninput="liveUpdate()"></div>
+            <button class="btn btn-sm btn-link text-danger w-100" onclick="removeEl('prj-${id}')">Delete</button></div>`);
+    }
+
+    function addEdu() {
+        const id = Date.now();
+        document.getElementById('edu-container').insertAdjacentHTML('beforeend', `<div class="entry-card" id="edu-${id}">
+            <input class="form-control mb-1 fw-bold edu-sc" placeholder="SCHOOL" oninput="liveUpdate()">
+            <input class="form-control mb-1 edu-dg" placeholder="DEGREE" oninput="liveUpdate()">
+            <div class="row g-1"><div class="col"><input type="month" class="form-control sd" oninput="liveUpdate()"></div><div class="col"><input type="month" class="form-control ed" oninput="liveUpdate()"></div></div>
+            <button class="btn btn-sm btn-link text-danger w-100 mt-1" onclick="removeEl('edu-${id}')">Delete</button></div>`);
     }
 
     function addCert() {
         const id = Date.now();
-        document.getElementById('cert-container').insertAdjacentHTML('beforeend', `
-            <div class="entry-card" id="cert-${id}">
-                <input class="form-control mb-1 fw-bold cert-na" placeholder="CERTIFICATION NAME" oninput="liveUpdate()">
-                <input class="form-control mb-1 cert-pr" placeholder="PROVIDER (e.g. Google, AWS)" oninput="liveUpdate()">
-                <label class="text-light-50 small">EXPIRY DATE</label>
-                <input type="month" class="form-control cert-ex" oninput="liveUpdate()">
-                <button class="btn btn-sm glass-btn-danger mt-2 w-100" onclick="removeEl('cert-${id}')">Delete</button>
-            </div>`);
+        document.getElementById('cert-container').insertAdjacentHTML('beforeend', `<div class="entry-card" id="cert-${id}">
+            <input class="form-control mb-1 fw-bold c-na" placeholder="CERT NAME" oninput="liveUpdate()">
+            <input class="form-control mb-1 c-pr" placeholder="PROVIDER" oninput="liveUpdate()">
+            <input type="month" class="form-control c-ex" oninput="liveUpdate()">
+            <button class="btn btn-sm btn-link text-danger w-100 mt-1" onclick="removeEl('cert-${id}')">Delete</button></div>`);
     }
 
     function addRef() {
         const id = Date.now();
-        document.getElementById('ref-container').insertAdjacentHTML('beforeend', `
-            <div class="entry-card" id="ref-${id}">
-                <input class="form-control mb-1 fw-bold ref-na" placeholder="NAME" oninput="liveUpdate()">
-                <input class="form-control mb-1 ref-ti" placeholder="COMPANY/TITLE" oninput="liveUpdate()">
-                <button class="btn btn-sm glass-btn-danger mt-1 w-100" onclick="removeEl('ref-${id}')">Delete</button>
-            </div>`);
+        document.getElementById('ref-container').insertAdjacentHTML('beforeend', `<div class="entry-card" id="ref-${id}">
+            <input class="form-control mb-1 fw-bold ref-na" placeholder="NAME" oninput="liveUpdate()">
+            <input class="form-control mb-1 ref-ti" placeholder="TITLE" oninput="liveUpdate()">
+            <button class="btn btn-sm btn-link text-danger w-100" onclick="removeEl('ref-${id}')">Delete</button></div>`);
     }
 
     function addCustom() {
         const id = Date.now();
-        document.getElementById('custom-container').insertAdjacentHTML('beforeend', `
-            <div class="entry-card" id="cust-${id}">
-                <input class="form-control mb-1 fw-bold cust-ti" placeholder="SECTION TITLE" oninput="updateSortList('${id}', this.value); liveUpdate()">
-                <div contenteditable="true" class="rich-editor cust-de" data-placeholder="Content..." oninput="liveUpdate()"></div>
-                <button class="btn btn-sm glass-btn-danger mt-1 w-100" onclick="removeCustom('${id}')">Delete</button>
-            </div>`);
+        document.getElementById('custom-container').insertAdjacentHTML('beforeend', `<div class="entry-card" id="cust-${id}">
+            <input class="form-control mb-1 fw-bold cust-ti" placeholder="SECTION TITLE" oninput="updateSortList('${id}', this.value); liveUpdate()">
+            <div contenteditable="true" class="rich-editor" oninput="liveUpdate()"></div>
+            <button class="btn btn-sm btn-link text-danger w-100" onclick="removeEl('cust-${id}')">Delete</button></div>`);
         document.getElementById('section-sort').insertAdjacentHTML('beforeend', `<li class="list-group-item bg-transparent text-info border-info py-1 small" data-id="cust-${id}" id="li-cust-${id}">New Section</li>`);
     }
-    function updateSortList(id, val) { document.getElementById('li-cust-'+id).innerText = val || "New Section"; }
-    function removeCustom(id) { document.getElementById('li-cust-'+id).remove(); removeEl('cust-'+id); }
+    function updateSortList(id, val) { const li = document.getElementById('li-cust-'+id); if(li) li.innerText = val || "New Section"; }
 
-    function getSections(fCol) {
+    function getSections(fCol, cSize) {
         const order = Array.from(document.querySelectorAll('#section-sort li')).map(li => li.dataset.id);
-        const hStyle = `color:var(--accent); border-bottom:2px solid var(--accent); padding-bottom:4px; margin-bottom:12px;`;
+        const hStyle = `color:var(--accent); border-bottom:2px solid var(--accent); padding-bottom:5px; margin-bottom:15px;`;
         let html = '';
         order.forEach(id => {
-            const hasC = (elId) => document.getElementById(elId) && document.getElementById(elId).innerText.replace(/\u200B/g, "").trim().length > 0;
-            if (id === 'summary' && hasC('sm')) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">About Me</div>${document.getElementById('sm').innerHTML}</div>`;
+            const hasC = (elId) => { let el = document.getElementById(elId); return el && el.innerText.trim().length > 0; };
+            if (id === 'summary' && hasC('sm')) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">About Me</div><div style="font-size:${cSize}rem">${document.getElementById('sm').innerHTML}</div></div>`;
             if (id === 'experience') {
                 const items = Array.from(document.querySelectorAll('#exp-container .entry-card')).filter(e => e.querySelector('.exp-co').value);
                 if (items.length) {
                     html += `<div class="sec-item"><div class="section-header" style="${hStyle}">Experience</div>`;
-                    items.forEach(el => {
-                        const ed = el.querySelector('input[type="checkbox"]').checked ? 'Present' : el.querySelector('.date-end').value;
-                        html += `<div class="mb-3"><strong>${el.querySelector('.exp-ro').value}</strong> @ ${el.querySelector('.exp-co').value} <span style="float:right; font-size:0.8rem">${el.querySelector('.date-start').value} - ${ed}</span><br><small>${el.querySelector('.exp-lo').value}</small><div>${el.querySelector('.exp-de').innerHTML}</div></div>`;
-                    });
+                    items.forEach(el => html += `<div class="mb-4" style="font-size:${cSize}rem"><strong>${el.querySelector('.exp-ro').value}</strong> @ ${el.querySelector('.exp-co').value} <span style="float:right; opacity:0.7">${el.querySelector('.sd').value} — ${el.querySelector('.ed').value || 'Present'}</span><br><small style="opacity:0.7">${el.querySelector('.exp-lo').value}</small><div>${el.querySelector('.rich-editor').innerHTML}</div></div>`);
                     html += `</div>`;
                 }
             }
@@ -310,7 +292,7 @@
                 const items = Array.from(document.querySelectorAll('#edu-container .entry-card')).filter(e => e.querySelector('.edu-sc').value);
                 if (items.length) {
                     html += `<div class="sec-item"><div class="section-header" style="${hStyle}">Education</div>`;
-                    items.forEach(el => html += `<div class="mb-2"><strong>${el.querySelector('.edu-sc').value}</strong> <span style="float:right; font-size:0.8rem">${el.querySelector('.date-start').value} - ${el.querySelector('.date-end').value}</span><br>${el.querySelector('.edu-dg').value}</div>`);
+                    items.forEach(el => html += `<div class="mb-3" style="font-size:${cSize}rem"><strong>${el.querySelector('.edu-sc').value}</strong> <span style="float:right; opacity:0.7">${el.querySelector('.sd').value} — ${el.querySelector('.ed').value}</span><br>${el.querySelector('.edu-dg').value}</div>`);
                     html += `</div>`;
                 }
             }
@@ -318,32 +300,32 @@
                 const items = Array.from(document.querySelectorAll('#proj-container .entry-card')).filter(e => e.querySelector('.prj-ti').value);
                 if (items.length) {
                     html += `<div class="sec-item"><div class="section-header" style="${hStyle}">Projects</div>`;
-                    items.forEach(el => html += `<div class="mb-3"><strong>${el.querySelector('.prj-ti').value}</strong> - ${el.querySelector('.prj-ro').value}<div>${el.querySelector('.prj-de').innerHTML}</div></div>`);
+                    items.forEach(el => html += `<div class="mb-3" style="font-size:${cSize}rem"><strong>${el.querySelector('.prj-ti').value}</strong> <small style="opacity:0.7">(${el.querySelector('.prj-ro').value})</small><div>${el.querySelector('.rich-editor').innerHTML}</div></div>`);
                     html += `</div>`;
                 }
             }
-            if (id === 'roles' && hasC('roles')) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">Roles & Responsibilities</div>${document.getElementById('roles').innerHTML}</div>`;
-            if (id === 'skills' && hasC('sk')) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">Skills</div>${document.getElementById('sk').innerHTML}</div>`;
+            if (id === 'skills' && hasC('sk')) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">Expertise</div><div style="font-size:${cSize}rem">${document.getElementById('sk').innerHTML}</div></div>`;
             if (id === 'certifications') {
-                const items = Array.from(document.querySelectorAll('#cert-container .entry-card')).filter(e => e.querySelector('.cert-na').value);
+                const items = Array.from(document.querySelectorAll('#cert-container .entry-card')).filter(e => e.querySelector('.c-na').value);
                 if (items.length) {
                     html += `<div class="sec-item"><div class="section-header" style="${hStyle}">Certifications</div>`;
-                    items.forEach(el => html += `<div class="mb-2"><strong>${el.querySelector('.cert-na').value}</strong> - ${el.querySelector('.cert-pr').value} <span style="float:right; font-size:0.8rem">Exp: ${el.querySelector('.cert-ex').value}</span></div>`);
+                    items.forEach(el => html += `<div class="mb-2" style="font-size:${cSize}rem"><strong>${el.querySelector('.c-na').value}</strong> - ${el.querySelector('.c-pr').value} <span style="float:right; opacity:0.6">${el.querySelector('.c-ex').value}</span></div>`);
                     html += `</div>`;
                 }
             }
-            if (id === 'languages' && hasC('lang')) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">Languages</div>${document.getElementById('lang').innerHTML}</div>`;
+            if (id === 'roles' && hasC('roles')) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">Core Responsibilities</div><div style="font-size:${cSize}rem">${document.getElementById('roles').innerHTML}</div></div>`;
+            if (id === 'languages' && hasC('lang')) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">Languages</div><div style="font-size:${cSize}rem">${document.getElementById('lang').innerHTML}</div></div>`;
             if (id === 'references') {
                 const items = Array.from(document.querySelectorAll('#ref-container .entry-card')).filter(e => e.querySelector('.ref-na').value);
                 if (items.length) {
-                    html += `<div class="sec-item"><div class="section-header" style="${hStyle}">References</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">`;
+                    html += `<div class="sec-item"><div class="section-header" style="${hStyle}">References</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:${cSize}rem">`;
                     items.forEach(el => html += `<div><strong>${el.querySelector('.ref-na').value}</strong><br><small>${el.querySelector('.ref-ti').value}</small></div>`);
                     html += `</div></div>`;
                 }
             }
             if (id.startsWith('cust-')) {
                 const el = document.getElementById(id);
-                if(el && hasC('cust-de')) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">${el.querySelector('.cust-ti').value.toUpperCase()}</div><div>${el.querySelector('.cust-de').innerHTML}</div></div>`;
+                if(el && el.querySelector('.cust-ti').value) html += `<div class="sec-item"><div class="section-header" style="${hStyle}">${el.querySelector('.cust-ti').value.toUpperCase()}</div><div style="font-size:${cSize}rem">${el.querySelector('.rich-editor').innerHTML}</div></div>`;
             }
         });
         return html;
@@ -352,41 +334,46 @@
     function liveUpdate() {
         const target = document.getElementById('resume-target');
         const fCol = document.getElementById('fontColor').value;
-        const bCol = document.getElementById('bgColor').value;
-        target.style.backgroundColor = bCol;
+        const fFam = document.getElementById('fontFamily').value;
+        const tSize = document.getElementById('titleSize').value;
+        const cSize = document.getElementById('contentSize').value;
+        const lH = document.getElementById('lineHeight').value;
+        const lS = document.getElementById('letterSpacing').value;
+        const pRadius = document.getElementById('photoShape').value;
+
+        target.style.backgroundColor = document.getElementById('bgColor').value;
         target.style.color = fCol;
+        target.style.fontFamily = fFam;
+        target.style.lineHeight = lH;
+        target.style.letterSpacing = lS + 'px';
         
-        const photoHtml = photoData ? `<img src="${photoData}" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--accent); margin-bottom:15px; object-fit:cover;">` : '';
-        const header = `<div style="margin-bottom:30px; ${currentStyle==='apollo'?'text-align:center':''}">
-            ${photoHtml}
-            <h1 style="margin:0; font-weight:900; font-size:2.5rem; color:${fCol}">${document.getElementById('fn').value} ${document.getElementById('ln').value}</h1>
-            <div style="opacity:0.7">${document.getElementById('em').value} | ${document.getElementById('ph').value} | ${document.getElementById('lc').value}</div>
+        const photo = photoData ? `<img src="${photoData}" style="width:120px; height:120px; border-radius:${pRadius}; border:3px solid var(--accent); margin-bottom:15px; object-fit:cover; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">` : '';
+        const nameText = `${document.getElementById('fn').value || 'YOUR'} ${document.getElementById('ln').value || 'NAME'}`;
+        
+        const header = `<div style="margin-bottom:35px; ${currentStyle==='apollo'?'text-align:center':''}">
+            ${photo}<h1 style="margin:0; font-weight:900; font-size:${tSize}rem; color:${fCol}; letter-spacing:-1px;">${nameText}</h1>
+            <div style="opacity:0.8; font-size:${cSize}rem; font-weight:600; margin-top:8px;">${document.getElementById('em').value} | ${document.getElementById('ph').value} | ${document.getElementById('lc').value}</div>
         </div>`;
         
         if (currentStyle === 'sidebar') {
-            target.innerHTML = `<div style="display:grid; grid-template-columns: 220px 1fr; gap: 40px;"><div style="border-right:1px solid #ddd; padding-right:20px">${header}</div><div>${getSections(fCol)}</div></div>`;
+            target.innerHTML = `<div style="display:grid; grid-template-columns: 240px 1fr; gap: 40px;"><div style="border-right:1px solid #eee; padding-right:20px">${header}</div><div>${getSections(fCol, cSize)}</div></div>`;
+        } else if(['modern','aura','midnight'].includes(currentStyle)) {
+            target.innerHTML = `<div style="background:${fCol}; color:white; margin:-50px -50px 40px -50px; padding:60px; display:flex; gap:40px; align-items:center;">${photo}<div><h1 style="margin:0; font-weight:900; font-size:${tSize}rem; color:white">${nameText}</h1><div style="opacity:0.8; font-size:${cSize}rem">${document.getElementById('em').value} | ${document.getElementById('ph').value}</div></div></div>${getSections(fCol, cSize)}`;
         } else {
-            target.innerHTML = header + getSections(fCol);
+            target.innerHTML = header + getSections(fCol, cSize);
         }
         
         document.querySelectorAll('.page-break-guide').forEach(g => g.remove());
-        const pageH = 1123;
-        for(let i=1; i < Math.ceil(target.scrollHeight / pageH); i++) {
-            target.insertAdjacentHTML('beforeend', `<div class="page-break-guide" style="top: ${i * pageH}px"></div>`);
-        }
+        for(let i=1; i < Math.ceil(target.scrollHeight / 1123); i++) target.insertAdjacentHTML('beforeend', `<div class="page-break-guide" style="top: ${i * 1123}px"></div>`);
     }
     
     function exportPDF() { 
         document.querySelectorAll('.page-break-guide').forEach(g => g.style.display = 'none');
-        html2pdf().set({ margin: 0, filename: 'resume.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'px', format: [794, 1123] }, pagebreak: { mode: 'avoid-all' } })
-        .from(document.getElementById('resume-target')).save().then(() => {
-            document.querySelectorAll('.page-break-guide').forEach(g => g.style.display = 'block');
-        });
+        html2pdf().set({ margin: 0, filename: 'resume.pdf', html2canvas: { scale: 2.2 }, jsPDF: { unit: 'px', format: [794, 1123] }, pagebreak: { mode: 'avoid-all' } }).from(document.getElementById('resume-target')).save().then(() => document.querySelectorAll('.page-break-guide').forEach(g => g.style.display = 'block'));
     }
-    function exportJSON() { const d = { fn: document.getElementById('fn').value, ln: document.getElementById('ln').value, em: document.getElementById('em').value, ph: document.getElementById('ph').value, lc: document.getElementById('lc').value, accent: document.querySelector('input[type="color"]').value, fontCol: document.getElementById('fontColor').value, bgCol: document.getElementById('bgColor').value, style: currentStyle, photo: photoData }; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(d)], {type: 'application/json'})); a.download = `resume_save.json`; a.click(); }
-    function importJSON(e) { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = (re) => { const d = JSON.parse(re.target.result); document.getElementById('fn').value = d.fn || ""; document.getElementById('ln').value = d.ln || ""; document.getElementById('em').value = d.em || ""; document.getElementById('ph').value = d.ph || ""; photoData = d.photo || ""; if(d.accent) updateAccent(d.accent); if(d.fontCol) document.getElementById('fontColor').value = d.fontCol; if(d.bgCol) document.getElementById('bgColor').value = d.bgCol; currentStyle = d.style || 'apollo'; liveUpdate(); }; r.readAsText(f); }
-    function resetForm() { if(confirm("Reset everything?")) location.reload(); }
-
+    function exportJSON() { const d = { fn: document.getElementById('fn').value, ln: document.getElementById('ln').value, accent: document.getElementById('accentColor').value, fontCol: document.getElementById('fontColor').value, bgCol: document.getElementById('bgColor').value, style: currentStyle, photo: photoData }; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(d)], {type: 'application/json'})); a.download = `resume_save.json`; a.click(); }
+    function importJSON(e) { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = (re) => { const d = JSON.parse(re.target.result); document.getElementById('fn').value=d.fn||""; photoData=d.photo||""; currentStyle=d.style||'apollo'; liveUpdate(); }; r.readAsText(f); }
+    function resetForm() { if(confirm("Discard all data?")) location.reload(); }
     window.onload = () => { addExp(); liveUpdate(); };
 </script>
 </body>
