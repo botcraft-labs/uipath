@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bot Craft Resume Studio - Enhanced</title>
+<title>Bot Craft Resume Studio - Pro</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -148,6 +148,12 @@
         max-width: 794px;
     }
     
+    /* Updated Print Styles for Better Splitting */
+    .sec-item {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
     .page-break-guide { 
         position: absolute; 
         left: 0; 
@@ -231,18 +237,49 @@
     .entry-card { 
         background: rgba(255,255,255,0.03); 
         border: 1px solid var(--border); 
-        padding: 18px; 
+        padding: 0;
         border-radius: 20px; 
         margin-bottom: 15px; 
         position: relative;
         transition: all 0.3s;
         backdrop-filter: blur(5px);
+        overflow: hidden;
     }
     
     .entry-card:hover {
         border-color: var(--accent);
         background: rgba(255,255,255,0.05);
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    /* New Minimize Feature Styles */
+    .entry-header {
+        background: rgba(255,255,255,0.05);
+        padding: 10px 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .card-title-preview {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin: 0;
+    }
+
+    .entry-body {
+        padding: 18px;
+        transition: all 0.3s ease;
+    }
+
+    .entry-card.collapsed .entry-body {
+        display: none;
+    }
+
+    .entry-card.collapsed {
+        background: rgba(0,0,0,0.4);
     }
     
     label { 
@@ -1238,40 +1275,49 @@
         }
     }
     
-    function addSocialLink() {
+    function addSocialLink(data = null) {
         const container = document.getElementById('social-container');
+        const count = socialLinkCount; 
+        const selectedType = data ? data.type : 'linkedin';
+        const urlValue = data ? data.url : '';
+        
         container.insertAdjacentHTML('beforeend', `
             <div class="social-link-input">
-                <select class="form-control glass-select p-1" style="width: 120px;" id="social-type-${socialLinkCount}">
-                    <option value="linkedin">LinkedIn</option>
-                    <option value="github">GitHub</option>
-                    <option value="portfolio">Portfolio</option>
-                    <option value="twitter">Twitter</option>
-                    <option value="website">Website</option>
+                <select class="form-control glass-select p-1" style="width: 120px;" id="social-type-${count}">
+                    <option value="linkedin" ${selectedType === 'linkedin' ? 'selected' : ''}>LinkedIn</option>
+                    <option value="github" ${selectedType === 'github' ? 'selected' : ''}>GitHub</option>
+                    <option value="portfolio" ${selectedType === 'portfolio' ? 'selected' : ''}>Portfolio</option>
+                    <option value="twitter" ${selectedType === 'twitter' ? 'selected' : ''}>Twitter</option>
+                    <option value="website" ${selectedType === 'website' ? 'selected' : ''}>Website</option>
                 </select>
-                <input type="url" class="form-control" id="social-url-${socialLinkCount}" placeholder="https://..." oninput="liveUpdate()">
+                <input type="url" class="form-control" id="social-url-${count}" placeholder="https://..." oninput="liveUpdate()" value="${urlValue}">
                 <button class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove(); liveUpdate()">×</button>
             </div>
         `);
         socialLinkCount++;
+        if(!data) liveUpdate();
     }
     
-    function addLanguageProficiency() {
+    function addLanguageProficiency(data = null) {
         const container = document.getElementById('language-proficiency-container');
         const id = Date.now();
+        const langValue = data ? data.language : '';
+        const level = data ? data.level : 3;
+
         container.insertAdjacentHTML('beforeend', `
             <div class="language-skill-row" id="lang-prof-${id}">
-                <input type="text" class="form-control" placeholder="Language" style="flex: 1; margin-right: 10px;" oninput="liveUpdate()">
+                <input type="text" class="form-control" placeholder="Language" style="flex: 1; margin-right: 10px;" oninput="liveUpdate()" value="${langValue}">
                 <div class="proficiency-dots">
-                    <div class="proficiency-dot active" onclick="setProficiency(this, 1)"></div>
-                    <div class="proficiency-dot active" onclick="setProficiency(this, 2)"></div>
-                    <div class="proficiency-dot active" onclick="setProficiency(this, 3)"></div>
-                    <div class="proficiency-dot" onclick="setProficiency(this, 4)"></div>
-                    <div class="proficiency-dot" onclick="setProficiency(this, 5)"></div>
+                    <div class="proficiency-dot ${level >= 1 ? 'active' : ''}" onclick="setProficiency(this, 1)"></div>
+                    <div class="proficiency-dot ${level >= 2 ? 'active' : ''}" onclick="setProficiency(this, 2)"></div>
+                    <div class="proficiency-dot ${level >= 3 ? 'active' : ''}" onclick="setProficiency(this, 3)"></div>
+                    <div class="proficiency-dot ${level >= 4 ? 'active' : ''}" onclick="setProficiency(this, 4)"></div>
+                    <div class="proficiency-dot ${level >= 5 ? 'active' : ''}" onclick="setProficiency(this, 5)"></div>
                 </div>
                 <button class="btn btn-sm btn-link text-danger" onclick="removeEl('lang-prof-${id}')">×</button>
             </div>
         `);
+        if(!data) liveUpdate();
     }
     
     function setProficiency(element, level) {
@@ -1318,6 +1364,7 @@
     <style>
         body { font-family: ${document.getElementById('fontFamily').value}; margin: 0; padding: 20px; }
         .resume-preview { max-width: 794px; margin: 0 auto; }
+        .sec-item { page-break-inside: avoid; }
     </style>
 </head>
 <body>
@@ -1342,6 +1389,7 @@
                     <title>Print Resume</title>
                     <style>
                         body { font-family: ${document.getElementById('fontFamily').value}; }
+                        .sec-item { break-inside: avoid; page-break-inside: avoid; }
                         @media print { body { margin: 0; } }
                     </style>
                 </head>
@@ -1506,109 +1554,182 @@
     function removeEl(id) { 
         if (confirm('Delete this entry?')) {
             document.getElementById(id).remove(); 
-            liveUpdate();
+            liveUpdate(); 
             showToast('Entry deleted');
         }
     }
+    
+    function toggleCard(btn) {
+        const card = btn.closest('.entry-card');
+        card.classList.toggle('collapsed');
+        btn.innerText = card.classList.contains('collapsed') ? '+' : '−';
+    }
+    
+    function updateCardTitle(input, selector, fallback) {
+        const card = input.closest('.entry-card');
+        const titleEl = card.querySelector('.card-title-preview');
+        titleEl.innerText = input.value || fallback;
+        liveUpdate();
+    }
 
-    function addExp() {
+    function addExp(data = null) {
         const id = Date.now();
+        const comp = data ? data.company : '';
+        const role = data ? data.role : '';
+        const loc = data ? data.location : '';
+        const start = data ? data.start : '';
+        const end = data ? data.end : '';
+        const desc = data ? data.desc : '';
+
         document.getElementById('exp-container').insertAdjacentHTML('beforeend', `
             <div class="entry-card" id="exp-${id}">
-                <label>Company</label><input class="form-control mb-2 fw-bold exp-co" placeholder="Company Name" oninput="liveUpdate()">
-                <label>Role</label><input class="form-control mb-2 exp-ro" placeholder="Job Title" oninput="liveUpdate()">
-                <label>Location</label><input class="form-control mb-2 exp-lo" placeholder="City, Country" oninput="liveUpdate()">
-                <div class="row g-2">
-                    <div class="col-6"><label>Start Date</label><input type="month" class="form-control sd" oninput="liveUpdate()"></div>
-                    <div class="col-6"><label>End Date</label><input type="month" class="form-control ed" oninput="liveUpdate()"></div>
+                <div class="entry-header">
+                    <h6 class="card-title-preview">${comp || 'New Experience'}</h6>
+                    <button class="btn btn-sm btn-outline-light" onclick="toggleCard(this)" title="Minimize/Maximize">−<button>
                 </div>
-                <label class="mt-2">Description</label>
-                <div class="toolbar">
-                    <button onclick="formatText('bold')">B</button>
-                    <button onclick="formatText('italic')">I</button>
-                    <button onclick="formatText('insertUnorderedList')">•</button>
+                <div class="entry-body">
+                    <label>Company</label><input class="form-control mb-2 fw-bold exp-co" placeholder="Company Name" oninput="updateCardTitle(this, '.exp-co', 'New Experience')" value="${comp}">
+                    <label>Role</label><input class="form-control mb-2 exp-ro" placeholder="Job Title" oninput="liveUpdate()" value="${role}">
+                    <label>Location</label><input class="form-control mb-2 exp-lo" placeholder="City, Country" oninput="liveUpdate()" value="${loc}">
+                    <div class="row g-2">
+                        <div class="col-6"><label>Start Date</label><input type="month" class="form-control sd" oninput="liveUpdate()" value="${start}"></div>
+                        <div class="col-6"><label>End Date</label><input type="month" class="form-control ed" oninput="liveUpdate()" value="${end}"></div>
+                    </div>
+                    <label class="mt-2">Description</label>
+                    <div class="toolbar">
+                        <button onclick="formatText('bold')">B</button>
+                        <button onclick="formatText('italic')">I</button>
+                        <button onclick="formatText('insertUnorderedList')">•</button>
+                    </div>
+                    <div contenteditable="true" class="rich-editor" data-placeholder="Describe your achievements..." oninput="liveUpdate()">${desc}</div>
+                    <button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeEl('exp-${id}')">Delete Entry</button>
                 </div>
-                <div contenteditable="true" class="rich-editor" data-placeholder="Describe your achievements..." oninput="liveUpdate()"></div>
-                <button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeEl('exp-${id}')">Delete Entry</button>
             </div>`);
-        showToast('Experience entry added');
+        if(!data) showToast('Experience entry added');
     }
 
-    function addProj() {
+    function addProj(data = null) {
         const id = Date.now();
+        const title = data ? data.title : '';
+        const role = data ? data.role : '';
+        const desc = data ? data.desc : '';
+
         document.getElementById('proj-container').insertAdjacentHTML('beforeend', `
             <div class="entry-card" id="prj-${id}">
-                <label>Project Title</label><input class="form-control mb-2 fw-bold prj-ti" placeholder="Project Name" oninput="liveUpdate()">
-                <label>Your Role</label><input class="form-control mb-2 prj-ro" placeholder="Your Role" oninput="liveUpdate()">
-                <label>Description</label>
-                <div class="toolbar">
-                    <button onclick="formatText('bold')">B</button>
-                    <button onclick="formatText('insertUnorderedList')">•</button>
+                <div class="entry-header">
+                    <h6 class="card-title-preview">${title || 'New Project'}</h6>
+                    <button class="btn btn-sm btn-outline-light" onclick="toggleCard(this)">−</button>
                 </div>
-                <div contenteditable="true" class="rich-editor" data-placeholder="Describe the project..." oninput="liveUpdate()"></div>
-                <button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeEl('prj-${id}')">Delete</button>
+                <div class="entry-body">
+                    <label>Project Title</label><input class="form-control mb-2 fw-bold prj-ti" placeholder="Project Name" oninput="updateCardTitle(this, '.prj-ti', 'New Project')" value="${title}">
+                    <label>Your Role</label><input class="form-control mb-2 prj-ro" placeholder="Your Role" oninput="liveUpdate()" value="${role}">
+                    <label>Description</label>
+                    <div class="toolbar">
+                        <button onclick="formatText('bold')">B</button>
+                        <button onclick="formatText('insertUnorderedList')">•</button>
+                    </div>
+                    <div contenteditable="true" class="rich-editor" data-placeholder="Describe the project..." oninput="liveUpdate()">${desc}</div>
+                    <button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeEl('prj-${id}')">Delete</button>
+                </div>
             </div>`);
-        showToast('Project added');
+        if(!data) showToast('Project added');
     }
 
-    function addEdu() {
+    function addEdu(data = null) {
         const id = Date.now();
+        const school = data ? data.school : '';
+        const degree = data ? data.degree : '';
+        const start = data ? data.start : '';
+        const end = data ? data.end : '';
+
         document.getElementById('edu-container').insertAdjacentHTML('beforeend', `
             <div class="entry-card" id="edu-${id}">
-                <label>School/University</label><input class="form-control mb-2 fw-bold edu-sc" placeholder="Institution Name" oninput="liveUpdate()">
-                <label>Degree</label><input class="form-control mb-2 edu-dg" placeholder="Degree/Certificate" oninput="liveUpdate()">
-                <div class="row g-2">
-                    <div class="col-6"><label>Start</label><input type="month" class="form-control sd" oninput="liveUpdate()"></div>
-                    <div class="col-6"><label>End</label><input type="month" class="form-control ed" oninput="liveUpdate()"></div>
+                <div class="entry-header">
+                    <h6 class="card-title-preview">${school || 'New Education'}</h6>
+                    <button class="btn btn-sm btn-outline-light" onclick="toggleCard(this)">−</button>
                 </div>
-                <button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeEl('edu-${id}')">Delete</button>
+                <div class="entry-body">
+                    <label>School/University</label><input class="form-control mb-2 fw-bold edu-sc" placeholder="Institution Name" oninput="updateCardTitle(this, '.edu-sc', 'New Education')" value="${school}">
+                    <label>Degree</label><input class="form-control mb-2 edu-dg" placeholder="Degree/Certificate" oninput="liveUpdate()" value="${degree}">
+                    <div class="row g-2">
+                        <div class="col-6"><label>Start</label><input type="month" class="form-control sd" oninput="liveUpdate()" value="${start}"></div>
+                        <div class="col-6"><label>End</label><input type="month" class="form-control ed" oninput="liveUpdate()" value="${end}"></div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeEl('edu-${id}')">Delete</button>
+                </div>
             </div>`);
-        showToast('Education entry added');
+        if(!data) showToast('Education entry added');
     }
 
-    function addCert() {
+    function addCert(data = null) {
         const id = Date.now();
+        const name = data ? data.name : '';
+        const prov = data ? data.provider : '';
+        const date = data ? data.date : '';
+
         document.getElementById('cert-container').insertAdjacentHTML('beforeend', `
             <div class="entry-card" id="cert-${id}">
-                <label>Certification Name</label><input class="form-control mb-2 fw-bold c-na" placeholder="Certification Title" oninput="liveUpdate()">
-                <label>Provider</label><input class="form-control mb-2 c-pr" placeholder="Issuing Organization" oninput="liveUpdate()">
-                <label>Issue Date</label><input type="month" class="form-control c-ex" oninput="liveUpdate()">
-                <button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeEl('cert-${id}')">Delete</button>
+                <div class="entry-header">
+                    <h6 class="card-title-preview">${name || 'New Certification'}</h6>
+                    <button class="btn btn-sm btn-outline-light" onclick="toggleCard(this)">−</button>
+                </div>
+                <div class="entry-body">
+                    <label>Certification Name</label><input class="form-control mb-2 fw-bold c-na" placeholder="Certification Title" oninput="updateCardTitle(this, '.c-na', 'New Certification')" value="${name}">
+                    <label>Provider</label><input class="form-control mb-2 c-pr" placeholder="Issuing Organization" oninput="liveUpdate()" value="${prov}">
+                    <label>Issue Date</label><input type="month" class="form-control c-ex" oninput="liveUpdate()" value="${date}">
+                    <button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeEl('cert-${id}')">Delete</button>
+                </div>
             </div>`);
-        showToast('Certification added');
+        if(!data) showToast('Certification added');
     }
 
-    function addRef() {
+    function addRef(data = null) {
         const id = Date.now();
+        const name = data ? data.name : '';
+        const title = data ? data.title : '';
+
         document.getElementById('ref-container').insertAdjacentHTML('beforeend', `
             <div class="entry-card" id="ref-${id}">
-                <label>Reference Name</label><input class="form-control mb-2 fw-bold ref-na" placeholder="Full Name" oninput="liveUpdate()">
-                <label>Title/Position</label><input class="form-control mb-2 ref-ti" placeholder="Job Title" oninput="liveUpdate()">
+                <label>Reference Name</label><input class="form-control mb-2 fw-bold ref-na" placeholder="Full Name" oninput="liveUpdate()" value="${name}">
+                <label>Title/Position</label><input class="form-control mb-2 ref-ti" placeholder="Job Title" oninput="liveUpdate()" value="${title}">
                 <button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeEl('ref-${id}')">Delete</button>
             </div>`);
-        showToast('Reference added');
+        if(!data) showToast('Reference added');
     }
 
-    function addCustom() {
+    function addCustom(data = null) {
         const id = Date.now();
+        const title = data ? data.title : '';
+        const content = data ? data.content : '';
+
         document.getElementById('custom-container').insertAdjacentHTML('beforeend', `
             <div class="entry-card" id="cust-${id}">
-                <label>Section Title</label><input class="form-control mb-2 fw-bold cust-ti" placeholder="Custom Section Name" oninput="updateSortList('${id}', this.value); liveUpdate()">
-                <label>Content</label>
-                <div class="toolbar">
-                    <button onclick="formatText('bold')">B</button>
-                    <button onclick="formatText('italic')">I</button>
-                    <button onclick="formatText('insertUnorderedList')">•</button>
+                <div class="entry-header">
+                    <h6 class="card-title-preview">${title || 'New Section'}</h6>
+                    <button class="btn btn-sm btn-outline-light" onclick="toggleCard(this)">−</button>
                 </div>
-                <div contenteditable="true" class="rich-editor" data-placeholder="Add custom content..." oninput="liveUpdate()"></div>
-                <button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeEl('cust-${id}')">Delete</button>
+                <div class="entry-body">
+                    <label>Section Title</label><input class="form-control mb-2 fw-bold cust-ti" placeholder="Custom Section Name" oninput="updateSortList('${id}', this.value); updateCardTitle(this, '.cust-ti', 'New Section')" value="${title}">
+                    <label>Content</label>
+                    <div class="toolbar">
+                        <button onclick="formatText('bold')">B</button>
+                        <button onclick="formatText('italic')">I</button>
+                        <button onclick="formatText('insertUnorderedList')">•</button>
+                    </div>
+                    <div contenteditable="true" class="rich-editor" data-placeholder="Add custom content..." oninput="liveUpdate()">${content}</div>
+                    <button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeEl('cust-${id}')">Delete</button>
+                </div>
             </div>`);
-        document.getElementById('section-sort').insertAdjacentHTML('beforeend', 
-            `<li class="list-group-item bg-transparent text-info border-info py-2 small" data-id="cust-${id}" id="li-cust-${id}">
-                <span>➕ New Section</span>
-                <div class="section-toggle active" onclick="toggleSection(this, 'cust-${id}')"></div>
-            </li>`);
-        showToast('Custom section added');
+        
+        // Only add sort list item if it doesn't exist (prevents duplicates on reload)
+        if(!document.getElementById(`li-cust-${id}`)) {
+            document.getElementById('section-sort').insertAdjacentHTML('beforeend', 
+                `<li class="list-group-item bg-transparent text-info border-info py-2 small" data-id="cust-${id}" id="li-cust-${id}">
+                    <span>${title || '➕ New Section'}</span>
+                    <div class="section-toggle active" onclick="toggleSection(this, 'cust-${id}')"></div>
+                </li>`);
+        }
+        if(!data) showToast('Custom section added');
     }
     
     function updateSortList(id, val) { 
@@ -1649,7 +1770,7 @@
                     items.forEach(el => {
                         const start = formatDate(el.querySelector('.sd').value);
                         const end = el.querySelector('.ed').value ? formatDate(el.querySelector('.ed').value) : 'Present';
-                        html += `<div class="mb-${features.compactMode ? '2' : '4'}" style="font-size:${cSize}rem">
+                        html += `<div class="mb-${features.compactMode ? '2' : '4'}" style="font-size:${cSize}rem; break-inside: avoid; page-break-inside: avoid;">
                             <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap;">
                                 <strong style="font-size:1.1em">${el.querySelector('.exp-ro').value}</strong>
                                 <span style="opacity:0.6; font-size:0.9em">${start} — ${end}</span>
@@ -1670,7 +1791,7 @@
                     items.forEach(el => {
                         const start = formatDate(el.querySelector('.sd').value);
                         const end = formatDate(el.querySelector('.ed').value);
-                        html += `<div class="mb-3" style="font-size:${cSize}rem">
+                        html += `<div class="mb-3" style="font-size:${cSize}rem; break-inside: avoid; page-break-inside: avoid;">
                             <div style="display:flex; justify-content:space-between; flex-wrap:wrap;">
                                 <strong style="font-size:1.05em">${el.querySelector('.edu-sc').value}</strong>
                                 <span style="opacity:0.6; font-size:0.9em">${start} — ${end}</span>
@@ -1687,7 +1808,7 @@
                 if (items.length) {
                     html += `<div class="sec-item" style="margin-bottom:${sectionMargin}"><div class="section-header" style="${hStyle}">Projects</div>`;
                     items.forEach(el => {
-                        html += `<div class="mb-3" style="font-size:${cSize}rem">
+                        html += `<div class="mb-3" style="font-size:${cSize}rem; break-inside: avoid; page-break-inside: avoid;">
                             <strong style="font-size:1.05em">${el.querySelector('.prj-ti').value}</strong> 
                             <span style="opacity:0.7; font-style:italic">(${el.querySelector('.prj-ro').value})</span>
                             <div style="margin-top:6px; line-height:${features.compactMode ? '1.4' : '1.6'}">${el.querySelector('.rich-editor').innerHTML}</div>
@@ -1700,7 +1821,6 @@
             if (id === 'skills' && hasC('sk')) {
                 let skillsContent = document.getElementById('sk').innerHTML;
                 if (features.showSkillBars) {
-                    // Convert bullet list to skill bars
                     const skillItems = document.getElementById('sk').innerText.split('\n').filter(s => s.trim());
                     skillsContent = skillItems.map(skill => `
                         <div style="margin-bottom: 8px;">
@@ -1722,7 +1842,7 @@
                     html += `<div class="sec-item" style="margin-bottom:${sectionMargin}"><div class="section-header" style="${hStyle}">Certifications</div>`;
                     items.forEach(el => {
                         const issued = formatDate(el.querySelector('.c-ex').value);
-                        html += `<div class="mb-2" style="font-size:${cSize}rem">
+                        html += `<div class="mb-2" style="font-size:${cSize}rem; break-inside: avoid;">
                             <strong>${el.querySelector('.c-na').value}</strong> - ${el.querySelector('.c-pr').value} 
                             <span style="float:right; opacity:0.6; font-size:0.9em">${issued}</span>
                         </div>`;
@@ -1738,7 +1858,6 @@
             if (id === 'languages' && hasC('lang')) {
                 let langContent = document.getElementById('lang').innerHTML;
                 
-                // Add language proficiency if available
                 const proficiencyItems = document.querySelectorAll('#language-proficiency-container .language-skill-row');
                 if (proficiencyItems.length > 0 && features.showProficiencyBars) {
                     langContent = '<div>';
@@ -1774,7 +1893,7 @@
                     html += `<div class="sec-item" style="margin-bottom:${sectionMargin}"><div class="section-header" style="${hStyle}">References</div>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; font-size:${cSize}rem">`;
                     items.forEach(el => {
-                        html += `<div>
+                        html += `<div style="break-inside: avoid;">
                             <strong>${el.querySelector('.ref-na').value}</strong><br>
                             <small style="opacity:0.7">${el.querySelector('.ref-ti').value}</small>
                         </div>`;
@@ -1836,10 +1955,10 @@
         if (location) contactParts.push(`${locationIcon}${location}`);
         const contactInfo = contactParts.join(' • ');
         
-        // Collect social links
         const socialLinksHTML = [];
         document.querySelectorAll('[id^="social-type-"]').forEach((select, index) => {
-            const urlInput = document.getElementById(`social-url-${index}`);
+            const container = select.closest('.social-link-input');
+            const urlInput = container.querySelector('input');
             if (urlInput && urlInput.value) {
                 const type = select.value;
                 const url = urlInput.value;
@@ -1859,7 +1978,6 @@
         
         const sections = getSections(fCol, cSize);
         
-        // Add page numbers if enabled
         let pageNumberHTML = '';
         if (features.showPageNumbers) {
             pageNumberHTML = `<div style="position: absolute; bottom: 20px; right: 20px; opacity: 0.5; font-size: 0.8rem;">Page 1</div>`;
@@ -1903,6 +2021,55 @@
     }
     
     function collectData() {
+        // Collect Lists
+        const experiences = Array.from(document.querySelectorAll('#exp-container .entry-card')).map(card => ({
+            company: card.querySelector('.exp-co').value,
+            role: card.querySelector('.exp-ro').value,
+            location: card.querySelector('.exp-lo').value,
+            start: card.querySelector('.sd').value,
+            end: card.querySelector('.ed').value,
+            desc: card.querySelector('.rich-editor').innerHTML
+        }));
+
+        const projects = Array.from(document.querySelectorAll('#proj-container .entry-card')).map(card => ({
+            title: card.querySelector('.prj-ti').value,
+            role: card.querySelector('.prj-ro').value,
+            desc: card.querySelector('.rich-editor').innerHTML
+        }));
+
+        const education = Array.from(document.querySelectorAll('#edu-container .entry-card')).map(card => ({
+            school: card.querySelector('.edu-sc').value,
+            degree: card.querySelector('.edu-dg').value,
+            start: card.querySelector('.sd').value,
+            end: card.querySelector('.ed').value
+        }));
+
+        const certifications = Array.from(document.querySelectorAll('#cert-container .entry-card')).map(card => ({
+            name: card.querySelector('.c-na').value,
+            provider: card.querySelector('.c-pr').value,
+            date: card.querySelector('.c-ex').value
+        }));
+
+        const references = Array.from(document.querySelectorAll('#ref-container .entry-card')).map(card => ({
+            name: card.querySelector('.ref-na').value,
+            title: card.querySelector('.ref-ti').value
+        }));
+
+        const customSections = Array.from(document.querySelectorAll('#custom-container .entry-card')).map(card => ({
+            title: card.querySelector('.cust-ti').value,
+            content: card.querySelector('.rich-editor').innerHTML
+        }));
+        
+        const socialLinksData = Array.from(document.querySelectorAll('.social-link-input')).map(el => ({
+            type: el.querySelector('select').value,
+            url: el.querySelector('input').value
+        })).filter(s => s.url);
+
+        const langProficiencyData = Array.from(document.querySelectorAll('.language-skill-row')).map(el => ({
+            language: el.querySelector('input').value,
+            level: el.querySelectorAll('.proficiency-dot.active').length
+        })).filter(l => l.language);
+
         return {
             fn: document.getElementById('fn').value,
             ln: document.getElementById('ln').value,
@@ -1930,6 +2097,15 @@
             layoutStyle: layoutStyle,
             sectionSpacing: sectionSpacing,
             headerAlignment: headerAlignment,
+            // Enhanced Lists
+            experiences: experiences,
+            projects: projects,
+            education: education,
+            certifications: certifications,
+            references: references,
+            customSections: customSections,
+            socialLinks: socialLinksData,
+            langProficiency: langProficiencyData,
             timestamp: new Date().toISOString()
         };
     }
@@ -1956,6 +2132,38 @@
         document.getElementById('dateFormat').value = data.dateFormat || 'month-year';
         photoData = data.photo || '';
         currentStyle = data.style || 'apollo';
+        
+        // Restore Dynamic Lists
+        document.getElementById('exp-container').innerHTML = '';
+        if(data.experiences) data.experiences.forEach(item => addExp(item));
+        else addExp(); // Add empty if none
+
+        document.getElementById('proj-container').innerHTML = '';
+        if(data.projects) data.projects.forEach(item => addProj(item));
+
+        document.getElementById('edu-container').innerHTML = '';
+        if(data.education) data.education.forEach(item => addEdu(item));
+
+        document.getElementById('cert-container').innerHTML = '';
+        if(data.certifications) data.certifications.forEach(item => addCert(item));
+
+        document.getElementById('ref-container').innerHTML = '';
+        if(data.references) data.references.forEach(item => addRef(item));
+
+        document.getElementById('custom-container').innerHTML = '';
+        // Clear old custom sorts to avoid dupes
+        document.querySelectorAll('[id^="li-cust-"]').forEach(el => el.remove());
+        if(data.customSections) data.customSections.forEach(item => addCustom(item));
+        
+        document.getElementById('social-container').innerHTML = '';
+        if(data.socialLinks && data.socialLinks.length > 0) {
+            data.socialLinks.forEach(item => addSocialLink(item));
+        } else {
+            addSocialLink(); // Default empty
+        }
+
+        document.getElementById('language-proficiency-container').innerHTML = '';
+        if(data.langProficiency) data.langProficiency.forEach(item => addLanguageProficiency(item));
         
         if (data.hiddenSections) {
             hiddenSections = new Set(data.hiddenSections);
@@ -2015,7 +2223,7 @@
             filename: `resume_${document.getElementById('fn').value}_${document.getElementById('ln').value}.pdf`.replace(/\s+/g, '_'), 
             html2canvas: { scale: 2.2, useCORS: true }, 
             jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' }, 
-            pagebreak: { mode: 'avoid-all' } 
+            pagebreak: { mode: ['css', 'legacy'] } 
         }).from(document.getElementById('resume-target')).save().then(() => {
             document.querySelectorAll('.page-break-guide').forEach(g => g.style.display = 'block');
             currentZoom = originalZoom;
