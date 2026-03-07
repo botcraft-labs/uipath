@@ -687,7 +687,11 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
       </div>
     </div>
     <div class="fr">
-      <div class="fg"><label>Candidate Name <span class="req">*</span></label><input id="e-cand" placeholder="Full name"/></div>
+      <div class="fg">
+        <label>Candidate Name <span class="req">*</span></label>
+        <input id="e-cand" placeholder="Full name" readonly style="background:var(--sf3);color:var(--ink2);cursor:default;opacity:.85"/>
+        <div style="font-size:.68rem;color:var(--ink3);margin-top:4px">Auto-filled as the booking user's name.</div>
+      </div>
       <div class="fg"><label>Company Name <span class="req">*</span></label><input id="e-comp" placeholder="Company"/></div>
     </div>
     <div class="fr t3">
@@ -709,8 +713,65 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
     </div>
     <div class="fg"><label>Event Color</label><div class="cr-row" id="e-cr"></div></div>
     <div class="fg"><label>Notes</label><textarea id="e-notes" placeholder="Interview format, topics, instructions, links…"></textarea></div>
+<!-- RECURRENCE — admin only -->
+    <div id="e-recur-wrap" style="display:none;margin-top:4px">
+      <div class="dt-box" style="margin-bottom:12px">
+        <div class="dt-hdr">&#x1F501; Recurrence</div>
+        <div class="fg" style="margin-bottom:10px">
+          <label>Repeat</label>
+          <select id="e-recur" onchange="onRecurChange()">
+            <option value="none">Does not repeat</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div id="e-recur-opts" style="display:none">
+          <div class="fr" id="e-recur-interval-row">
+            <div class="fg">
+              <label>Every</label>
+              <div style="display:flex;align-items:center;gap:8px">
+                <input id="e-recur-every" type="number" min="1" max="99" value="1" style="width:80px"/>
+                <span id="e-recur-unit" style="color:var(--ink3);font-size:.82rem">day(s)</span>
+              </div>
+            </div>
+            <div class="fg">
+              <label>End After</label>
+              <select id="e-recur-end-type" onchange="onRecurEndChange()">
+                <option value="count">Number of occurrences</option>
+                <option value="date">Specific end date</option>
+                <option value="never">Never (max 52)</option>
+              </select>
+            </div>
+          </div>
+          <div id="e-recur-count-row" class="fg">
+            <label>Occurrences</label>
+            <input id="e-recur-count" type="number" min="1" max="52" value="5"/>
+          </div>
+          <div id="e-recur-date-row" class="fg" style="display:none">
+            <label>Repeat Until</label>
+            <input id="e-recur-until" type="date"/>
+          </div>
+          <div id="e-recur-days-row" style="display:none;margin-bottom:10px">
+            <label style="font-family:var(--font-head);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink2);display:block;margin-bottom:7px">Repeat On</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <label style="display:flex;align-items:center;gap:4px;background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:5px 10px;cursor:pointer;font-size:.75rem;font-weight:600"><input type="checkbox" value="0" class="rcb" style="accent-color:var(--acc)"/>Sun</label>
+              <label style="display:flex;align-items:center;gap:4px;background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:5px 10px;cursor:pointer;font-size:.75rem;font-weight:600"><input type="checkbox" value="1" class="rcb" style="accent-color:var(--acc)"/>Mon</label>
+              <label style="display:flex;align-items:center;gap:4px;background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:5px 10px;cursor:pointer;font-size:.75rem;font-weight:600"><input type="checkbox" value="2" class="rcb" style="accent-color:var(--acc)"/>Tue</label>
+              <label style="display:flex;align-items:center;gap:4px;background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:5px 10px;cursor:pointer;font-size:.75rem;font-weight:600"><input type="checkbox" value="3" class="rcb" style="accent-color:var(--acc)"/>Wed</label>
+              <label style="display:flex;align-items:center;gap:4px;background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:5px 10px;cursor:pointer;font-size:.75rem;font-weight:600"><input type="checkbox" value="4" class="rcb" style="accent-color:var(--acc)"/>Thu</label>
+              <label style="display:flex;align-items:center;gap:4px;background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:5px 10px;cursor:pointer;font-size:.75rem;font-weight:600"><input type="checkbox" value="5" class="rcb" style="accent-color:var(--acc)"/>Fri</label>
+              <label style="display:flex;align-items:center;gap:4px;background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:5px 10px;cursor:pointer;font-size:.75rem;font-weight:600"><input type="checkbox" value="6" class="rcb" style="accent-color:var(--acc)"/>Sat</label>
+            </div>
+          </div>
+          <div id="e-recur-preview" style="background:var(--accbg);border:1px solid var(--accbd);border-radius:9px;padding:10px 14px;font-size:.76rem;color:var(--acc);margin-top:6px;line-height:1.7"></div>
+        </div>
+      </div>
+    </div>
     <div style="background:var(--blbg);border:1px solid rgba(26,74,154,.2);border-radius:9px;padding:11px 14px;font-size:.76rem;color:var(--bl);line-height:1.6">
-      🔔 Configured notification channels will receive an alert when you save.
+      &#x1F514; Configured notification channels will receive an alert when you save.
     </div>
   </div>
   <div class="mfoot">
@@ -1568,13 +1629,29 @@ function openEvtModal(ds, st='09:00', et='10:00', ev=null) {
   sv('e-name', ev?.name||'');
   sv('e-sd', ev?.sd||ds); sv('e-st', ev?.st||st);
   sv('e-ed', ev?.ed||ds); sv('e-et', ev?.et||et);
-  sv('e-cand', ev?.cand||''); sv('e-comp', ev?.comp||'');
+  // Candidate auto-filled as current user's name (read-only)
+  sv('e-cand', ev?.cand||CU.name);
+  sv('e-comp', ev?.comp||'');
   sv('e-loc', ev?.loc||''); sv('e-wm', ev?.wm||'onsite');
   sv('e-cat', ev?.category||'interview'); sv('e-pri', ev?.priority||'medium');
   sv('e-sts', ev?.status||'confirmed');
   sv('e-notes', ev?.notes||'');
   selEC = ev?.color||EC[0]; buildCR('e-cr', EC, 'ev', selEC);
   g('em-del').style.display = ev ? '' : 'none';
+  // Recurrence — admin only, hidden for non-admin
+  const recurWrap = g('e-recur-wrap');
+  if (recurWrap) recurWrap.style.display = CU.role === 'admin' ? '' : 'none';
+  // Reset recurrence fields
+  sv('e-recur', ev?.recur?.type||'none');
+  sv('e-recur-every', ev?.recur?.every||1);
+  sv('e-recur-end-type', ev?.recur?.endType||'count');
+  sv('e-recur-count', ev?.recur?.count||5);
+  sv('e-recur-until', ev?.recur?.until||'');
+  // Reset weekday checkboxes
+  document.querySelectorAll('.rcb').forEach(cb => {
+    cb.checked = (ev?.recur?.days||[]).includes(parseInt(cb.value));
+  });
+  onRecurChange();
   openOv('ov-ev');
 }
 function slotsOverlap(asd, aed, ast, aet, bsd, bed, bst, bet) {
@@ -1594,27 +1671,123 @@ function findOverlappingSlots(evData) {
   });
 }
 
+/* ─ RECURRENCE UI ─ */
+function onRecurChange() {
+  const val = gv('e-recur');
+  const opts = g('e-recur-opts');
+  const daysRow = g('e-recur-days-row');
+  const unitEl = g('e-recur-unit');
+  if (!opts) return;
+  opts.style.display = (val === 'none') ? 'none' : '';
+  if (daysRow) daysRow.style.display = (val === 'weekly' || val === 'custom') ? '' : 'none';
+  const units = { daily:'day(s)', weekly:'week(s)', monthly:'month(s)', yearly:'year(s)', custom:'day(s)' };
+  if (unitEl) unitEl.textContent = units[val] || 'day(s)';
+  updateRecurPreview();
+}
+function onRecurEndChange() {
+  const et = gv('e-recur-end-type');
+  const cr = g('e-recur-count-row'), dr = g('e-recur-date-row');
+  if (cr) cr.style.display = et === 'count' ? '' : 'none';
+  if (dr) dr.style.display = et === 'date' ? '' : 'none';
+  updateRecurPreview();
+}
+function updateRecurPreview() {
+  const prev = g('e-recur-preview'); if (!prev) return;
+  const dates = generateRecurDates();
+  if (!dates || !dates.length) { prev.innerHTML = ''; return; }
+  const fmt = d => new Date(d+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  const shown = dates.slice(0,5);
+  const more = dates.length > 5 ? ` <span style="opacity:.7">+${dates.length-5} more</span>` : '';
+  prev.innerHTML = `&#x1F4C5; <strong>${dates.length} occurrence${dates.length!==1?'s':''}</strong><br>${shown.map(fmt).join(' &nbsp;&#183;&nbsp; ')}${more}`;
+}
+function generateRecurDates() {
+  const type = gv('e-recur');
+  if (type === 'none') return [];
+  const startDs = gv('e-sd'); if (!startDs) return [];
+  const every = Math.max(1, parseInt(gv('e-recur-every'))||1);
+  const endType = gv('e-recur-end-type');
+  const maxCount = endType === 'never' ? 52 : Math.min(52, parseInt(gv('e-recur-count'))||5);
+  const untilDs = gv('e-recur-until');
+  const checkedDays = Array.from(document.querySelectorAll('.rcb:checked')).map(cb => parseInt(cb.value));
+  const dates = [];
+  let cur = new Date(startDs + 'T12:00');
+  const dur = Math.max(0, (new Date((gv('e-ed')||startDs)+'T12:00') - new Date(startDs+'T12:00')) / 86400000);
+  while (dates.length < maxCount) {
+    const ds = isoD(cur.getFullYear(), cur.getMonth(), cur.getDate());
+    if (endType === 'date' && untilDs && ds > untilDs) break;
+    if (dates.length > 0 || ds >= startDs) {
+      if (type === 'weekly' || type === 'custom') {
+        if (checkedDays.length === 0 || checkedDays.includes(cur.getDay())) dates.push(ds);
+      } else {
+        dates.push(ds);
+      }
+    }
+    // Advance
+    if (type === 'daily') cur.setDate(cur.getDate() + every);
+    else if (type === 'weekly') cur.setDate(cur.getDate() + (checkedDays.length > 0 ? 1 : every * 7));
+    else if (type === 'monthly') cur.setMonth(cur.getMonth() + every);
+    else if (type === 'yearly') cur.setFullYear(cur.getFullYear() + every);
+    else if (type === 'custom') cur.setDate(cur.getDate() + every);
+    if (dates.length >= 52) break; // hard cap
+  }
+  return dates;
+}
+function getRecurConfig() {
+  const type = gv('e-recur');
+  if (type === 'none' || CU.role !== 'admin') return null;
+  const checkedDays = Array.from(document.querySelectorAll('.rcb:checked')).map(cb => parseInt(cb.value));
+  return {
+    type,
+    every: parseInt(gv('e-recur-every'))||1,
+    endType: gv('e-recur-end-type'),
+    count: parseInt(gv('e-recur-count'))||5,
+    until: gv('e-recur-until')||'',
+    days: checkedDays
+  };
+}
+
 async function proceedSaveEvent(evData, isNew) {
-  if (editEvtId) { const i = DB.events.findIndex(e=>e.id===editEvtId); if (i>-1) DB.events[i]=evData; }
-  else DB.events.push(evData);
-  logAct('event', `${isNew?'Booked':'Updated'} slot: ${evData.name}`, evData.id);
+  const recurDates = (isNew && evData.recur && evData.recur.type !== 'none') ? generateRecurDates() : [];
+  if (recurDates.length > 1) {
+    // Create recurring slots — skip first date (that's the main evData)
+    const startDs = evData.sd;
+    const dur = Math.max(0, (new Date((evData.ed||startDs)+'T12:00') - new Date(startDs+'T12:00')) / 86400000);
+    let created = 0;
+    recurDates.forEach((ds, idx) => {
+      const edDs = new Date(ds+'T12:00');
+      edDs.setDate(edDs.getDate() + dur);
+      const edStr = isoD(edDs.getFullYear(), edDs.getMonth(), edDs.getDate());
+      const childEv = { ...evData, id: (idx === 0 ? evData.id : 'e'+Date.now()+idx), sd: ds, ed: edStr, date: ds, recurGroup: evData.id };
+      DB.events.push(childEv);
+      created++;
+    });
+    logAct('event', `Booked ${created} recurring slots: ${evData.name}`, evData.id);
+    toast(`✓ ${created} recurring slots created`);
+  } else {
+    if (editEvtId) { const i = DB.events.findIndex(e=>e.id===editEvtId); if (i>-1) DB.events[i]=evData; }
+    else DB.events.push(evData);
+    logAct('event', `${isNew?'Booked':'Updated'} slot: ${evData.name}`, evData.id);
+    toast(isNew ? '✓ Slot booked' : '✓ Slot updated');
+  }
   persist(); closeOv('ov-ev'); showSec(SEC); updateCounts(); buildMiniCal();
-  toast(isNew ? '✓ Slot booked' : '✓ Slot updated');
   sendNotifications(evData, isNew);
   editEvtId = null;
 }
 
 async function saveEvent() {
   const name=gv('e-name').trim(), sd=gv('e-sd'), st=gv('e-st'), ed=gv('e-ed'), et=gv('e-et');
-  const cand=gv('e-cand').trim(), comp=gv('e-comp').trim();
-  if (!name||!sd||!cand||!comp) { toast('Please fill all required fields','warn'); return; }
+  // Candidate is auto-filled from user, company still required
+  const cand=gv('e-cand').trim()||CU.name, comp=gv('e-comp').trim();
+  if (!name||!sd||!comp) { toast('Please fill all required fields','warn'); return; }
   if (ed < sd) { toast('End date cannot be before start date','err'); return; }
   const isNew = !editEvtId;
+  const recurCfg = getRecurConfig();
   const evData = {
     id: editEvtId||'e'+Date.now(), name, sd, ed, st, et, cand, comp,
     loc: gv('e-loc').trim(), wm: gv('e-wm'), category: gv('e-cat'),
     priority: gv('e-pri'), status: gv('e-sts'),
     notes: gv('e-notes').trim(),
+    recur: recurCfg,
     assignedTo: editEvtId ? (DB.events.find(e=>e.id===editEvtId)?.assignedTo||null) : null,
     color: selEC, createdBy: editEvtId ? (DB.events.find(e=>e.id===editEvtId)?.createdBy||CU.id) : CU.id,
     date: sd, start: st, end: et
@@ -1637,35 +1810,35 @@ function showSlotConflictWarning(evData, isNew, overlaps) {
 
   const ov = overlaps[0];
   const ownerUser = DB.users.find(u => u.id === ov.createdBy);
-  const ownerName = ownerUser ? ownerUser.name : 'another user';
-  const isAdmin = CU.role === 'admin';
+  const ownerIsAdmin = ownerUser && ownerUser.role === 'admin';
+  // Only reveal who blocked it if the owner is an admin
+  const ownerDisplay = ownerIsAdmin ? ownerUser.name : 'another user';
+  const isAdminCU = CU.role === 'admin';
 
   const modal = document.createElement('div');
   modal.id = 'ov-conflict';
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);';
   modal.innerHTML = `
     <div style="background:#fff;border-radius:20px;max-width:460px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,0.25);overflow:hidden;animation:scaleIn .2s ease;">
-      <!-- Header -->
-      <div style="background:linear-gradient(135deg,#fff3f3,#ffe8e8);padding:28px 28px 20px;border-bottom:1px solid #fecaca;position:relative;">
+      <div style="background:linear-gradient(135deg,#fff3f3,#ffe8e8);padding:28px 28px 20px;border-bottom:1px solid #fecaca;">
         <div style="width:52px;height:52px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:14px;border:2px solid #fca5a5;">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         </div>
         <div style="font-size:1.15rem;font-weight:800;color:#1a1a2e;margin-bottom:6px;">Slot Already Reserved</div>
         <div style="font-size:0.82rem;color:#6b7280;line-height:1.5;">This time slot conflicts with an existing booking</div>
       </div>
-      <!-- Body -->
       <div style="padding:24px 28px;">
         <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:18px;">
           <div style="font-size:0.68rem;font-weight:700;color:#9ca3af;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;">Conflicting Slot</div>
-          <div style="font-size:0.9rem;font-weight:700;color:#111827;margin-bottom:4px;">${ov.name}</div>
+          ${isAdminCU ? `<div style="font-size:0.9rem;font-weight:700;color:#111827;margin-bottom:4px;">${ov.name}</div>` : ''}
           <div style="font-size:0.78rem;color:#6b7280;margin-bottom:2px;">&#128197; ${fmtDate(ov.sd)} &nbsp;&#9679;&nbsp; &#9200; ${ov.st||'—'} – ${ov.et||'—'}</div>
-          <div style="font-size:0.78rem;color:#6b7280;">&#128100; Reserved by: <strong style="color:#374151;">${ownerName}</strong></div>
+          <div style="font-size:0.78rem;color:#6b7280;">&#128274; Blocked by: <strong style="color:#374151;">${ownerDisplay}</strong></div>
         </div>
         <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:13px 16px;margin-bottom:20px;display:flex;gap:10px;align-items:flex-start;">
           <span style="font-size:1rem;flex-shrink:0;">&#128274;</span>
           <div style="font-size:0.8rem;color:#92400e;line-height:1.6;">
-            <strong>This time slot is blocked by another user.</strong><br>
-            ${isAdmin ? 'As admin, you can still book this slot.' : 'Please contact your <strong>admin</strong> to resolve the conflict or choose a different time.'}
+            <strong>This time slot is blocked by ${ownerDisplay}.</strong><br>
+            ${isAdminCU ? 'As admin, you can still override and book this slot.' : 'Please contact your <strong>admin</strong> to resolve the conflict or choose a different time.'}
           </div>
         </div>
         <div style="display:flex;gap:10px;flex-direction:column;">
