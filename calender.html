@@ -845,9 +845,10 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
         <strong>Setup EmailJS for Invitation Emails:</strong><br>
         1. Sign up free at <a href="https://www.emailjs.com" target="_blank">emailjs.com</a> → Dashboard<br>
         2. <strong>Email Services</strong> → Add Service (Gmail, Outlook, etc.) → Copy <strong>Service ID</strong><br>
-        3. <strong>Email Templates</strong> → Create Template → use variables below → Copy <strong>Template ID</strong><br>
-        4. <strong>Account → API Keys</strong> → Copy <strong>Public Key</strong><br>
-        5. In your template use: <code>{{to_name}}</code> <code>{{to_email}}</code> <code>{{username}}</code> <code>{{password}}</code> <code>{{role}}</code> <code>{{app_url}}</code> <code>{{invited_by}}</code>
+        3. <strong>Email Templates</strong> → Create Template → Copy <strong>Template ID</strong><br>
+        4. <span style="background:#fff3cd;border-radius:4px;padding:1px 6px;color:#856404">❗ CRITICAL: In template settings, set the <strong>To Email</strong> field to <code>{{to_email}}</code></span><br>
+        5. <strong>Account → API Keys</strong> → Copy <strong>Public Key</strong><br>
+        6. Template variables: <code>{{to_name}}</code> <code>{{to_email}}</code> <code>{{username}}</code> <code>{{password}}</code> <code>{{role}}</code> <code>{{app_url}}</code> <code>{{invited_by}}</code>
       </div>
       <div class="fr t3">
         <div class="fg"><label>Public Key <span class="req">*</span></label><input id="n-ejpk" placeholder="your_public_key"/></div>
@@ -1710,8 +1711,8 @@ function emailJSReady() {
 
 async function sendInviteEmail({ name, username, password, role, email }) {
   if (!emailJSReady()) {
-    toast('⚠ EmailJS not configured — user created without invite', 'warn');
-    logAct('notify', `Invite NOT sent to ${email} — EmailJS not configured`);
+    toast('\u26a0 EmailJS not configured \u2014 user created without invite', 'warn');
+    logAct('notify', `Invite NOT sent to ${email} \u2014 EmailJS not configured`);
     return;
   }
   const n = DB.notif.email;
@@ -1719,9 +1720,12 @@ async function sendInviteEmail({ name, username, password, role, email }) {
     emailjs.init(n.publicKey);
     const appUrl = n.appUrl || window.location.href;
     const roleLabels = { viewer:'Viewer (read-only)', editor:'Editor (create & edit slots)', admin:'Administrator (full access)' };
-    await emailjs.send(n.serviceId, n.templateId, {
+    const params = {
       to_name: name,
       to_email: email,
+      reply_to: email,
+      email: email,
+      recipient: email,
       username: username,
       password: password,
       role: roleLabels[role] || role,
@@ -1730,13 +1734,19 @@ async function sendInviteEmail({ name, username, password, role, email }) {
       invited_by_email: CU.email || '',
       app_name: 'UiPath Interview Slot Booking',
       message: `You have been invited to join the UiPath Interview Slot Booking platform by ${CU.name}. Use the credentials below to sign in.`
-    });
-    toast(`✓ User created & invitation sent to ${email}`, 'ok');
+    };
+    await emailjs.send(n.serviceId, n.templateId, params);
+    toast(`\u2713 Invitation sent to ${email}`, 'ok');
     logAct('notify', `Invitation email sent to ${email} for user: ${name}`);
   } catch(err) {
     console.error('EmailJS error:', err);
-    toast(`User created but email failed: ${err?.text || err?.message || 'Unknown error'}`, 'warn');
-    logAct('notify', `Invite email FAILED to ${email}: ${err?.text || err?.message || 'error'}`);
+    const errMsg = err?.text || err?.message || 'Unknown error';
+    if (errMsg.toLowerCase().includes('recipients') || errMsg.toLowerCase().includes('address')) {
+      toast('Email failed: In EmailJS template settings, set \"To Email\" field to {{to_email}}', 'warn');
+    } else {
+      toast(`User created but email failed: ${errMsg}`, 'warn');
+    }
+    logAct('notify', `Invite email FAILED to ${email}: ${errMsg}`);
   }
 }
 
