@@ -6,6 +6,7 @@
 <title>UiPath · Interview Slot Booking</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 :root {
   --bg: #eaecf5;
@@ -728,6 +729,13 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
       <div class="fg"><label>Full Name <span class="req">*</span></label><input id="u-name" placeholder="Display name"/></div>
       <div class="fg"><label>Username <span class="req">*</span></label><input id="u-un" placeholder="login id" autocomplete="off"/></div>
     </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Email Address <span class="req" id="u-er">*</span></label>
+        <input id="u-email" type="email" placeholder="user@company.com" autocomplete="off"/>
+        <div style="font-size:.69rem;color:var(--ink3);margin-top:4px" id="u-eh">Invitation with login credentials will be sent to this email.</div>
+      </div>
+    </div>
     <div class="fr">
       <div class="fg">
         <label>Password <span class="req" id="u-pr">*</span></label>
@@ -741,11 +749,19 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
       </div>
     </div>
     <div class="fg"><label>Avatar Color</label><div class="cr-row" id="u-cr"></div></div>
+    <div id="u-invite-row" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--grbg);border:1px solid rgba(15,122,80,.2);border-radius:9px;font-size:.78rem;color:var(--gr)">
+      <span style="font-size:1rem">📧</span>
+      <span>An invitation email with login credentials will be sent automatically on save.</span>
+    </div>
+    <div id="u-noemail-row" style="display:none;align-items:center;gap:10px;padding:10px 14px;background:var(--ambg);border:1px solid rgba(138,92,0,.2);border-radius:9px;font-size:.78rem;color:var(--am)">
+      <span style="font-size:1rem">⚠️</span>
+      <span>EmailJS not configured. Go to <strong>Notifications → Email</strong> to set up invitations.</span>
+    </div>
   </div>
   <div class="mfoot">
     <button class="bdanger" id="um-del" style="display:none" onclick="delUsrM()">🗑 Delete</button>
     <button class="bg" onclick="closeOv('ov-usr')">Cancel</button>
-    <button class="bp" onclick="saveUser()">💾 Save</button>
+    <button class="bp" onclick="saveUser()">💾 Save &amp; Send Invite</button>
   </div>
 </div></div>
 
@@ -804,6 +820,7 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
       <div class="ntab on" onclick="selNTab('slack')" id="nt-slack">💬 Slack</div>
       <div class="ntab" onclick="selNTab('telegram')" id="nt-telegram">✈️ Telegram</div>
       <div class="ntab" onclick="selNTab('whatsapp')" id="nt-whatsapp">📱 WhatsApp</div>
+      <div class="ntab" onclick="selNTab('email')" id="nt-email">📧 Email (Invites)</div>
     </div>
     <div class="ntab-body on" id="nb-slack">
       <div class="nh"><strong>Setup Slack Webhook:</strong><br>1. Go to <a href="https://api.slack.com/apps" target="_blank">api.slack.com/apps</a> → Create App → Incoming Webhooks<br>2. Toggle "Activate Incoming Webhooks" → Add to Workspace → Choose channel<br>3. Copy the Webhook URL and paste below</div>
@@ -822,6 +839,26 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
       <div class="fg"><label>Phone (with country code) <span class="req">*</span></label><input id="n-wp" placeholder="+919876543210"/></div>
       <div class="fg"><label>API Key <span class="req">*</span></label><input id="n-wk" placeholder="Your CallMeBot API key"/></div>
       <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testNotif('whatsapp')">🧪 Send Test</button><div id="n-ws" class="ns-badge ns-idle" style="display:none"></div></div>
+    </div>
+    <div class="ntab-body" id="nb-email">
+      <div class="nh">
+        <strong>Setup EmailJS for Invitation Emails:</strong><br>
+        1. Sign up free at <a href="https://www.emailjs.com" target="_blank">emailjs.com</a> → Dashboard<br>
+        2. <strong>Email Services</strong> → Add Service (Gmail, Outlook, etc.) → Copy <strong>Service ID</strong><br>
+        3. <strong>Email Templates</strong> → Create Template → use variables below → Copy <strong>Template ID</strong><br>
+        4. <strong>Account → API Keys</strong> → Copy <strong>Public Key</strong><br>
+        5. In your template use: <code>{{to_name}}</code> <code>{{to_email}}</code> <code>{{username}}</code> <code>{{password}}</code> <code>{{role}}</code> <code>{{app_url}}</code> <code>{{invited_by}}</code>
+      </div>
+      <div class="fr t3">
+        <div class="fg"><label>Public Key <span class="req">*</span></label><input id="n-ejpk" placeholder="your_public_key"/></div>
+        <div class="fg"><label>Service ID <span class="req">*</span></label><input id="n-ejsid" placeholder="service_xxxxxxx"/></div>
+        <div class="fg"><label>Template ID <span class="req">*</span></label><input id="n-ejtid" placeholder="template_xxxxxxx"/></div>
+      </div>
+      <div class="fg"><label>App URL (shown in email)</label><input id="n-ejurl" placeholder="https://yoursite.com or leave blank"/></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testEmailInvite()">🧪 Send Test Email</button><div id="n-ejs" class="ns-badge ns-idle" style="display:none"></div></div>
+      <div class="notif-info" style="margin-top:12px">
+        ℹ️ Free EmailJS tier allows <strong>200 emails/month</strong>. Invitation emails are sent only when you create a new user — not on edits.
+      </div>
     </div>
   </div>
   <div class="mfoot"><button class="bg" onclick="closeOv('ov-notif')">Close</button><button class="bp" onclick="saveNotif()">💾 Save Settings</button></div>
@@ -949,6 +986,7 @@ function initApp() {
   g('notif-mi').style.display = CU.role === 'admin' ? '' : 'none';
   updateCounts(); showSec('dash'); buildMiniCal();
   startReminders();
+  initEmailJS();
 }
 
 function toggleDrop() {
@@ -1632,7 +1670,9 @@ function openNotifModal() {
   sv('n-su', n.slack?.url||''); sv('n-sc', n.slack?.ch||'');
   sv('n-tt', n.telegram?.token||''); sv('n-tc', n.telegram?.chat||'');
   sv('n-wp', n.whatsapp?.phone||''); sv('n-wk', n.whatsapp?.key||'');
-  ['n-ss','n-ts','n-ws'].forEach(id => { const el = g(id); if (el) el.style.display='none'; });
+  sv('n-ejpk', n.email?.publicKey||''); sv('n-ejsid', n.email?.serviceId||'');
+  sv('n-ejtid', n.email?.templateId||''); sv('n-ejurl', n.email?.appUrl||'');
+  ['n-ss','n-ts','n-ws','n-ejs'].forEach(id => { const el = g(id); if (el) el.style.display='none'; });
   selNTab('slack'); openOv('ov-notif');
 }
 function saveNotif() {
@@ -1640,16 +1680,93 @@ function saveNotif() {
   DB.notif.slack = { url:gv('n-su').trim(), ch:gv('n-sc').trim() };
   DB.notif.telegram = { token:gv('n-tt').trim(), chat:gv('n-tc').trim() };
   DB.notif.whatsapp = { phone:gv('n-wp').trim(), key:gv('n-wk').trim() };
+  DB.notif.email = {
+    publicKey: gv('n-ejpk').trim(),
+    serviceId: gv('n-ejsid').trim(),
+    templateId: gv('n-ejtid').trim(),
+    appUrl: gv('n-ejurl').trim()
+  };
+  // Init EmailJS with new key if set
+  if (DB.notif.email.publicKey) {
+    try { emailjs.init(DB.notif.email.publicKey); } catch(e) {}
+  }
   persist(); closeOv('ov-notif');
   logAct('settings', 'Updated notification settings');
   toast('✓ Notification settings saved');
-  startReminders(); // restart with new config
+  startReminders();
 }
 function selNTab(ch) {
-  ['slack','telegram','whatsapp'].forEach(c => {
+  ['slack','telegram','whatsapp','email'].forEach(c => {
     g('nt-'+c).classList.toggle('on', c===ch);
     g('nb-'+c).classList.toggle('on', c===ch);
   });
+}
+
+/* ─ EMAIL INVITE ─ */
+function emailJSReady() {
+  const n = DB.notif?.email;
+  return !!(n?.publicKey && n?.serviceId && n?.templateId);
+}
+
+async function sendInviteEmail({ name, username, password, role, email }) {
+  if (!emailJSReady()) {
+    toast('⚠ EmailJS not configured — user created without invite', 'warn');
+    logAct('notify', `Invite NOT sent to ${email} — EmailJS not configured`);
+    return;
+  }
+  const n = DB.notif.email;
+  try {
+    emailjs.init(n.publicKey);
+    const appUrl = n.appUrl || window.location.href;
+    const roleLabels = { viewer:'Viewer (read-only)', editor:'Editor (create & edit slots)', admin:'Administrator (full access)' };
+    await emailjs.send(n.serviceId, n.templateId, {
+      to_name: name,
+      to_email: email,
+      username: username,
+      password: password,
+      role: roleLabels[role] || role,
+      app_url: appUrl,
+      invited_by: CU.name,
+      invited_by_email: CU.email || '',
+      app_name: 'UiPath Interview Slot Booking',
+      message: `You have been invited to join the UiPath Interview Slot Booking platform by ${CU.name}. Use the credentials below to sign in.`
+    });
+    toast(`✓ User created & invitation sent to ${email}`, 'ok');
+    logAct('notify', `Invitation email sent to ${email} for user: ${name}`);
+  } catch(err) {
+    console.error('EmailJS error:', err);
+    toast(`User created but email failed: ${err?.text || err?.message || 'Unknown error'}`, 'warn');
+    logAct('notify', `Invite email FAILED to ${email}: ${err?.text || err?.message || 'error'}`);
+  }
+}
+
+async function testEmailInvite() {
+  const stEl = g('n-ejs'); if (!stEl) return;
+  const show = (cls, msg) => { stEl.style.display='inline-flex'; stEl.className='ns-badge '+cls; stEl.innerHTML=msg; };
+  const pk = gv('n-ejpk').trim(), sid = gv('n-ejsid').trim(), tid = gv('n-ejtid').trim();
+  if (!pk) { show('ns-err','❌ Enter Public Key first'); return; }
+  if (!sid) { show('ns-err','❌ Enter Service ID first'); return; }
+  if (!tid) { show('ns-err','❌ Enter Template ID first'); return; }
+  show('ns-sending','⏳ Sending test…');
+  try {
+    emailjs.init(pk);
+    const appUrl = gv('n-ejurl').trim() || window.location.href;
+    await emailjs.send(sid, tid, {
+      to_name: CU.name,
+      to_email: CU.email || 'test@example.com',
+      username: CU.username,
+      password: '••••••••',
+      role: CU.role,
+      app_url: appUrl,
+      invited_by: 'Test System',
+      invited_by_email: '',
+      app_name: 'UiPath Interview Slot Booking',
+      message: 'This is a test invitation email from UiPath Interview Slot Booking.'
+    });
+    show('ns-ok', `✅ Test sent! Check ${CU.email || 'your email'}`);
+  } catch(err) {
+    show('ns-err', `❌ ${err?.text || err?.message || 'Failed — check your keys'}`);
+  }
 }
 
 /* ─ NOTIF SECTION ─ */
@@ -1659,6 +1776,7 @@ function renderNotifSec(area) {
     {ch:'slack',icon:'💬',title:'Slack',desc:'Incoming Webhooks',ok:!!(n.slack?.url)},
     {ch:'telegram',icon:'✈️',title:'Telegram',desc:'Bot API + Daily Reminders',ok:!!(n.telegram?.token&&n.telegram?.chat)},
     {ch:'whatsapp',icon:'📱',title:'WhatsApp',desc:'CallMeBot API',ok:!!(n.whatsapp?.phone&&n.whatsapp?.key)},
+    {ch:'email',icon:'📧',title:'Email Invites',desc:'EmailJS — user onboarding',ok:!!(n.email?.publicKey&&n.email?.serviceId&&n.email?.templateId)},
   ];
   area.innerHTML = `<div class="panel">
     <div class="ph"><div><h2>🔔 Notifications</h2><div class="ph-sub">Channels + 3-hourly daily reminders (8am–9pm) via Telegram</div></div>
@@ -1704,7 +1822,7 @@ function renderUsers(area) {
     <div class="tbl-wrap">
       <div class="tbl-tb"><input class="srch-in" id="usr-q" placeholder="Search by name or username…" oninput="renderUsrRows(this.value.toLowerCase())"/></div>
       <div style="overflow-x:auto"><table>
-        <thead><tr><th>User</th><th>Username</th><th>Role</th><th>Slots</th><th>Last Login</th><th>Actions</th></tr></thead>
+        <thead><tr><th>User</th><th>Username</th><th>Email</th><th>Role</th><th>Slots</th><th>Last Login</th><th>Actions</th></tr></thead>
         <tbody id="usr-tb"></tbody>
       </table></div>
     </div>
@@ -1722,12 +1840,14 @@ function renderUsrRows(f='') {
         <div style="width:32px;height:32px;border-radius:50%;background:${u.color};color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:.8rem;flex-shrink:0">${u.name[0]}</div>
         <div class="tdn">${u.name}</div></div></td>
       <td><code style="background:var(--sf2);border:1px solid var(--bd);padding:2px 8px;border-radius:5px;font-family:var(--font-mono);font-size:.74rem">@${u.username}</code></td>
+      <td style="font-size:.78rem;color:var(--ink3)">${u.email ? `<a href="mailto:${u.email}" style="color:var(--acc);text-decoration:none">${u.email}</a>` : '<span style="opacity:.4">—</span>'}</td>
       <td><span class="rbadge rb-${u.role}">${u.role}</span></td>
       <td style="color:var(--ink3);font-size:.8rem;font-family:var(--font-mono)">${ec}</td>
       <td style="font-family:var(--font-mono);font-size:.74rem;color:var(--ink3)">${u.lastLogin?timeAgo(u.lastLogin):'Never'}</td>
       <td><div class="td-a">
         <button class="bsm" onclick="openUsrModal('${u.id}')">Edit</button>
         <button class="bsm" onclick="openChangePwd('${u.id}')">🔑</button>
+        ${u.email && emailJSReady() ? `<button class="bsm" onclick="resendInvite('${u.id}')" title="Resend invite email">📧</button>` : ''}
         ${u.id!=='u0'?`<button class="bsm d" onclick="confirmDelUser('${u.id}')">✕</button>`:''}
       </div></td>
     </tr>`;
@@ -1735,6 +1855,19 @@ function renderUsrRows(f='') {
 }
 
 /* ─ EXPORT / IMPORT USERS ─ */
+function resendInvite(uid) {
+  const u = DB.users.find(x=>x.id===uid);
+  if (!u || !u.email) { toast('No email on file for this user','warn'); return; }
+  if (!emailJSReady()) { toast('EmailJS not configured','warn'); return; }
+  if (!confirm(`Resend invitation to ${u.email}?\n\nNote: Password will show as [Contact admin] since it cannot be retrieved. Use this to re-send login instructions.`)) return;
+  sendInviteEmail({ name:u.name, username:u.username, password:'[Contact admin to get your password]', role:u.role, email:u.email });
+}
+
+function initEmailJS() {
+  const pk = DB.notif?.email?.publicKey;
+  if (pk) { try { emailjs.init(pk); } catch(e) {} }
+}
+
 function exportUsers() {
   const data = DB.users.map(u => ({ id:u.id, name:u.name, username:u.username, role:u.role, color:u.color, created:u.created }));
   const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
@@ -1788,30 +1921,56 @@ function openUsrModal(uid=null) {
   const u = uid ? DB.users.find(x=>x.id===uid) : null;
   s('um-ttl', u ? 'Edit User' : 'New User');
   sv('u-name', u?.name||''); sv('u-un', u?.username||''); sv('u-pw', '');
+  sv('u-email', u?.email||'');
   sv('u-role', u?.role||'viewer');
+  // Email field: required only for new users
+  const erEl = g('u-er'); if (erEl) erEl.textContent = u ? '' : '*';
+  const ehEl = g('u-eh'); if (ehEl) ehEl.textContent = u ? 'Update email address for this user.' : 'Invitation with login credentials will be sent to this email.';
   s('u-pr', u ? '' : ' *'); s('u-ph', u ? 'Leave blank to keep current password.' : '');
   selUC = u?.color||UC[0]; buildCR('u-cr', UC, 'usr', selUC);
   updateRoleHint();
   g('um-del').style.display = (u && u.id!=='u0') ? '' : 'none';
+  // Show invite status banner only for new users
+  const hasEmail = !!(DB.notif?.email?.publicKey && DB.notif?.email?.serviceId && DB.notif?.email?.templateId);
+  const invRow = g('u-invite-row'), noEmailRow = g('u-noemail-row');
+  if (!u) {
+    if (invRow) invRow.style.display = hasEmail ? 'flex' : 'none';
+    if (noEmailRow) noEmailRow.style.display = hasEmail ? 'none' : 'flex';
+  } else {
+    if (invRow) invRow.style.display = 'none';
+    if (noEmailRow) noEmailRow.style.display = 'none';
+  }
   openOv('ov-usr');
 }
 g('u-role').addEventListener('change', updateRoleHint);
 function updateRoleHint() { s('u-rh', ROLES[gv('u-role')]||''); }
 function saveUser() {
   const name=gv('u-name').trim(), un=gv('u-un').trim(), pw=gv('u-pw'), role=gv('u-role');
+  const email=gv('u-email').trim();
   if (!name||!un) { toast('Name and username are required','warn'); return; }
   if (!editUsrId && !pw) { toast('Password is required for new users','warn'); return; }
+  if (!editUsrId && !email) { toast('Email address is required for new users','warn'); return; }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast('Please enter a valid email address','warn'); return; }
   if (DB.users.find(u=>u.username===un && u.id!==editUsrId)) { toast('Username is already taken','warn'); return; }
+  const isNew = !editUsrId;
   if (editUsrId) {
     const u = DB.users.find(x=>x.id===editUsrId);
-    if (u) { u.name=name; u.username=un; u.role=role; u.color=selUC; if (pw) u.password=pw; }
-  } else DB.users.push({ id:'u'+Date.now(), name, username:un, password:pw, role, color:selUC, created:Date.now() });
+    if (u) { u.name=name; u.username=un; u.role=role; u.color=selUC; u.email=email; if (pw) u.password=pw; }
+  } else {
+    DB.users.push({ id:'u'+Date.now(), name, username:un, password:pw, role, color:selUC, email, created:Date.now() });
+  }
   persist(); closeOv('ov-usr');
   if (SEC==='users') renderUsers(g('content'));
-  updateCounts(); toast(editUsrId?'User updated':'User created');
-  logAct('user', editUsrId?`Updated user: ${name}`:`Created user: ${name}`);
+  updateCounts();
+  logAct('user', editUsrId?`Updated user: ${name}`:`Created user: ${name} (${email})`);
   const upd = DB.users.find(u=>u.id===CU.id);
   if (upd) { CU=upd; initApp(); if (SEC==='users') renderUsers(g('content')); }
+  if (isNew && email && pw) {
+    toast('Sending invitation email…', 'info');
+    sendInviteEmail({ name, username:un, password:pw, role, email });
+  } else {
+    toast(editUsrId?'✓ User updated':'✓ User created');
+  }
   editUsrId = null;
 }
 function delUsrM() {
