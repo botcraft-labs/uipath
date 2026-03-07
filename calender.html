@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScheduleOS — Admin Calendar</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Epilogue:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+:root {
+  --bg: #f5f3ef;
+  --surface: #ffffff;
+  --surface2: #f0ede8;
+  --border: #e2ddd7;
+  --border2: #ccc8c0;
+  --ink: #1a1714;
+  --ink2: #5a5550;
+  --ink3: #9a948e;
+  --accent: #1a1714;
+  --green: #2d6a4f;
+  --green-bg: #d8f3dc;
+  --red: #9b2226;
+  --red-bg: #fce4e4;
+  --amber: #7b4f12;
+  --amber-bg: #fef3cd;
+  --blue: #1d3557;
+  --blue-bg: #dbe9f4;
+  --reserved: #c0392b;
+  --reserved-bg: #fdecea;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.12);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Epilogue',sans-serif;background:var(--bg);color:var(--ink);overflow:hidden;}
+
+/* ════════════════════════════════
+   LOGIN
+════════════════════════════════ */
+#login-screen{
+  position:fixed;inset:0;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;z-index:999;
+  transition:opacity .35s;
+}
+#login-screen.gone{opacity:0;pointer-events:none;}
+.login-wrap{display:flex;width:820px;min-height:480px;background:var(--surface);border-radius:20px;box-shadow:var(--shadow-lg);overflow:hidden;}
+.login-panel{
+  width:340px;flex-shrink:0;
+  background:var(--ink);color:#fff;
+  padding:48px 36px;
+  display:flex;flex-direction:column;
+  background-image:
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,.06) 0 40%, transparent 41%),
+    radial-gradient(circle at 10% 90%, rgba(255,255,255,.04) 0 30%, transparent 31%);
+}
+.login-panel .brand{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;letter-spacing:-.04em;margin-bottom:6px;}
+.login-panel .brand span{opacity:.45;}
+.login-panel .tagline{font-size:.82rem;opacity:.5;font-style:italic;margin-bottom:auto;}
+.login-panel .hint-box{background:rgba(255,255,255,.08);border-radius:10px;padding:16px;margin-top:32px;}
+.hint-box h4{font-family:'Syne',sans-serif;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;opacity:.6;margin-bottom:10px;}
+.hint-row{display:flex;justify-content:space-between;font-size:.8rem;padding:3px 0;opacity:.75;}
+.hint-row .tag{background:rgba(255,255,255,.12);padding:2px 8px;border-radius:4px;font-size:.72rem;font-family:'Syne',sans-serif;}
+
+.login-form-area{flex:1;padding:48px 40px;display:flex;flex-direction:column;justify-content:center;}
+.login-form-area h2{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:4px;}
+.login-form-area p{color:var(--ink3);font-size:.88rem;margin-bottom:32px;}
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:.75rem;font-family:'Syne',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);margin-bottom:7px;}
+.field input,.field select{
+  width:100%;background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:8px;padding:11px 14px;font-family:'Epilogue',sans-serif;
+  font-size:.93rem;color:var(--ink);outline:none;transition:border-color .2s;
+}
+.field input:focus,.field select:focus{border-color:var(--ink);}
+.field input::placeholder{color:var(--ink3);}
+.btn-login{
+  width:100%;background:var(--ink);color:#fff;border:none;border-radius:8px;
+  padding:13px;font-family:'Syne',sans-serif;font-size:.93rem;font-weight:700;
+  cursor:pointer;letter-spacing:.04em;transition:opacity .2s;margin-top:6px;
+}
+.btn-login:hover{opacity:.85;}
+#login-error{color:var(--red);font-size:.82rem;margin-top:8px;min-height:18px;}
+
+/* ════════════════════════════════
+   APP SHELL
+════════════════════════════════ */
+#app{display:none;height:100vh;flex-direction:column;}
+#app.on{display:flex;}
+
+/* TOPBAR */
+.topbar{
+  height:56px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 20px 0 0;gap:0;flex-shrink:0;
+}
+.topbar-logo{
+  width:220px;flex-shrink:0;display:flex;align-items:center;gap:10px;
+  padding:0 20px;border-right:1px solid var(--border);height:100%;
+}
+.topbar-logo .name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:-.03em;}
+.topbar-logo .name span{opacity:.35;}
+.topbar-center{flex:1;padding:0 20px;display:flex;align-items:center;gap:16px;}
+.view-tabs{display:flex;background:var(--surface2);border-radius:8px;padding:3px;gap:2px;}
+.view-tab{
+  background:transparent;border:none;padding:5px 14px;border-radius:6px;
+  font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.04em;
+  cursor:pointer;color:var(--ink3);transition:all .15s;
+}
+.view-tab.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1);}
+.cal-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-left:8px;}
+.nav-arrows{display:flex;gap:4px;margin-left:4px;}
+.nav-arrow{
+  background:var(--surface2);border:1px solid var(--border);
+  width:30px;height:30px;border-radius:7px;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;font-size:.85rem;color:var(--ink2);
+  transition:border-color .15s;
+}
+.nav-arrow:hover{border-color:var(--ink2);}
+.btn-today{
+  background:transparent;border:1px solid var(--border);border-radius:7px;
+  padding:5px 12px;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:600;
+  cursor:pointer;color:var(--ink3);transition:border-color .15s;
+}
+.btn-today:hover{border-color:var(--ink2);color:var(--ink);}
+.topbar-right{display:flex;align-items:center;gap:12px;margin-left:auto;}
+.user-pill{
+  display:flex;align-items:center;gap:8px;background:var(--surface2);
+  border:1px solid var(--border);border-radius:20px;padding:5px 12px 5px 6px;
+  font-size:.82rem;
+}
+.user-pill .avatar{
+  width:26px;height:26px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;color:#fff;
+}
+.role-badge{
+  font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;padding:2px 7px;border-radius:4px;
+}
+.role-badge.admin{background:#1a1714;color:#fff;}
+.role-badge.viewer{background:var(--blue-bg);color:var(--blue);}
+.role-badge.editor{background:var(--green-bg);color:var(--green);}
+.btn-logout{
+  background:transparent;border:1px solid var(--border);border-radius:7px;
+  padding:6px 12px;font-family:'Syne',sans-serif;font-size:.75rem;
+  cursor:pointer;color:var(--ink3);transition:all .15s;
+}
+.btn-logout:hover{border-color:var(--red);color:var(--red);}
+
+/* LAYOUT */
+.main-layout{display:flex;flex:1;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{
+  width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;
+}
+.sidebar-section{padding:16px 12px 8px;}
+.sidebar-section h4{
+  font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);
+  padding:0 8px;margin-bottom:8px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:9px;width:100%;padding:8px 10px;
+  border-radius:8px;background:transparent;border:none;
+  font-family:'Epilogue',sans-serif;font-size:.87rem;color:var(--ink2);
+  cursor:pointer;text-align:left;transition:all .15s;
+}
+.nav-item:hover{background:var(--surface2);color:var(--ink);}
+.nav-item.active{background:var(--ink);color:#fff;}
+.nav-item .icon{font-size:1rem;width:18px;text-align:center;flex-shrink:0;}
+.sidebar-divider{height:1px;background:var(--border);margin:8px 12px;}
+
+/* CONTENT AREA */
+.content{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+
+/* ════════════════════════════════
+   CALENDAR
+════════════════════════════════ */
+.cal-wrapper{flex:1;overflow:auto;padding:20px 24px;}
+
+.weekday-header{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:4px;
+  margin-bottom:4px;position:sticky;top:0;background:var(--bg);z-index:2;padding-bottom:4px;
+}
+.wday-lbl{
+  text-align:center;font-family:'Syne',sans-serif;font-size:.68rem;
+  font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);
+  padding:6px 0;
+}
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+
+.day-cell{
+  min-height:120px;background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius);padding:8px;cursor:pointer;
+  transition:border-color .15s,box-shadow .15s;position:relative;
+  display:flex;flex-direction:column;
+}
+.day-cell:hover{border-color:var(--border2);box-shadow:var(--shadow);}
+.day-cell.other-month{opacity:.4;background:transparent;}
+.day-cell.today{border-color:var(--ink);}
+.day-num{
+  font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;
+  color:var(--ink3);margin-bottom:6px;display:flex;align-items:center;gap:6px;
+}
+.day-num .today-dot{
+  width:22px;height:22px;border-radius:50%;background:var(--ink);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:.78rem;
+}
+
+.event-chip{
+  font-size:.7rem;font-weight:500;padding:4px 8px;border-radius:5px;
+  margin-bottom:3px;cursor:pointer;overflow:hidden;white-space:nowrap;
+  text-overflow:ellipsis;transition:opacity .15s;
+  border-left:3px solid currentColor;
+  display:flex;align-items:center;gap:4px;
+}
+.event-chip:hover{opacity:.8;}
+/* Admin sees full chip, others see reserved only */
+.event-chip.reserved-only{
+  background:var(--reserved-bg)!important;color:var(--reserved)!important;
+  border-left-color:var(--reserved)!important;
+}
+.event-chip.reserved-only .chip-label::before{content:'🔒 Reserved';}
+.more-chip{font-size:.68rem;color:var(--ink3);padding:2px 4px;margin-top:1px;}
+
+/* WEEK VIEW */
+.week-outer{flex:1;overflow:auto;padding:0 24px 24px;}
+.week-grid-wrap{display:grid;grid-template-columns:52px repeat(7,1fr);min-width:700px;}
+.wk-corner,.wk-col-hdr{
+  position:sticky;top:0;background:var(--bg);z-index:3;
+  border-bottom:2px solid var(--border);padding:10px 0;
+}
+.wk-col-hdr{text-align:center;}
+.wk-col-hdr .wd{font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);}
+.wk-col-hdr .dd{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;color:var(--ink);}
+.wk-col-hdr .dd.today-day{
+  background:var(--ink);color:#fff;width:30px;height:30px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;font-size:.9rem;
+}
+.wk-time-lbl{
+  height:56px;display:flex;align-items:flex-start;padding-top:4px;
+  justify-content:flex-end;padding-right:8px;font-size:.65rem;
+  color:var(--ink3);font-family:'Syne',sans-serif;border-right:1px solid var(--border);
+}
+.wk-day-col{border-right:1px solid var(--border);position:relative;}
+.wk-hour{
+  height:56px;border-bottom:1px solid var(--surface2);cursor:pointer;
+  transition:background .1s;
+}
+.wk-hour:hover{background:var(--surface2);}
+.wk-event{
+  position:absolute;left:2px;right:2px;border-radius:6px;
+  padding:4px 7px;font-size:.68rem;font-weight:500;cursor:pointer;
+  overflow:hidden;z-index:1;border-left:3px solid rgba(0,0,0,.2);
+  transition:opacity .15s;
+}
+.wk-event:hover{opacity:.85;z-index:2;}
+.wk-event.reserved-only{
+  background:var(--reserved-bg)!important;color:var(--reserved)!important;
+  border-left-color:var(--reserved)!important;
+}
+.wk-event.reserved-only::after{content:'🔒 Reserved';font-size:.65rem;}
+
+/* ════════════════════════════════
+   ADMIN PANEL
+════════════════════════════════ */
+.panel{flex:1;overflow:auto;padding:24px;}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.panel-header h2{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;}
+.btn-primary{
+  background:var(--ink);color:#fff;border:none;border-radius:8px;
+  padding:9px 18px;font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;
+  letter-spacing:.04em;cursor:pointer;display:flex;align-items:center;gap:7px;
+  transition:opacity .2s;
+}
+.btn-primary:hover{opacity:.8;}
+.btn-sm{
+  background:transparent;border:1.5px solid var(--border);border-radius:6px;
+  padding:5px 11px;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:600;
+  cursor:pointer;color:var(--ink2);transition:all .15s;
+}
+.btn-sm:hover{border-color:var(--ink);color:var(--ink);}
+.btn-sm.danger{border-color:var(--red-bg);}
+.btn-sm.danger:hover{border-color:var(--red);color:var(--red);background:var(--red-bg);}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:12px;
+  padding:18px 20px;
+}
+.stat-card .s-label{font-family:'Syne',sans-serif;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:6px;}
+.stat-card .s-value{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;letter-spacing:-.04em;}
+.stat-card .s-sub{font-size:.78rem;color:var(--ink3);margin-top:3px;}
+
+/* TABLE */
+.table-wrap{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;}
+.table-toolbar{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;}
+.search-input{
+  flex:1;max-width:280px;background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:7px;padding:7px 12px 7px 32px;font-family:'Epilogue',sans-serif;
+  font-size:.85rem;color:var(--ink);outline:none;transition:border-color .2s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' viewBox='0 0 24 24' stroke='%239a948e' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:10px center;
+}
+.search-input:focus{border-color:var(--ink);}
+.search-input::placeholder{color:var(--ink3);}
+
+table{width:100%;border-collapse:collapse;}
+thead th{
+  font-family:'Syne',sans-serif;font-size:.68rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);
+  padding:10px 18px;text-align:left;border-bottom:1px solid var(--border);
+  background:var(--surface2);
+}
+tbody tr{border-bottom:1px solid var(--surface2);transition:background .1s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--surface2);}
+td{padding:12px 18px;font-size:.88rem;vertical-align:middle;}
+.cell-name{font-weight:500;font-family:'Syne',sans-serif;font-size:.85rem;}
+.cell-sub{font-size:.75rem;color:var(--ink3);margin-top:2px;}
+.cell-actions{display:flex;gap:6px;}
+
+/* WORKMODE BADGE */
+.wm-badge{
+  display:inline-block;font-size:.7rem;font-family:'Syne',sans-serif;
+  font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  padding:3px 9px;border-radius:5px;
+}
+.wm-remote{background:var(--green-bg);color:var(--green);}
+.wm-onsite{background:var(--blue-bg);color:var(--blue);}
+.wm-hybrid{background:var(--amber-bg);color:var(--amber);}
+
+/* ════════════════════════════════
+   MODALS
+════════════════════════════════ */
+.overlay{
+  position:fixed;inset:0;background:rgba(20,18,15,.55);
+  backdrop-filter:blur(3px);display:flex;align-items:center;
+  justify-content:center;z-index:500;opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{
+  background:var(--surface);border-radius:16px;width:520px;max-height:90vh;
+  overflow-y:auto;box-shadow:var(--shadow-lg);
+  transform:translateY(12px);transition:transform .2s;
+}
+.overlay.open .modal{transform:translateY(0);}
+.modal-head{
+  padding:24px 28px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:var(--surface);z-index:1;
+}
+.modal-head h3{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;}
+.modal-close{
+  background:var(--surface2);border:none;width:30px;height:30px;border-radius:7px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;color:var(--ink2);transition:background .15s;
+}
+.modal-close:hover{background:var(--border);}
+.modal-body{padding:24px 28px;}
+.modal-foot{
+  padding:16px 28px;border-top:1px solid var(--border);
+  display:flex;justify-content:flex-end;gap:10px;
+  position:sticky;bottom:0;background:var(--surface);
+}
+.btn-ghost{
+  background:transparent;border:1.5px solid var(--border);border-radius:8px;
+  padding:9px 18px;font-family:'Syne',sans-serif;font-size:.8rem;font-weight:600;
+  cursor:pointer;color:var(--ink2);transition:all .15s;
+}
+.btn-ghost:hover{border-color:var(--ink2);color:var(--ink);}
+.btn-danger{
+  background:var(--red-bg);border:1.5px solid var(--red-bg);border-radius:8px;
+  padding:9px 18px;font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;
+  cursor:pointer;color:var(--red);transition:all .15s;margin-right:auto;
+}
+.btn-danger:hover{background:var(--red);color:#fff;}
+
+/* FORM */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.form-row.full{grid-template-columns:1fr;}
+.f-group{margin-bottom:16px;}
+.f-group label{
+  display:block;font-family:'Syne',sans-serif;font-size:.68rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;color:var(--ink2);margin-bottom:7px;
+}
+.f-group input,.f-group select,.f-group textarea{
+  width:100%;background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:8px;padding:10px 13px;font-family:'Epilogue',sans-serif;
+  font-size:.9rem;color:var(--ink);outline:none;transition:border-color .2s;
+}
+.f-group input:focus,.f-group select:focus,.f-group textarea:focus{border-color:var(--ink);}
+.f-group input::placeholder{color:var(--ink3);}
+.f-group select option{background:var(--surface);}
+.f-group textarea{resize:vertical;min-height:72px;}
+.color-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.color-swatch{
+  width:28px;height:28px;border-radius:7px;cursor:pointer;border:2px solid transparent;
+  transition:transform .15s,border-color .15s;
+}
+.color-swatch:hover{transform:scale(1.15);}
+.color-swatch.selected{border-color:var(--ink);}
+.pass-toggle{position:relative;}
+.pass-toggle input{padding-right:38px;}
+.pass-eye{
+  position:absolute;right:11px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;color:var(--ink3);font-size:.9rem;padding:0;
+}
+
+/* DETAIL VIEW */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.detail-item{background:var(--surface2);border-radius:8px;padding:12px 14px;}
+.detail-item .d-label{font-family:'Syne',sans-serif;font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:4px;}
+.detail-item .d-val{font-size:.9rem;font-weight:500;}
+
+/* POPOVER */
+.popover{
+  position:fixed;background:var(--surface);border:1.5px solid var(--border);
+  border-radius:12px;padding:18px;width:260px;z-index:600;
+  box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:opacity .15s;
+}
+.popover.open{opacity:1;pointer-events:all;}
+.pop-tag{
+  display:inline-block;font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:4px;
+  margin-bottom:10px;
+}
+.pop-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:8px;}
+.pop-row{font-size:.78rem;color:var(--ink2);padding:3px 0;display:flex;gap:8px;align-items:baseline;}
+.pop-row .pr-icon{color:var(--ink3);width:14px;text-align:center;flex-shrink:0;}
+.pop-actions{display:flex;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.pop-btn{
+  flex:1;background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:7px;padding:6px;font-family:'Syne',sans-serif;
+  font-size:.72rem;font-weight:700;cursor:pointer;color:var(--ink2);
+  transition:all .15s;text-align:center;
+}
+.pop-btn:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+.pop-btn.danger:hover{background:var(--red);color:#fff;border-color:var(--red);}
+
+/* TOAST */
+#toast{
+  position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;
+  border-radius:10px;padding:12px 18px;font-size:.85rem;font-family:'Syne',sans-serif;
+  font-weight:600;display:flex;align-items:center;gap:8px;
+  opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;z-index:999;
+  box-shadow:var(--shadow-lg);
+}
+#toast.show{opacity:1;transform:translateY(0);}
+#toast .t-icon{font-size:1rem;}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:48px 24px;color:var(--ink3);}
+.empty-state .es-icon{font-size:2.5rem;margin-bottom:12px;}
+.empty-state h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--ink2);margin-bottom:6px;}
+.empty-state p{font-size:.85rem;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-panel">
+      <div class="brand">Schedule<span>OS</span></div>
+      <div class="tagline">Interview & event scheduling platform</div>
+      <div class="hint-box">
+        <h4>Demo Credentials</h4>
+        <div class="hint-row"><span>admin</span><span class="tag">Admin</span></div>
+        <div class="hint-row" style="opacity:.55;font-size:.76rem;margin-top:4px;">password: admin123</div>
+        <div style="margin-top:8px;font-size:.74rem;opacity:.5;">Create more users via Admin Panel</div>
+      </div>
+    </div>
+    <div class="login-form-area">
+      <h2>Welcome back</h2>
+      <p>Sign in to your account to continue</p>
+      <div class="field">
+        <label>Username</label>
+        <input id="l-user" placeholder="Enter username" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="pass-toggle">
+          <input id="l-pass" type="password" placeholder="Enter password" />
+          <button class="pass-eye" onclick="togglePass('l-pass',this)">👁</button>
+        </div>
+      </div>
+      <button class="btn-login" onclick="doLogin()">Sign In →</button>
+      <div id="login-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     APP
+══════════════════════════════════ -->
+<div id="app">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="name">Schedule<span>OS</span></div>
+    </div>
+    <div class="topbar-center">
+      <div class="view-tabs" id="view-tabs">
+        <button class="view-tab active" onclick="setView('month')">Month</button>
+        <button class="view-tab" onclick="setView('week')">Week</button>
+      </div>
+      <div class="nav-arrows">
+        <button class="nav-arrow" onclick="navDir(-1)">‹</button>
+        <button class="nav-arrow" onclick="navDir(1)">›</button>
+      </div>
+      <div class="cal-title" id="cal-title"></div>
+      <button class="btn-today" onclick="goToday()">Today</button>
+    </div>
+    <div class="topbar-right">
+      <div class="user-pill" id="user-pill">
+        <div class="avatar" id="user-avatar"></div>
+        <span id="user-display"></span>
+        <span class="role-badge" id="role-badge"></span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-layout">
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sidebar-section">
+        <h4>Calendar</h4>
+        <button class="nav-item active" id="nav-cal" onclick="showSection('calendar')">
+          <span class="icon">📅</span>Calendar
+        </button>
+        <button class="nav-item" id="nav-events" onclick="showSection('events')">
+          <span class="icon">📋</span>All Events
+        </button>
+      </div>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-section" id="admin-nav" style="display:none">
+        <h4>Admin</h4>
+        <button class="nav-item" id="nav-users" onclick="showSection('users')">
+          <span class="icon">👥</span>Users
+        </button>
+        <button class="nav-item" id="nav-stats" onclick="showSection('stats')">
+          <span class="icon">📊</span>Overview
+        </button>
+      </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <div class="content" id="content-area">
+      <!-- calendar, events, users, stats rendered here -->
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     EVENT MODAL
+══════════════════════════════════ -->
+<div class="overlay" id="evt-overlay" onclick="closeOverlay('evt-overlay',event)">
+<div class="modal">
+  <div class="modal-head">
+    <h3 id="evt-modal-title">New Event</h3>
+    <button class="modal-close" onclick="closeOverlay('evt-overlay')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="form-row">
+      <div class="f-group">
+        <label>Event Name *</label>
+        <input id="e-name" placeholder="e.g. Technical Interview" />
+      </div>
+      <div class="f-group">
+        <label>Date *</label>
+        <input id="e-date" type="date" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="f-group">
+        <label>Start Time *</label>
+        <input id="e-start" type="time" value="10:00" />
+      </div>
+      <div class="f-group">
+        <label>End Time *</label>
+        <input id="e-end" type="time" value="11:00" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="f-group">
+        <label>Candidate Name *</label>
+        <input id="e-candidate" placeholder="Full name" />
+      </div>
+      <div class="f-group">
+        <label>Company Name *</label>
+        <input id="e-company" placeholder="Company" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="f-group">
+        <label>Location</label>
+        <input id="e-location" placeholder="Office / Meet link / Address" />
+      </div>
+      <div class="f-group">
+        <label>Work Mode</label>
+        <select id="e-workmode">
+          <option value="onsite">On-site</option>
+          <option value="remote">Remote</option>
+          <option value="hybrid">Hybrid</option>
+        </select>
+      </div>
+    </div>
+    <div class="f-group">
+      <label>Assigned To (User)</label>
+      <select id="e-assigned"></select>
+    </div>
+    <div class="f-group">
+      <label>Event Color</label>
+      <div class="color-row" id="e-color-row"></div>
+    </div>
+    <div class="f-group">
+      <label>Notes</label>
+      <textarea id="e-notes" placeholder="Additional information…"></textarea>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn-danger" id="evt-del-btn" onclick="deleteEventFromModal()" style="display:none">Delete</button>
+    <button class="btn-ghost" onclick="closeOverlay('evt-overlay')">Cancel</button>
+    <button class="btn-primary" onclick="saveEvent()">💾 Save Event</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════
+     USER MODAL
+══════════════════════════════════ -->
+<div class="overlay" id="usr-overlay" onclick="closeOverlay('usr-overlay',event)">
+<div class="modal" style="width:440px">
+  <div class="modal-head">
+    <h3 id="usr-modal-title">New User</h3>
+    <button class="modal-close" onclick="closeOverlay('usr-overlay')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="form-row">
+      <div class="f-group">
+        <label>Full Name *</label>
+        <input id="u-name" placeholder="Display name" />
+      </div>
+      <div class="f-group">
+        <label>Username *</label>
+        <input id="u-username" placeholder="login username" autocomplete="off" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="f-group">
+        <label>Password *</label>
+        <div class="pass-toggle">
+          <input id="u-pass" type="password" placeholder="Password" autocomplete="new-password"/>
+          <button class="pass-eye" onclick="togglePass('u-pass',this)">👁</button>
+        </div>
+      </div>
+      <div class="f-group">
+        <label>Role *</label>
+        <select id="u-role">
+          <option value="viewer">Viewer — sees reserved/free only</option>
+          <option value="editor">Editor — can create events</option>
+          <option value="admin">Admin — full access</option>
+        </select>
+      </div>
+    </div>
+    <div class="f-group">
+      <label>Avatar Color</label>
+      <div class="color-row" id="u-color-row"></div>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn-danger" id="usr-del-btn" onclick="deleteUserFromModal()" style="display:none">Delete User</button>
+    <button class="btn-ghost" onclick="closeOverlay('usr-overlay')">Cancel</button>
+    <button class="btn-primary" onclick="saveUser()">💾 Save User</button>
+  </div>
+</div>
+</div>
+
+<!-- POPOVER -->
+<div class="popover" id="popover"></div>
+
+<!-- TOAST -->
+<div id="toast"><span class="t-icon">✓</span><span id="toast-msg"></span></div>
+
+<script>
+// ════════════════════════════════
+// DATA STORE
+// ════════════════════════════════
+const SK = 'scheduleos_v2';
+const EVENT_COLORS = ['#2d6a4f','#1d3557','#9b2226','#7b4f12','#4a1942','#1a5276','#154360','#6e2f0a','#0b5345','#512c1a'];
+const USER_COLORS  = ['#e76f51','#2a9d8f','#e9c46a','#264653','#f4a261','#219ebc','#8ecae6','#c77dff','#06d6a0','#ef476f'];
+
+function load() {
+  try { const r = localStorage.getItem(SK); if(r) return JSON.parse(r); } catch{}
+  return {
+    users: [{ id:'u0', name:'Administrator', username:'admin', password:'admin123', role:'admin', color:'#264653' }],
+    events: []
+  };
+}
+function persist() { localStorage.setItem(SK, JSON.stringify(DB)); }
+
+let DB = load();
+let CU = null; // current user
+let viewMode = 'month';
+let curDate = new Date();
+let activeSection = 'calendar';
+let editingEvtId = null;
+let editingUsrId = null;
+let selectedEvtColor = EVENT_COLORS[0];
+let selectedUsrColor = USER_COLORS[0];
+
+// ════════════════════════════════
+// AUTH
+// ════════════════════════════════
+function doLogin() {
+  const u = document.getElementById('l-user').value.trim();
+  const p = document.getElementById('l-pass').value;
+  const found = DB.users.find(x => x.username === u && x.password === p);
+  if (!found) { document.getElementById('login-error').textContent = 'Invalid username or password.'; return; }
+  CU = found;
+  document.getElementById('login-error').textContent = '';
+  document.getElementById('login-screen').classList.add('gone');
+  document.getElementById('app').classList.add('on');
+  initApp();
+}
+document.getElementById('l-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('l-user').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('l-pass').focus(); });
+
+function doLogout() {
+  CU = null;
+  document.getElementById('login-screen').classList.remove('gone');
+  document.getElementById('app').classList.remove('on');
+  document.getElementById('l-user').value = '';
+  document.getElementById('l-pass').value = '';
+}
+
+function togglePass(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+function initApp() {
+  // User pill
+  document.getElementById('user-display').textContent = CU.name;
+  const av = document.getElementById('user-avatar');
+  av.textContent = CU.name[0].toUpperCase();
+  av.style.background = CU.color;
+  const rb = document.getElementById('role-badge');
+  rb.textContent = CU.role;
+  rb.className = 'role-badge ' + CU.role;
+  // Admin nav
+  document.getElementById('admin-nav').style.display = CU.role === 'admin' ? '' : 'none';
+  showSection('calendar');
+}
+
+// ════════════════════════════════
+// SECTIONS
+// ════════════════════════════════
+function showSection(sec) {
+  activeSection = sec;
+  ['cal','events','users','stats'].forEach(id => {
+    const el = document.getElementById('nav-'+id);
+    if(el) el.classList.remove('active');
+  });
+  const active = document.getElementById('nav-'+sec);
+  if(active) active.classList.add('active');
+
+  const area = document.getElementById('content-area');
+  if (sec === 'calendar') renderCalSection(area);
+  else if (sec === 'events') renderEventsSection(area);
+  else if (sec === 'users') renderUsersSection(area);
+  else if (sec === 'stats') renderStatsSection(area);
+}
+
+// ════════════════════════════════
+// CALENDAR SECTION
+// ════════════════════════════════
+function renderCalSection(area) {
+  area.innerHTML = viewMode === 'month'
+    ? `<div class="cal-wrapper" id="cal-wrap"><div class="weekday-header">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="wday-lbl">${d}</div>`).join('')}</div><div class="month-grid" id="month-grid"></div></div>`
+    : `<div class="week-outer" id="week-outer"></div>`;
+  updateTitle();
+  if (viewMode === 'month') buildMonth();
+  else buildWeek();
+}
+
+function updateTitle() {
+  const t = document.getElementById('cal-title');
+  if (!t) return;
+  if (viewMode === 'month') {
+    t.textContent = curDate.toLocaleDateString('en-US', {month:'long', year:'numeric'});
+  } else {
+    const ws = weekStart(curDate);
+    const we = new Date(ws); we.setDate(we.getDate()+6);
+    t.textContent = ws.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' – ' + we.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  }
+}
+
+function weekStart(d) {
+  const s = new Date(d); s.setDate(s.getDate()-s.getDay()); return s;
+}
+
+function setView(v) {
+  viewMode = v;
+  document.querySelectorAll('.view-tab').forEach((t,i)=>t.classList.toggle('active', (i===0&&v==='month')||(i===1&&v==='week')));
+  if (activeSection === 'calendar') showSection('calendar');
+}
+function navDir(d) {
+  if (viewMode==='month') curDate = new Date(curDate.getFullYear(), curDate.getMonth()+d, 1);
+  else { const nd = new Date(curDate); nd.setDate(nd.getDate()+d*7); curDate = nd; }
+  if (activeSection === 'calendar') showSection('calendar');
+}
+function goToday() { curDate = new Date(); if(activeSection==='calendar') showSection('calendar'); }
+
+function todayStr() {
+  const n = new Date();
+  return iso(n.getFullYear(), n.getMonth(), n.getDate());
+}
+function iso(y,m,d) { return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+
+// ── MONTH ──
+function buildMonth() {
+  const grid = document.getElementById('month-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const y = curDate.getFullYear(), m = curDate.getMonth();
+  const fd = new Date(y,m,1).getDay();
+  const dim = new Date(y,m+1,0).getDate();
+  const dip = new Date(y,m,0).getDate();
+  const td = todayStr();
+
+  const cells = [];
+  for(let i=fd-1;i>=0;i--) cells.push({y,m:m-1,d:dip-i,other:true});
+  for(let d=1;d<=dim;d++) cells.push({y,m,d,other:false});
+  const rem = cells.length%7===0?0:7-cells.length%7;
+  for(let d=1;d<=rem;d++) cells.push({y,m:m+1,d,other:true});
+
+  cells.forEach(({y:cy,m:cm,d:cd,other})=>{
+    const ry = cy+(cm<0?-1:cm>11?1:0);
+    const rm = ((cm%12)+12)%12;
+    const ds = iso(ry,rm,cd);
+    const isToday = ds===td;
+
+    const cell = document.createElement('div');
+    cell.className = 'day-cell'+(other?' other-month':'')+(isToday?' today':'');
+    cell.onclick = ()=>{ if(CU.role!=='viewer') openEvtModal(ds); };
+
+    const num = document.createElement('div');
+    num.className = 'day-num';
+    if(isToday) num.innerHTML = `<span class="today-dot">${cd}</span>`;
+    else num.textContent = cd;
+    cell.appendChild(num);
+
+    const dayEvts = DB.events.filter(e=>e.date===ds).sort((a,b)=>a.start.localeCompare(b.start));
+    const max = 3;
+    dayEvts.slice(0,max).forEach(ev=>{
+      const chip = document.createElement('div');
+      if(CU.role==='admin') {
+        chip.className='event-chip';
+        chip.style.cssText=`background:${ev.color}18;color:${ev.color};border-left-color:${ev.color}`;
+        chip.textContent = `${ev.start} ${ev.name}`;
+        chip.onclick = e=>{ e.stopPropagation(); showPopover(e,ev); };
+      } else {
+        chip.className='event-chip reserved-only';
+        chip.onclick = e=>e.stopPropagation();
+      }
+      cell.appendChild(chip);
+    });
+    if(dayEvts.length>max){
+      const m2=document.createElement('div');
+      m2.className='more-chip';
+      m2.textContent=`+${dayEvts.length-max} more`;
+      cell.appendChild(m2);
+    }
+    grid.appendChild(cell);
+  });
+}
+
+// ── WEEK ──
+function buildWeek() {
+  const outer = document.getElementById('week-outer');
+  if(!outer) return;
+  outer.innerHTML = '';
+  const ws = weekStart(curDate);
+  const td = todayStr();
+  const days = [];
+  for(let i=0;i<7;i++){const d=new Date(ws);d.setDate(d.getDate()+i);days.push(d);}
+
+  const wrap = document.createElement('div');
+  wrap.className = 'week-grid-wrap';
+
+  // corner
+  const corner = document.createElement('div'); corner.className='wk-corner'; wrap.appendChild(corner);
+  // headers
+  days.forEach(day=>{
+    const hdr = document.createElement('div'); hdr.className='wk-col-hdr';
+    const ds = iso(day.getFullYear(),day.getMonth(),day.getDate());
+    const isT = ds===td;
+    hdr.innerHTML = `<div class="wd">${day.toLocaleDateString('en-US',{weekday:'short'})}</div><div class="dd${isT?' today-day':''}"><span>${day.getDate()}</span></div>`;
+    wrap.appendChild(hdr);
+  });
+
+  // time rows
+  for(let h=0;h<24;h++){
+    const lbl=document.createElement('div');lbl.className='wk-time-lbl';
+    lbl.textContent = h===0?'12 AM':h<12?`${h} AM`:h===12?'12 PM':`${h-12} PM`;
+    wrap.appendChild(lbl);
+
+    days.forEach((day,ci)=>{
+      const ds = iso(day.getFullYear(),day.getMonth(),day.getDate());
+      const cell=document.createElement('div');cell.className='wk-hour wk-day-col';
+      cell.onclick=()=>{ if(CU.role!=='viewer') openEvtModal(ds,`${String(h).padStart(2,'0')}:00`,`${String(h+1).padStart(2,'0')}:00`); };
+      wrap.appendChild(cell);
+    });
+  }
+
+  outer.appendChild(wrap);
+
+  // overlay events
+  days.forEach((day,ci)=>{
+    const ds = iso(day.getFullYear(),day.getMonth(),day.getDate());
+    DB.events.filter(e=>e.date===ds).forEach(ev=>{
+      const [sh,sm]=ev.start.split(':').map(Number);
+      const [eh,em]=ev.end.split(':').map(Number);
+      const topPx = sm;
+      const heightPx = Math.max((eh*60+em)-(sh*60+sm),24);
+
+      const colCells = wrap.querySelectorAll('.wk-day-col');
+      const dayColCells = Array.from(colCells).filter((_,idx)=>idx%7===ci);
+      const anchor = dayColCells[sh];
+      if(!anchor) return;
+
+      const slot=document.createElement('div');
+      if(CU.role==='admin'){
+        slot.className='wk-event';
+        slot.style.cssText=`background:${ev.color}20;color:${ev.color};border-left-color:${ev.color};top:${topPx}px;height:${heightPx}px;`;
+        slot.innerHTML=`<div style="font-weight:700">${ev.name}</div><div style="opacity:.7">${ev.start}–${ev.end}</div>`;
+        slot.onclick=e=>{e.stopPropagation();showPopover(e,ev);};
+      } else {
+        slot.className='wk-event reserved-only';
+        slot.style.cssText=`top:${topPx}px;height:${heightPx}px;`;
+      }
+      anchor.style.position='relative';
+      slot.style.position='absolute';
+      anchor.appendChild(slot);
+    });
+  });
+}
+
+// ════════════════════════════════
+// POPOVER (admin only)
+// ════════════════════════════════
+function showPopover(mouseEvt, ev) {
+  mouseEvt.stopPropagation();
+  const pop = document.getElementById('popover');
+  const wm = ev.workmode||'onsite';
+  const wmClasses = {remote:'wm-remote',onsite:'wm-onsite',hybrid:'wm-hybrid'};
+  const owner = DB.users.find(u=>u.id===ev.assignedTo);
+
+  pop.innerHTML = `
+    <span class="pop-tag" style="background:${ev.color}18;color:${ev.color}">${ev.name}</span>
+    <div class="pop-row"><span class="pr-icon">🗓</span> ${formatDate(ev.date)} · ${ev.start}–${ev.end}</div>
+    <div class="pop-row"><span class="pr-icon">👤</span> ${ev.candidate||'—'}</div>
+    <div class="pop-row"><span class="pr-icon">🏢</span> ${ev.company||'—'}</div>
+    <div class="pop-row"><span class="pr-icon">📍</span> ${ev.location||'—'}</div>
+    <div class="pop-row"><span class="pr-icon">💼</span> <span class="wm-badge ${wmClasses[wm]}">${wm}</span></div>
+    ${owner?`<div class="pop-row"><span class="pr-icon">🔗</span> ${owner.name}</div>`:''}
+    ${ev.notes?`<div class="pop-row"><span class="pr-icon">📝</span> ${ev.notes}</div>`:''}
+    <div class="pop-actions">
+      <div class="pop-btn" onclick="editEvent('${ev.id}')">Edit</div>
+      <div class="pop-btn danger" onclick="quickDelete('${ev.id}')">Delete</div>
+    </div>`;
+
+  const x = Math.min(mouseEvt.clientX+12, window.innerWidth-275);
+  const y = Math.min(mouseEvt.clientY+12, window.innerHeight-340);
+  pop.style.left=x+'px'; pop.style.top=y+'px';
+  pop.classList.add('open');
+  setTimeout(()=>document.addEventListener('click',closePopover,{once:true}),50);
+}
+function closePopover(){ document.getElementById('popover').classList.remove('open'); }
+function quickDelete(id) {
+  DB.events = DB.events.filter(e=>e.id!==id);
+  persist(); closePopover(); showSection(activeSection); toast('Event deleted');
+}
+function editEvent(id) {
+  closePopover();
+  const ev = DB.events.find(e=>e.id===id);
+  if(ev) openEvtModal(ev.date,'','',ev);
+}
+function formatDate(ds) {
+  return new Date(ds+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+}
+
+// ════════════════════════════════
+// EVENT MODAL
+// ════════════════════════════════
+function openEvtModal(dateStr, startT='09:00', endT='10:00', evObj=null) {
+  editingEvtId = evObj ? evObj.id : null;
+  document.getElementById('evt-modal-title').textContent = evObj ? 'Edit Event' : 'New Event';
+
+  document.getElementById('e-name').value = evObj?.name||'';
+  document.getElementById('e-date').value = evObj?.date||dateStr;
+  document.getElementById('e-start').value = evObj?.start||startT;
+  document.getElementById('e-end').value = evObj?.end||endT;
+  document.getElementById('e-candidate').value = evObj?.candidate||'';
+  document.getElementById('e-company').value = evObj?.company||'';
+  document.getElementById('e-location').value = evObj?.location||'';
+  document.getElementById('e-workmode').value = evObj?.workmode||'onsite';
+  document.getElementById('e-notes').value = evObj?.notes||'';
+
+  // Color row
+  selectedEvtColor = evObj?.color||EVENT_COLORS[0];
+  buildColorRow('e-color-row', EVENT_COLORS, 'evt', selectedEvtColor);
+
+  // Assigned user dropdown
+  const sel = document.getElementById('e-assigned');
+  sel.innerHTML = '<option value="">— None —</option>' + DB.users.map(u=>`<option value="${u.id}" ${evObj?.assignedTo===u.id?'selected':''}>${u.name} (${u.role})</option>`).join('');
+
+  document.getElementById('evt-del-btn').style.display = evObj?'':'none';
+  document.getElementById('evt-overlay').classList.add('open');
+}
+
+function buildColorRow(containerId, colors, prefix, selected) {
+  const row = document.getElementById(containerId);
+  row.innerHTML = '';
+  colors.forEach(c=>{
+    const sw = document.createElement('div');
+    sw.className = 'color-swatch'+(c===selected?' selected':'');
+    sw.style.background = c;
+    sw.onclick = ()=>{
+      row.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));
+      sw.classList.add('selected');
+      if(prefix==='evt') selectedEvtColor=c;
+      else selectedUsrColor=c;
+    };
+    row.appendChild(sw);
+  });
+}
+
+function saveEvent() {
+  const name = document.getElementById('e-name').value.trim();
+  const date = document.getElementById('e-date').value;
+  const start = document.getElementById('e-start').value;
+  const end = document.getElementById('e-end').value;
+  const candidate = document.getElementById('e-candidate').value.trim();
+  const company = document.getElementById('e-company').value.trim();
+  if(!name||!date||!candidate||!company){ toast('Please fill required fields','⚠'); return; }
+
+  const evData = {
+    name, date, start, end, candidate, company,
+    location: document.getElementById('e-location').value.trim(),
+    workmode: document.getElementById('e-workmode').value,
+    notes: document.getElementById('e-notes').value.trim(),
+    assignedTo: document.getElementById('e-assigned').value||null,
+    color: selectedEvtColor,
+    createdBy: CU.id,
+    id: editingEvtId || ('e'+Date.now())
+  };
+
+  if(editingEvtId) {
+    const idx = DB.events.findIndex(e=>e.id===editingEvtId);
+    if(idx>-1) DB.events[idx]=evData;
+  } else {
+    DB.events.push(evData);
+  }
+  persist();
+  closeOverlay('evt-overlay');
+  showSection(activeSection);
+  toast(editingEvtId?'Event updated':'Event created');
+  editingEvtId=null;
+}
+
+function deleteEventFromModal() {
+  if(!editingEvtId) return;
+  DB.events = DB.events.filter(e=>e.id!==editingEvtId);
+  persist(); closeOverlay('evt-overlay'); showSection(activeSection); toast('Event deleted'); editingEvtId=null;
+}
+
+// ════════════════════════════════
+// USERS SECTION
+// ════════════════════════════════
+function renderUsersSection(area) {
+  if(CU.role!=='admin'){area.innerHTML='<div class="empty-state"><div class="es-icon">🔒</div><h3>Access Denied</h3><p>Admin only</p></div>';return;}
+  area.innerHTML = `<div class="panel">
+    <div class="panel-header">
+      <h2>User Management</h2>
+      <button class="btn-primary" onclick="openUsrModal()">+ New User</button>
+    </div>
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <input class="search-input" id="usr-search" placeholder="Search users…" oninput="filterUsers()" />
+      </div>
+      <table><thead><tr>
+        <th>User</th><th>Username</th><th>Role</th><th>Events Assigned</th><th>Actions</th>
+      </tr></thead>
+      <tbody id="users-tbody"></tbody></table>
+    </div>
+  </div>`;
+  renderUserRows();
+}
+
+function filterUsers() {
+  renderUserRows(document.getElementById('usr-search')?.value.toLowerCase()||'');
+}
+
+function renderUserRows(filter='') {
+  const tbody = document.getElementById('users-tbody');
+  if(!tbody) return;
+  const users = DB.users.filter(u=>!filter||u.name.toLowerCase().includes(filter)||u.username.toLowerCase().includes(filter));
+  if(!users.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--ink3);padding:24px">No users found</td></tr>';return;}
+  tbody.innerHTML = users.map(u=>{
+    const evtCount = DB.events.filter(e=>e.assignedTo===u.id).length;
+    const roleClass = {admin:'admin',editor:'editor',viewer:'viewer'}[u.role]||'viewer';
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:50%;background:${u.color};color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem">${u.name[0].toUpperCase()}</div>
+        <div><div class="cell-name">${u.name}</div></div>
+      </div></td>
+      <td><code style="background:var(--surface2);padding:2px 8px;border-radius:5px;font-size:.82rem">${u.username}</code></td>
+      <td><span class="role-badge ${roleClass}">${u.role}</span></td>
+      <td style="color:var(--ink3)">${evtCount} event${evtCount!==1?'s':''}</td>
+      <td><div class="cell-actions">
+        <button class="btn-sm" onclick="openUsrModal('${u.id}')">Edit</button>
+        ${u.id!=='u0'?`<button class="btn-sm danger" onclick="deleteUser('${u.id}')">Delete</button>`:''}
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function openUsrModal(userId=null) {
+  editingUsrId = userId;
+  const u = userId ? DB.users.find(x=>x.id===userId) : null;
+  document.getElementById('usr-modal-title').textContent = u ? 'Edit User' : 'New User';
+  document.getElementById('u-name').value = u?.name||'';
+  document.getElementById('u-username').value = u?.username||'';
+  document.getElementById('u-pass').value = '';
+  document.getElementById('u-role').value = u?.role||'viewer';
+  selectedUsrColor = u?.color||USER_COLORS[0];
+  buildColorRow('u-color-row', USER_COLORS, 'usr', selectedUsrColor);
+  const delBtn = document.getElementById('usr-del-btn');
+  delBtn.style.display = (u && u.id!=='u0') ? '' : 'none';
+  document.getElementById('usr-overlay').classList.add('open');
+}
+
+function saveUser() {
+  const name = document.getElementById('u-name').value.trim();
+  const username = document.getElementById('u-username').value.trim();
+  const pass = document.getElementById('u-pass').value;
+  const role = document.getElementById('u-role').value;
+  if(!name||!username){ toast('Name and username required','⚠'); return; }
+  if(!editingUsrId && !pass){ toast('Password required for new user','⚠'); return; }
+
+  const dup = DB.users.find(u=>u.username===username && u.id!==editingUsrId);
+  if(dup){ toast('Username already taken','⚠'); return; }
+
+  if(editingUsrId) {
+    const u = DB.users.find(x=>x.id===editingUsrId);
+    if(u){ u.name=name; u.username=username; u.role=role; u.color=selectedUsrColor; if(pass) u.password=pass; }
+  } else {
+    DB.users.push({ id:'u'+Date.now(), name, username, password:pass, role, color:selectedUsrColor });
+  }
+  persist();
+  closeOverlay('usr-overlay');
+  renderUsersSection(document.getElementById('content-area'));
+  toast(editingUsrId?'User updated':'User created');
+  editingUsrId=null;
+  if(CU) { // re-init pill in case self-edit
+    const updated = DB.users.find(u=>u.id===CU.id);
+    if(updated) { CU=updated; initApp(); showSection('users'); }
+  }
+}
+
+function deleteUserFromModal() {
+  if(!editingUsrId||editingUsrId==='u0') return;
+  deleteUser(editingUsrId);
+  closeOverlay('usr-overlay');
+}
+
+function deleteUser(id) {
+  if(id==='u0'){ toast("Can't delete admin",'⚠'); return; }
+  DB.users = DB.users.filter(u=>u.id!==id);
+  DB.events.forEach(e=>{ if(e.assignedTo===id) e.assignedTo=null; });
+  persist();
+  renderUsersSection(document.getElementById('content-area'));
+  toast('User deleted');
+}
+
+// ════════════════════════════════
+// ALL EVENTS SECTION
+// ════════════════════════════════
+function renderEventsSection(area) {
+  area.innerHTML = `<div class="panel">
+    <div class="panel-header">
+      <h2>${CU.role==='admin'?'All Events':'Schedule'}</h2>
+      ${CU.role!=='viewer'?'<button class="btn-primary" onclick="openEvtModal(new Date().toISOString().slice(0,10))">+ New Event</button>':''}
+    </div>
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <input class="search-input" id="evt-search" placeholder="Search events…" oninput="filterEvents()" />
+      </div>
+      <table><thead><tr>
+        <th>Event</th>
+        ${CU.role==='admin'?'<th>Candidate</th><th>Company</th>':''}
+        <th>Date & Time</th>
+        ${CU.role==='admin'?'<th>Location</th><th>Work Mode</th><th>Assigned</th><th>Actions</th>':'<th>Status</th>'}
+      </tr></thead>
+      <tbody id="evts-tbody"></tbody></table>
+    </div>
+  </div>`;
+  renderEventRows();
+}
+
+function filterEvents() { renderEventRows(document.getElementById('evt-search')?.value.toLowerCase()||''); }
+
+function renderEventRows(filter='') {
+  const tbody = document.getElementById('evts-tbody');
+  if(!tbody) return;
+  let evts = [...DB.events].sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));
+  if(filter) evts = evts.filter(e=>e.name.toLowerCase().includes(filter)||e.candidate?.toLowerCase().includes(filter)||e.company?.toLowerCase().includes(filter));
+  if(!evts.length){tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;color:var(--ink3);padding:32px"><div style="font-size:1.5rem;margin-bottom:8px">📭</div>No events found</td></tr>`;return;}
+  const wmC={remote:'wm-remote',onsite:'wm-onsite',hybrid:'wm-hybrid'};
+  tbody.innerHTML = evts.map(ev=>{
+    const owner = DB.users.find(u=>u.id===ev.assignedTo);
+    if(CU.role==='admin') {
+      return `<tr>
+        <td><div style="display:flex;align-items:center;gap:8px">
+          <div style="width:10px;height:10px;border-radius:3px;background:${ev.color};flex-shrink:0"></div>
+          <div class="cell-name">${ev.name}</div>
+        </div></td>
+        <td>${ev.candidate||'—'}</td>
+        <td>${ev.company||'—'}</td>
+        <td><div class="cell-name" style="font-size:.82rem">${formatDate(ev.date)}</div><div class="cell-sub">${ev.start} – ${ev.end}</div></td>
+        <td style="font-size:.82rem;color:var(--ink2)">${ev.location||'—'}</td>
+        <td><span class="wm-badge ${wmC[ev.workmode]||'wm-onsite'}">${ev.workmode||'onsite'}</span></td>
+        <td>${owner?`<div style="display:flex;align-items:center;gap:6px"><div style="width:22px;height:22px;border-radius:50%;background:${owner.color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700">${owner.name[0]}</div><span style="font-size:.82rem">${owner.name}</span></div>`:'<span style="color:var(--ink3);font-size:.82rem">Unassigned</span>'}</td>
+        <td><div class="cell-actions">
+          <button class="btn-sm" onclick="editEvent('${ev.id}')">Edit</button>
+          <button class="btn-sm danger" onclick="quickDelete('${ev.id}')">Delete</button>
+        </div></td>
+      </tr>`;
+    } else {
+      return `<tr>
+        <td><div class="cell-name">—</div><div class="cell-sub">Reserved slot</div></td>
+        <td><div class="cell-name" style="font-size:.82rem">${formatDate(ev.date)}</div><div class="cell-sub">${ev.start} – ${ev.end}</div></td>
+        <td><span class="wm-badge" style="background:var(--reserved-bg);color:var(--reserved)">🔒 Reserved</span></td>
+      </tr>`;
+    }
+  }).join('');
+}
+
+// ════════════════════════════════
+// STATS / OVERVIEW
+// ════════════════════════════════
+function renderStatsSection(area) {
+  if(CU.role!=='admin'){area.innerHTML='<div class="empty-state"><div class="es-icon">🔒</div><h3>Access Denied</h3></div>';return;}
+  const total = DB.events.length;
+  const users = DB.users.length;
+  const thisMonth = DB.events.filter(e=>{const d=new Date(e.date);const n=new Date();return d.getMonth()===n.getMonth()&&d.getFullYear()===n.getFullYear();}).length;
+  const upcoming = DB.events.filter(e=>new Date(e.date+'T'+e.start)>=new Date()).length;
+
+  const wmCounts = {remote:0,onsite:0,hybrid:0};
+  DB.events.forEach(e=>{ if(e.workmode) wmCounts[e.workmode]++; });
+
+  const byUser = DB.users.map(u=>({...u, count: DB.events.filter(e=>e.assignedTo===u.id).length})).sort((a,b)=>b.count-a.count);
+
+  area.innerHTML = `<div class="panel">
+    <div class="panel-header"><h2>Overview</h2></div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="s-label">Total Events</div><div class="s-value">${total}</div><div class="s-sub">All time</div></div>
+      <div class="stat-card"><div class="s-label">This Month</div><div class="s-value">${thisMonth}</div><div class="s-sub">${new Date().toLocaleDateString('en-US',{month:'long'})}</div></div>
+      <div class="stat-card"><div class="s-label">Upcoming</div><div class="s-value">${upcoming}</div><div class="s-sub">Scheduled ahead</div></div>
+      <div class="stat-card"><div class="s-label">Total Users</div><div class="s-value">${users}</div><div class="s-sub">Across all roles</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="table-wrap">
+        <div style="padding:14px 18px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700">Events by Work Mode</div>
+        <div style="padding:16px 18px">
+          ${Object.entries(wmCounts).map(([k,v])=>`
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <span class="wm-badge ${`wm-${k}`}">${k}</span>
+              <div style="flex:1;margin:0 14px;height:6px;background:var(--surface2);border-radius:99px;overflow:hidden">
+                <div style="height:100%;background:var(--ink);width:${total?Math.round(v/total*100):0}%;border-radius:99px"></div>
+              </div>
+              <span style="font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700">${v}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div style="padding:14px 18px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700">Events by User</div>
+        <div style="padding:16px 18px">
+          ${byUser.slice(0,6).map(u=>`
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <div style="width:26px;height:26px;border-radius:50%;background:${u.color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0">${u.name[0]}</div>
+              <span style="flex:1;font-size:.85rem">${u.name}</span>
+              <span class="role-badge ${u.role}">${u.role}</span>
+              <span style="font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;width:20px;text-align:right">${u.count}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════
+// UTILITIES
+// ════════════════════════════════
+function closeOverlay(id, evt) {
+  if(evt && evt.target.id !== id) return;
+  document.getElementById(id).classList.remove('open');
+}
+
+function toast(msg, icon='✓') {
+  const el = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  el.querySelector('.t-icon').textContent = icon;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>el.classList.remove('show'), 2400);
+}
+
+// Keyboard
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ ['evt-overlay','usr-overlay'].forEach(id=>document.getElementById(id).classList.remove('open')); closePopover(); } });
+</script>
+</body>
+</html>
