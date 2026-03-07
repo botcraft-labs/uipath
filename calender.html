@@ -1577,6 +1577,33 @@ function openEvtModal(ds, st='09:00', et='10:00', ev=null) {
   g('em-del').style.display = ev ? '' : 'none';
   openOv('ov-ev');
 }
+function slotsOverlap(asd, aed, ast, aet, bsd, bed, bst, bet) {
+  // Check if date ranges overlap
+  if (aed < bsd || bed < asd) return false;
+  // Check time overlap on overlapping days
+  const toMin = t => { if (!t) return 0; const [h,m]=(t||'00:00').split(':'); return +h*60+(+m||0); };
+  const aS=toMin(ast), aE=toMin(aet)||1439, bS=toMin(bst), bE=toMin(bet)||1439;
+  return aS < bE && bS < aE;
+}
+
+function findOverlappingSlots(evData) {
+  return DB.events.filter(e => {
+    if (e.id === evData.id) return false; // skip self when editing
+    return slotsOverlap(evData.sd, evData.ed||evData.sd, evData.st, evData.et,
+                        e.sd, e.ed||e.sd, e.st, e.et);
+  });
+}
+
+async function proceedSaveEvent(evData, isNew) {
+  if (editEvtId) { const i = DB.events.findIndex(e=>e.id===editEvtId); if (i>-1) DB.events[i]=evData; }
+  else DB.events.push(evData);
+  logAct('event', `${isNew?'Booked':'Updated'} slot: ${evData.name}`, evData.id);
+  persist(); closeOv('ov-ev'); showSec(SEC); updateCounts(); buildMiniCal();
+  toast(isNew ? '✓ Slot booked' : '✓ Slot updated');
+  sendNotifications(evData, isNew);
+  editEvtId = null;
+}
+
 async function saveEvent() {
   const name=gv('e-name').trim(), sd=gv('e-sd'), st=gv('e-st'), ed=gv('e-ed'), et=gv('e-et');
   const cand=gv('e-cand').trim(), comp=gv('e-comp').trim();
@@ -1592,13 +1619,109 @@ async function saveEvent() {
     color: selEC, createdBy: editEvtId ? (DB.events.find(e=>e.id===editEvtId)?.createdBy||CU.id) : CU.id,
     date: sd, start: st, end: et
   };
-  if (editEvtId) { const i = DB.events.findIndex(e=>e.id===editEvtId); if (i>-1) DB.events[i]=evData; }
-  else DB.events.push(evData);
-  logAct('event', `${isNew?'Booked':'Updated'} slot: ${name}`, evData.id);
-  persist(); closeOv('ov-ev'); showSec(SEC); updateCounts(); buildMiniCal();
-  toast(isNew ? '✓ Slot booked' : '✓ Slot updated');
-  sendNotifications(evData, isNew);
-  editEvtId = null;
+
+  // Check for overlapping slots
+  const overlaps = findOverlappingSlots(evData);
+  if (overlaps.length > 0) {
+    showSlotConflictWarning(evData, isNew, overlaps);
+    return;
+  }
+
+  await proceedSaveEvent(evData, isNew);
+}
+
+function showSlotConflictWarning(evData, isNew, overlaps) {
+  // Remove existing conflict modal if any
+  const existing = document.getElementById('ov-conflict');
+  if (existing) existing.remove();
+
+  const ov = overlaps[0];
+  const ownerUser = DB.users.find(u => u.id === ov.createdBy);
+  const ownerName = ownerUser ? ownerUser.name : 'another user';
+  const isAdmin = CU.role === 'admin';
+
+  const modal = document.createElement('div');
+  modal.id = 'ov-conflict';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);';
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:20px;max-width:460px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,0.25);overflow:hidden;animation:scaleIn .2s ease;">
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#fff3f3,#ffe8e8);padding:28px 28px 20px;border-bottom:1px solid #fecaca;position:relative;">
+        <div style="width:52px;height:52px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:14px;border:2px solid #fca5a5;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div style="font-size:1.15rem;font-weight:800;color:#1a1a2e;margin-bottom:6px;">Slot Already Reserved</div>
+        <div style="font-size:0.82rem;color:#6b7280;line-height:1.5;">This time slot conflicts with an existing booking</div>
+      </div>
+      <!-- Body -->
+      <div style="padding:24px 28px;">
+        <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:18px;">
+          <div style="font-size:0.68rem;font-weight:700;color:#9ca3af;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;">Conflicting Slot</div>
+          <div style="font-size:0.9rem;font-weight:700;color:#111827;margin-bottom:4px;">${ov.name}</div>
+          <div style="font-size:0.78rem;color:#6b7280;margin-bottom:2px;">&#128197; ${fmtDate(ov.sd)} &nbsp;&#9679;&nbsp; &#9200; ${ov.st||'—'} – ${ov.et||'—'}</div>
+          <div style="font-size:0.78rem;color:#6b7280;">&#128100; Reserved by: <strong style="color:#374151;">${ownerName}</strong></div>
+        </div>
+        <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:13px 16px;margin-bottom:20px;display:flex;gap:10px;align-items:flex-start;">
+          <span style="font-size:1rem;flex-shrink:0;">&#128274;</span>
+          <div style="font-size:0.8rem;color:#92400e;line-height:1.6;">
+            <strong>This time slot is blocked by another user.</strong><br>
+            ${isAdmin ? 'As admin, you can still book this slot.' : 'Please contact your <strong>admin</strong> to resolve the conflict or choose a different time.'}
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-direction:column;">
+          <button onclick="confirmOverlapBook()" style="background:#e5192a;color:#fff;border:none;border-radius:10px;padding:13px;font-size:0.9rem;font-weight:700;cursor:pointer;width:100%;">
+            Book Anyway
+          </button>
+          <button onclick="document.getElementById('ov-conflict').remove()" style="background:#f3f4f6;color:#374151;border:none;border-radius:10px;padding:13px;font-size:0.9rem;font-weight:600;cursor:pointer;width:100%;">
+            Choose Different Slot
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  // Store pending data globally for confirm action
+  window._pendingConflictData = { evData, isNew, overlaps };
+}
+
+async function confirmOverlapBook() {
+  const { evData, isNew, overlaps } = window._pendingConflictData || {};
+  document.getElementById('ov-conflict')?.remove();
+  if (!evData) return;
+  await proceedSaveEvent(evData, isNew);
+  // Send conflict alert to Telegram
+  sendConflictTelegram(evData, overlaps);
+}
+
+async function sendConflictTelegram(evData, overlaps) {
+  const n = DB.notif || {};
+  if (!n.telegram?.token || !n.telegram?.chat) return;
+  const ownerUser = DB.users.find(u => u.id === overlaps[0]?.createdBy);
+  const ownerName = ownerUser ? ownerUser.name : 'Unknown';
+  const bookedByUser = DB.users.find(u => u.id === evData.createdBy);
+  const bookedByName = bookedByUser ? bookedByUser.name : CU.name;
+  let conflictLines = overlaps.map(ov => {
+    const ou = DB.users.find(u => u.id === ov.createdBy);
+    return `  • "${ov.name}" by ${ou ? ou.name : 'Unknown'} (${ov.st||'?'} – ${ov.et||'?'})`;
+  }).join('\n');
+  const msg = `⚠️ SLOT CONFLICT ALERT — UiPath Interview Slots\n\n` +
+    `A new slot was booked despite a conflict!\n\n` +
+    `🆕 New Booking:\n` +
+    `  📌 ${evData.name}\n` +
+    `  👤 Candidate: ${evData.cand||'—'}\n` +
+    `  📅 ${fmtDate(evData.sd)} → ${fmtDate(evData.ed||evData.sd)}\n` +
+    `  ⏰ ${evData.st||'—'} – ${evData.et||'—'}\n` +
+    `  👥 Booked by: ${bookedByName}\n\n` +
+    `❌ Conflicting Slot(s):\n${conflictLines}\n\n` +
+    `⚡ Action Required: Please review and resolve this conflict.\n— UiPath Slots`;
+  try {
+    await fetch(`https://api.telegram.org/bot${n.telegram.token.trim()}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: n.telegram.chat.trim(), text: msg })
+    });
+  } catch(e) { console.error('Conflict telegram failed', e); }
 }
 function deleteEvtM() {
   if (!editEvtId) return;
@@ -1731,6 +1854,7 @@ async function sendInviteEmail({ name, username, password, role, email }) {
       role: roleLabels[role] || role,
       app_url: appUrl,
       invited_by: CU.name,
+      invited_by_initial: CU.name ? CU.name[0].toUpperCase() : 'A',
       invited_by_email: CU.email || '',
       app_name: 'UiPath Interview Slot Booking',
       message: `You have been invited to join the UiPath Interview Slot Booking platform by ${CU.name}. Use the credentials below to sign in.`
@@ -1769,6 +1893,7 @@ async function testEmailInvite() {
       role: CU.role,
       app_url: appUrl,
       invited_by: 'Test System',
+      invited_by_initial: 'T',
       invited_by_email: '',
       app_name: 'UiPath Interview Slot Booking',
       message: 'This is a test invitation email from UiPath Interview Slot Booking.'
