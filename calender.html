@@ -578,6 +578,9 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
       <div class="lf"><label>Password</label><div class="pw"><input id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password"/><button class="eye-btn" onclick="tv('l-pass',this)">👁</button></div></div>
       <button class="btn-login" id="btn-login-main" onclick="doLogin()">Sign In →</button>
       <div id="lerr"></div>
+      <div style="margin-top:14px;text-align:center;font-size:.72rem;color:var(--ink4)">
+        Having trouble? <button onclick="resetLocalData()" style="background:none;border:none;color:var(--acc);cursor:pointer;font-size:.72rem;font-family:var(--font-body);text-decoration:underline;padding:0">Reset local data</button> (keeps Firebase data intact)
+      </div>
     </div>
   </div>
 </div>
@@ -1137,13 +1140,30 @@ async function persist() {
   }
 }
 
+const DEFAULT_ADMIN = { id:'u0', name:'Administrator', username:'admin', password:'admin123', role:'admin', color:'#264653', created:0 };
+
 function dbInit() {
-  try { const r = localStorage.getItem(SK); if (r) return JSON.parse(r); } catch {}
-  return {
-    users: [{ id:'u0', name:'Administrator', username:'admin', password:'admin123', role:'admin', color:'#264653', created:Date.now() }],
-    events: [], notif: { slack:{url:'',ch:''}, telegram:{token:'',chat:''}, whatsapp:{phone:'',key:''} },
-    activity: [], theme: 'light'
-  };
+  let db = null;
+  try {
+    const r = localStorage.getItem(SK);
+    if (r) db = JSON.parse(r);
+  } catch(e) {
+    console.warn('localStorage corrupt, resetting', e);
+    try { localStorage.removeItem(SK); } catch(e2) {}
+  }
+  if (!db || typeof db !== 'object') {
+    db = { users: [], events: [], notif: { slack:{url:'',ch:''}, telegram:{token:'',chat:''}, whatsapp:{phone:'',key:''} }, activity: [], theme: 'light' };
+  }
+  if (!Array.isArray(db.users))    db.users    = [];
+  if (!Array.isArray(db.events))   db.events   = [];
+  if (!Array.isArray(db.activity)) db.activity = [];
+  if (!db.notif) db.notif = { slack:{url:'',ch:''}, telegram:{token:'',chat:''}, whatsapp:{phone:'',key:''} };
+  if (!db.theme) db.theme = 'light';
+  // Always guarantee admin exists
+  if (!db.users.some(u => u.username === 'admin')) {
+    db.users.unshift({ ...DEFAULT_ADMIN, created: Date.now() });
+  }
+  return db;
 }
 
 let DB = dbInit(), CU = null, VIEW = 'month', curDate = new Date(), SEC = 'calendar';
@@ -1255,6 +1275,12 @@ function doLogout() {
   g('login-screen').classList.remove('gone');
   g('udrop').classList.remove('open');
   closeSb();
+}
+
+function resetLocalData() {
+  if (!confirm('Clear local data and reload? This will re-fetch data from Firebase if configured, or restore the default admin account.')) return;
+  try { localStorage.removeItem(SK); localStorage.removeItem('uipath_fb_cfg'); } catch(e) {}
+  location.reload();
 }
 
 function initApp() {
