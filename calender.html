@@ -469,15 +469,21 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 .csw { width: 26px; height: 26px; border-radius: 7px; cursor: pointer; border: 2.5px solid transparent; transition: transform .14px, border-color .14s; }
 .csw:hover { transform: scale(1.2); }
 .csw.pk { border-color: var(--ink); transform: scale(1.1); }
-.dt-box { background: var(--sf2); border: 1.5px solid var(--bd); border-radius: 11px; padding: 16px; margin-bottom: 12px; }
-.dt-hdr { font-family: var(--font-head); font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--ink2); margin-bottom: 12px; }
-.dt-cols { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
-.dt-col { display: flex; flex-direction: column; gap: 8px; }
-.dt-g { display: flex; flex-direction: column; gap: 4px; }
-.dt-g label { font-family: var(--font-mono); font-size: .6rem; color: var(--ink3); text-transform: uppercase; letter-spacing: .08em; }
-.dt-g input { background: var(--sf); border: 1.5px solid var(--bd); border-radius: 8px; padding: 9px 11px; font-size: .85rem; color: var(--ink); outline: none; transition: all .2s; width: 100%; }
-.dt-g input:focus { border-color: var(--acc); box-shadow: 0 0 0 3px var(--accbg); }
-.dt-arr { color: var(--ink3); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; margin-top: 22px; }
+.dt-box { background: var(--sf2); border: 1.5px solid var(--bd); border-radius: 13px; padding: 14px 16px; margin-bottom: 12px; }
+.dt-hdr { font-family: var(--font-head); font-size: .65rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--ink2); margin-bottom: 12px; }
+.dt-mobile-grid { display: flex; align-items: stretch; gap: 10px; flex-wrap: wrap; }
+.dt-cell { flex: 1; min-width: 140px; }
+.dt-cell-lbl { font-family: var(--font-head); font-size: .62rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--ink3); margin-bottom: 7px; }
+.dt-cell-row { display: flex; flex-direction: column; gap: 7px; }
+.dt-input-wrap { display: flex; align-items: center; gap: 9px; background: var(--sf); border: 1.5px solid var(--bd); border-radius: 10px; padding: 9px 12px; transition: border-color .15s, box-shadow .15s; }
+.dt-input-wrap:focus-within { border-color: var(--acc); box-shadow: 0 0 0 3px var(--accbg); }
+.dt-input-icon { font-size: .9rem; flex-shrink: 0; line-height: 1; }
+.dt-input { flex: 1; background: transparent; border: none; outline: none; font-family: var(--font-mono); font-size: .85rem; color: var(--ink); min-width: 0; padding: 0; }
+.dt-input::-webkit-calendar-picker-indicator { cursor: pointer; opacity: .55; width: 18px; height: 18px; filter: var(--cal-icon-filter, none); }
+.dt-divider { color: var(--ink3); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; padding-top: 24px; flex-shrink: 0; }
+.kpi { cursor: default; transition: transform .15s, box-shadow .15s; }
+.kpi[onclick] { cursor: pointer; }
+.kpi[onclick]:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,.13); }
 .notif-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
 .ntab { display: flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 9px; border: 1.5px solid var(--bd); background: var(--sf); cursor: pointer; transition: all .16s; font-family: var(--font-head); font-size: .72rem; font-weight: 700; color: var(--ink2); }
 .ntab:hover { border-color: var(--bd2); background: var(--g2); }
@@ -536,7 +542,7 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
   .kpi-grid { grid-template-columns: 1fr 1fr; } .dash-grid { grid-template-columns: 1fr; }
   .sg { grid-template-columns: 1fr 1fr; } .cg2 { grid-template-columns: 1fr; }
   .panel { padding: 14px; } .fr { grid-template-columns: 1fr; } .fr.t3 { grid-template-columns: 1fr 1fr; }
-  .dt-cols { grid-template-columns: 1fr; } .dt-arr { display: none; }
+  .dt-mobile-grid { flex-direction: column; } .dt-divider { padding-top: 0; transform: rotate(90deg); align-self: center; } .dt-cell { width: 100%; }
   .detail-panel { width: 100%; top: auto; border-radius: 20px 20px 0 0; max-height: 82dvh; border-left: none; border-top: 1px solid var(--bd); }
   .sc-grid { grid-template-columns: 1fr; }
   .mbody { padding: 16px 18px; } .mhd { padding: 16px 18px 13px; } .mfoot { padding: 12px 18px; }
@@ -644,7 +650,7 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
         <button class="sbb" id="sb-users" onclick="showSec('users');closeSb()"><span class="sb-icon">👥</span>Users<span class="sb-cnt" id="sbc-u">0</span></button>
         <button class="sbb" id="sb-notif" onclick="showSec('notif');closeSb()"><span class="sb-icon">🔔</span>Notifications</button>
         <button class="sbb" id="sb-activity" onclick="showSec('activity');closeSb()"><span class="sb-icon">📋</span>Activity Log</button>
-        <button class="sbb" id="sb-stats" onclick="showSec('stats');closeSb()"><span class="sb-icon">📊</span>Analytics</button>
+
       </div>
       <div class="mc-wrap" id="mini-cal"></div>
     </nav>
@@ -682,18 +688,36 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
     <button class="mclose" onclick="closeOv('ov-ev')">✕</button>
   </div>
   <div class="mbody">
-    <div class="fr full"><div class="fg"><label>Event Name <span class="req">*</span></label><input id="e-name" placeholder="e.g. Technical Interview – Frontend Engineer"/></div></div>
+    <div class="fr full"><div class="fg"><label>Event Name <span class="req">*</span></label><input id="e-name" placeholder="e.g. Technical Interview – Frontend Engineer" oninput="this.style.outline='';this.style.background=''"/></div></div>
     <div class="dt-box">
       <div class="dt-hdr">📅 Date &amp; Time Range</div>
-      <div class="dt-cols">
-        <div class="dt-col">
-          <div class="dt-g"><label>Start Date *</label><input id="e-sd" type="date" oninput="syncEndDate()"/></div>
-          <div class="dt-g"><label>Start Time *</label><input id="e-st" type="time" value="09:00"/></div>
+      <div class="dt-mobile-grid">
+        <div class="dt-cell">
+          <div class="dt-cell-lbl">🟢 Start</div>
+          <div class="dt-cell-row">
+            <div class="dt-input-wrap">
+              <span class="dt-input-icon">📅</span>
+              <input id="e-sd" type="date" class="dt-input" oninput="syncEndDate();this.style.outline='';this.style.background=''" />
+            </div>
+            <div class="dt-input-wrap">
+              <span class="dt-input-icon">⏰</span>
+              <input id="e-st" type="time" class="dt-input" value="09:00" />
+            </div>
+          </div>
         </div>
-        <div class="dt-arr">→</div>
-        <div class="dt-col">
-          <div class="dt-g"><label>End Date *</label><input id="e-ed" type="date"/></div>
-          <div class="dt-g"><label>End Time *</label><input id="e-et" type="time" value="10:00"/></div>
+        <div class="dt-divider">→</div>
+        <div class="dt-cell">
+          <div class="dt-cell-lbl">🔴 End</div>
+          <div class="dt-cell-row">
+            <div class="dt-input-wrap">
+              <span class="dt-input-icon">📅</span>
+              <input id="e-ed" type="date" class="dt-input" />
+            </div>
+            <div class="dt-input-wrap">
+              <span class="dt-input-icon">⏰</span>
+              <input id="e-et" type="time" class="dt-input" value="10:00" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -703,7 +727,7 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
         <input id="e-cand" placeholder="Full name" readonly style="background:var(--sf3);color:var(--ink2);cursor:default;opacity:.85"/>
         <div style="font-size:.68rem;color:var(--ink3);margin-top:4px">Auto-filled as the booking user's name.</div>
       </div>
-      <div class="fg"><label>Company Name <span class="req">*</span></label><input id="e-comp" placeholder="Company"/></div>
+      <div class="fg"><label>Company Name <span class="req">*</span></label><input id="e-comp" placeholder="Company" oninput="this.style.outline='';this.style.background=''"/></div>
     </div>
     <div class="fr t3">
       <div class="fg"><label>Location</label><input id="e-loc" placeholder="Office / Video link"/></div>
@@ -878,6 +902,14 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
       <div class="fg"><label>Display Name</label><input id="prof-ni"/></div>
       <div class="fg"><label>Avatar Color</label><div class="cr-row" id="prof-cr"></div></div>
     </div>
+    <div class="fg" style="margin-top:4px">
+      <label>My Telegram Chat ID <span style="font-size:.68rem;color:var(--ink3);font-weight:400">(optional — get notified on your device)</span></label>
+      <input id="prof-tg" placeholder="e.g. 123456789 — message @userinfobot to get your ID" autocomplete="off"/>
+      <div style="font-size:.69rem;color:var(--ink3);margin-top:4px;line-height:1.5">
+        📱 You'll receive a personal Telegram message when any slot is created, updated, or deleted.
+        <br>Need help? Message <strong>@userinfobot</strong> on Telegram — it replies with your Chat ID.
+      </div>
+    </div>
   </div>
   <div class="mfoot"><button class="bg" onclick="closeOv('ov-prof')">Cancel</button><button class="bp" onclick="saveProfile()">Save Profile</button></div>
 </div></div>
@@ -1002,7 +1034,7 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 <div id="toast-stack"></div>
 
 <script id="fb-embed-cfg" type="application/json">
-{"projectId":"uipath-interview-slots"}
+{"projectId":""}
 </script>
 
 <script>
@@ -1424,10 +1456,10 @@ function closeSb() { g('sidebar').classList.remove('open'); g('sb-ov').classList
 /* ─ SECTIONS ─ */
 function showSec(sec) {
   SEC = sec; closeDetail();
-  ['dash','calendar','events','users','notif','activity','stats'].forEach(id => { const el = g('sb-'+id); if (el) el.classList.remove('on'); });
+  ['dash','calendar','events','users','notif','activity'].forEach(id => { const el = g('sb-'+id); if (el) el.classList.remove('on'); });
   const el = g('sb-'+sec); if (el) el.classList.add('on');
   const area = g('content'); area.innerHTML = '';
-  const fns = { dash:renderDash, calendar:renderCal, events:renderEvts, users:renderUsers, notif:renderNotifSec, activity:renderActivity, stats:renderStats };
+  const fns = { dash:renderDash, calendar:renderCal, events:renderEvts, users:renderUsers, notif:renderNotifSec, activity:renderActivity };
   if (fns[sec]) fns[sec](area);
   const cv = sec === 'calendar';
   g('vtabs').style.visibility = cv ? '' : 'hidden';
@@ -1615,11 +1647,11 @@ function renderDash(area) {
     <div class="dw-date">Here's your interview schedule overview</div>
     <div class="kpi-grid">
       ${[
-        {icon:'📅',bg:'var(--blbg)',val:fmtNum(total),lbl:isAdmin?'Total Slots':'My Slots',tr:thisMonth>0?`+${fmtNum(thisMonth)} this month`:'No slots this month',tc:thisMonth>0?'up':'nt'},
-        {icon:'⏳',bg:'var(--ambg)',val:fmtNum(upcoming),lbl:'Upcoming',tr:'Scheduled ahead',tc:'nt'},
-        {icon:'🎯',bg:'var(--accbg)',val:fmtNum(today),lbl:"Today's Slots",tr:today>0?'Active today':'Clear day',tc:today>0?'acc':'nt'},
-        {icon:'👥',bg:'var(--grbg)',val:fmtNum(DB.users.length),lbl:'Team Members',tr:`${fmtNum(DB.users.filter(u=>u.role==='admin').length)} admin`,tc:DB.users.length>1?'up':'nt'},
-      ].map((k,i) => `<div class="kpi" style="animation-delay:${i*.06}s">
+        {icon:'📅',bg:'var(--blbg)',val:fmtNum(total),lbl:isAdmin?'Total Slots':'My Slots',tr:thisMonth>0?`+${fmtNum(thisMonth)} this month`:'No slots this month',tc:thisMonth>0?'up':'nt',link:"showSec('events')"},
+        {icon:'⏳',bg:'var(--ambg)',val:fmtNum(upcoming),lbl:'Upcoming',tr:'Scheduled ahead',tc:'nt',link:"setView('agenda');showSec('calendar')"},
+        {icon:'🎯',bg:'var(--accbg)',val:fmtNum(today),lbl:"Today's Slots",tr:today>0?'Active today':'Clear day',tc:today>0?'acc':'nt',link:"setView('agenda');showSec('calendar')"},
+        {icon:'👥',bg:'var(--grbg)',val:fmtNum(DB.users.length),lbl:'Team Members',tr:`${fmtNum(DB.users.filter(u=>u.role==='admin').length)} admin`,tc:DB.users.length>1?'up':'nt',link:isAdmin?"showSec('users')":null},
+      ].map((k,i) => `<div class="kpi" style="animation-delay:${i*.06}s;cursor:${k.link?'pointer':'default'}" onclick="${k.link||''}" title="${k.link?'Click to view':''}">
         <div class="kpi-top"><div class="kpi-icon" style="background:${k.bg}">${k.icon}</div><span class="kpi-tr ${k.tc}">${k.tr}</span></div>
         <div class="kpi-val">${k.val}</div><div class="kpi-lbl">${k.lbl}</div>
       </div>`).join('')}
@@ -1982,6 +2014,7 @@ function quickDel(id) {
   lastDel = {...ev};
   DB.events = DB.events.filter(e=>e.id!==id);
   logAct('delete', `Deleted slot: ${ev.name}`, id);
+  sendNotifications(ev, false, true);
   persist(); closeDetail(); showSec(SEC); updateCounts(); buildMiniCal();
   toast('Slot deleted', 'warn', () => { DB.events.push(lastDel); persist(); showSec(SEC); updateCounts(); buildMiniCal(); lastDel=null; }, 'Undo');
 }
@@ -2082,6 +2115,7 @@ function openEvtModal(ds, st='09:00', et='10:00', ev=null) {
     cb.checked = (ev?.recur?.days||[]).includes(parseInt(cb.value));
   });
   onRecurChange();
+  ['e-name','e-sd','e-comp'].forEach(id=>{const el=document.getElementById(id);if(el){el.style.outline='';el.style.background='';}});
   openOv('ov-ev');
 }
 function slotsOverlap(asd, aed, ast, aet, bsd, bed, bst, bet) {
@@ -2200,7 +2234,7 @@ async function proceedSaveEvent(evData, isNew) {
     toast(isNew ? '✓ Slot booked' : '✓ Slot updated');
   }
   persist(); closeOv('ov-ev'); showSec(SEC); updateCounts(); buildMiniCal();
-  sendNotifications(evData, isNew);
+  sendNotifications(evData, isNew, false);
   editEvtId = null;
 }
 
@@ -2208,7 +2242,14 @@ async function saveEvent() {
   const name=gv('e-name').trim(), sd=gv('e-sd'), st=gv('e-st'), ed=gv('e-ed'), et=gv('e-et');
   // Candidate is auto-filled from user, company still required
   const cand=gv('e-cand').trim()||CU.name, comp=gv('e-comp').trim();
-  if (!name||!sd||!comp) { toast('Please fill all required fields','warn'); return; }
+  // Highlight missing required fields
+  let missing = false;
+  [['e-name',name],['e-sd',sd],['e-comp',comp]].forEach(([id,val]) => {
+    const el = document.getElementById(id);
+    if (!val) { if(el){el.style.outline='2.5px solid var(--rd)';el.style.background='var(--rdbg)';} missing=true; }
+    else { if(el){el.style.outline='';el.style.background='';} }
+  });
+  if (missing) { toast('Please fill all required fields','warn'); return; }
   if (ed < sd) { toast('End date cannot be before start date','err'); return; }
   const isNew = !editEvtId;
   const recurCfg = getRecurConfig();
@@ -2333,6 +2374,7 @@ function deleteEvtM() {
   if (!canDel) { toast('You can only delete your own slots', 'warn'); return; }
   DB.events = DB.events.filter(e=>e.id!==editEvtId);
   logAct('delete', `Deleted: ${ev?.name}`);
+  if (ev) sendNotifications(ev, false, true);
   persist(); closeOv('ov-ev'); showSec(SEC); updateCounts(); buildMiniCal();
   toast('Slot deleted','warn'); editEvtId = null;
 }
@@ -2348,18 +2390,46 @@ function buildMsg(ev, isNew) {
     `📊 Status: ${ev.status||'—'}\n`+(ev.notes?`\n📝 Notes: ${ev.notes.slice(0,200)}\n`:'')+`\n— UiPath Slots`;
 }
 
-async function sendNotifications(ev, isNew) {
-  const n = DB.notif||{}, msg = buildMsg(ev, isNew), results = [];
+async function sendNotifications(ev, isNew, isDelete) {
+  const n = DB.notif||{}, msg = buildMsg(ev, isNew, isDelete), results = [];
   if (n.slack?.url && n.slack.url.startsWith('https://hooks.slack.com/')) {
     try { const r = await fetch(n.slack.url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text:msg}) }); results.push('Slack '+(r.ok?'✓':'✗')); } catch(e) { results.push('Slack ✗'); }
   }
+  // Admin-level Telegram channel
   if (n.telegram?.token && n.telegram?.chat) {
-    try { const r = await fetch(`https://api.telegram.org/bot${n.telegram.token.trim()}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:n.telegram.chat.trim(),text:msg}) }); const d=await r.json(); results.push('Telegram '+(d.ok?'✓':'✗')); } catch(e) { results.push('Telegram ✗'); }
+    try { const r = await fetch(`https://api.telegram.org/bot${n.telegram.token.trim()}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:n.telegram.chat.trim(),text:msg,parse_mode:'HTML'}) }); const d=await r.json(); results.push('Telegram '+(d.ok?'✓':'✗')); } catch(e) { results.push('Telegram ✗'); }
+  }
+  // Per-user Telegram DMs — notify all users who have set their Chat ID
+  if (n.telegram?.token) {
+    const token = n.telegram.token.trim();
+    const userMsg = buildUserMsg(ev, isNew, isDelete);
+    const usersToNotify = DB.users.filter(u => u.telegramChatId && u.telegramChatId.trim() && u.id !== CU.id);
+    for (const u of usersToNotify) {
+      try { await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:u.telegramChatId.trim(), text:userMsg, parse_mode:'HTML'}) }); } catch(e) {}
+    }
+    // Also notify the current user if they have a personal chat ID set
+    if (CU.telegramChatId && CU.telegramChatId.trim()) {
+      try { await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:CU.telegramChatId.trim(), text:userMsg, parse_mode:'HTML'}) }); } catch(e) {}
+    }
+    if (usersToNotify.length > 0 || CU.telegramChatId) results.push(`DMs ✓ (${usersToNotify.length+1})`);
   }
   if (n.whatsapp?.phone && n.whatsapp?.key) {
     try { await fetch(`https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(n.whatsapp.phone.trim())}&text=${encodeURIComponent(msg)}&apikey=${encodeURIComponent(n.whatsapp.key.trim())}`, {mode:'no-cors'}); results.push('WhatsApp ✓'); } catch(e) { results.push('WhatsApp ✗'); }
   }
   if (results.length) toast('Notified: '+results.join(' · '), 'info');
+}
+
+// Short per-user DM — only date/time, no sensitive details
+function buildUserMsg(ev, isNew, isDelete) {
+  const action = isDelete ? '🗑 Slot Deleted' : isNew ? '✅ New Slot Booked' : '✏️ Slot Updated';
+  const dateStr = ev.sd ? new Date(ev.sd+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : '';
+  const endDateStr = (ev.ed && ev.ed !== ev.sd) ? ' → ' + new Date(ev.ed+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) : '';
+  const timeStr = ev.st ? (ev.st + (ev.et ? ' – ' + ev.et : '')) : '';
+  return `<b>UiPath Slots</b>
+${action}
+
+📅 <b>Date:</b> ${dateStr}${endDateStr}
+⏰ <b>Time:</b> ${timeStr}`;
 }
 
 async function testNotif(ch) {
@@ -3051,12 +3121,14 @@ function openProfile() {
   s('prof-n', CU.name); s('prof-u', '@'+CU.username);
   g('prof-rb').innerHTML = `<span class="rbadge rb-${CU.role}">${CU.role}</span>`;
   sv('prof-ni', CU.name); selPC = CU.color; buildCR('prof-cr', UC, 'prof', selPC);
+  sv('prof-tg', CU.telegramChatId||'');
   openOv('ov-prof');
 }
 function saveProfile() {
   const name = gv('prof-ni').trim(); if (!name) { toast('Name required','warn'); return; }
-  CU.name = name; CU.color = selPC;
-  const u = DB.users.find(x=>x.id===CU.id); if (u) { u.name=name; u.color=selPC; }
+  const tgId = gv('prof-tg').trim();
+  CU.name = name; CU.color = selPC; CU.telegramChatId = tgId;
+  const u = DB.users.find(x=>x.id===CU.id); if (u) { u.name=name; u.color=selPC; u.telegramChatId=tgId; }
   persist(); closeOv('ov-prof'); initApp(); showSec(SEC); toast('✓ Profile updated');
 }
 function openShortcuts() { g('udrop').classList.remove('open'); openOv('ov-sc'); }
