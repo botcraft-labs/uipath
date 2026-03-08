@@ -1209,43 +1209,70 @@ function syncEndDate() {
 }
 
 /* ─ AUTH ─ */
+
+// Called on page load — only initialises Firebase in the background.
+// Admin login always works from local DB — no Firebase dependency.
 async function initLoginScreen() {
-  // Wait for Firebase SDK (loaded as ES module — async)
-  await new Promise(res => {
-    if (window._fbModules) return res();
-    let n = 0;
-    const t = setInterval(() => { n++; if (window._fbModules || n > 40) { clearInterval(t); res(); } }, 100);
-  });
-  // Read config embedded in the HTML by admin (or from localStorage fallback)
+  // Kick off Firebase init in the background (don't await — never blocks login)
   const fbCfg = loadFbCfg();
   if (fbCfg && fbCfg.apiKey && fbCfg.projectId) {
-    const sub = g('l-sub');
-    if (sub) sub.textContent = 'Connecting to shared database…';
-    const ok = await initFirebase(fbCfg);
-    if (ok) {
-      const remote = await fbGet('uipath', 'db');
-      if (remote) {
-        if (remote.users)    DB.users    = remote.users;
-        if (remote.events)   DB.events   = remote.events;
-        if (remote.activity) DB.activity = remote.activity;
-        if (remote.theme)    DB.theme    = remote.theme;
-        try { localStorage.setItem(SK, JSON.stringify(DB)); } catch(e) {}
+    // Wait for SDK then connect — all async, login form is already usable
+    (async () => {
+      await new Promise(res => {
+        if (window._fbModules) return res();
+        let n = 0;
+        const t = setInterval(() => { n++; if (window._fbModules || n > 40) { clearInterval(t); res(); } }, 100);
+      });
+      const ok = await initFirebase(fbCfg);
+      if (ok) {
+        const remote = await fbGet('uipath', 'db');
+        if (remote) {
+          // Merge non-admin users and events from Firebase into local DB
+          if (remote.users) {
+            // Keep local admin intact, merge in all other users from Firebase
+            const adminUser = DB.users.find(u => u.username === 'admin');
+            DB.users = remote.users;
+            // Ensure admin is always present with local copy (not overwritten by Firebase)
+            if (adminUser && !DB.users.find(u => u.username === 'admin')) {
+              DB.users.unshift(adminUser);
+            }
+          }
+          if (remote.events)   DB.events   = remote.events;
+          if (remote.activity) DB.activity = remote.activity;
+          if (remote.theme)    DB.theme    = remote.theme;
+          try { localStorage.setItem(SK, JSON.stringify(DB)); } catch(e) {}
+        }
+        const remoteNotif = await fbGet('uipath', 'notif');
+        if (remoteNotif) DB.notif = remoteNotif;
       }
-      const remoteNotif = await fbGet('uipath', 'notif');
-      if (remoteNotif) DB.notif = remoteNotif;
-      if (sub) sub.textContent = 'Enter your credentials to continue';
-    } else {
-      if (sub) sub.textContent = '⚠ Could not connect — using local data';
-    }
+    })();
   }
-  // Always show login form — no setup screen needed when hosted on a URL
+  // Login form is always immediately ready — no waiting
 }
 
 async function doLogin() {
   const u = g('l-user').value.trim(), p = g('l-pass').value;
   const btn = g('btn-login-main');
   if (btn) btn.textContent = '⏳ Signing in…';
-  const f = DB.users.find(x => x.username === u && x.password === p);
+
+  // Step 1: always check local DB first (admin always works this way)
+  let f = DB.users.find(x => x.username === u && x.password === p);
+
+  // Step 2: if not found locally and Firebase is connected, try fetching latest users
+  // (handles case where Firebase loaded after user started typing)
+  if (!f && _fbDb) {
+    const remote = await fbGet('uipath', 'db');
+    if (remote && remote.users) {
+      const adminUser = DB.users.find(x => x.username === 'admin');
+      DB.users = remote.users;
+      if (adminUser && !DB.users.find(x => x.username === 'admin')) DB.users.unshift(adminUser);
+      if (remote.events)   DB.events   = remote.events;
+      if (remote.activity) DB.activity = remote.activity;
+      try { localStorage.setItem(SK, JSON.stringify(DB)); } catch(e) {}
+    }
+    f = DB.users.find(x => x.username === u && x.password === p);
+  }
+
   if (!f) {
     s('lerr', '⚠ Invalid username or password');
     if (btn) btn.textContent = 'Sign In →';
