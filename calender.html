@@ -156,6 +156,7 @@ button, input, select, textarea { font-family: inherit; }
 .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(229,25,42,.5); }
 .btn-login:active { transform: translateY(0); }
 #lerr { color: var(--rd); font-size: .78rem; margin-top: 10px; min-height: 18px; }
+/* Firebase setup CSS removed — config baked into hosted file */
 
 /* ═══ APP SHELL ═══ */
 #app { display: none; height: 100dvh; flex-direction: column; }
@@ -572,10 +573,10 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
     <div class="lr">
       <div class="lr-eyebrow">Welcome back</div>
       <div class="lr-h">Sign in to your<br>workspace</div>
-      <div class="lr-s">Enter your credentials to continue</div>
+      <div class="lr-s" id="l-sub">Enter your credentials to continue</div>
       <div class="lf"><label>Username</label><input id="l-user" placeholder="Enter username" autocomplete="username"/></div>
       <div class="lf"><label>Password</label><div class="pw"><input id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password"/><button class="eye-btn" onclick="tv('l-pass',this)">👁</button></div></div>
-      <button class="btn-login" onclick="doLogin()">Sign In →</button>
+      <button class="btn-login" id="btn-login-main" onclick="doLogin()">Sign In →</button>
       <div id="lerr"></div>
     </div>
   </div>
@@ -942,29 +943,33 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
       </div>
     </div>
     <div class="ntab-body" id="nb-firebase">
+      <div id="fb-in-app-status" style="margin-bottom:12px;padding:10px 13px;border-radius:9px;font-size:.78rem;line-height:1.6;background:var(--grbg);border:1px solid rgba(15,122,80,.2);color:var(--gr);display:none">
+        ✅ <strong>Firebase is live.</strong> All browsers with this file sync in real-time.
+      </div>
       <div class="nh">
-        <strong>Firebase Firestore — Real-time sync across all browsers:</strong><br>
+        <strong>One-time setup by admin — users need zero configuration:</strong><br>
         1. Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → New Project<br>
-        2. <strong>Build → Firestore Database</strong> → Create → Start in <strong>test mode</strong><br>
-        3. <strong>Project Settings ⚙</strong> → General → Your Apps → Web → Register app → Copy config<br>
-        4. Paste the values below — all users on any browser will share the same data live<br>
-        5. ⚠️ In Firestore Rules set: <code>allow read, write: if true;</code> for now (or add auth later)
+        2. <strong>Build → Firestore Database</strong> → Create → <strong>Test mode</strong><br>
+        3. <strong>Project Settings ⚙ → Your Apps → Web → Register App</strong> → copy <code>apiKey</code> and <code>projectId</code><br>
+        4. Paste below → <strong>Save Settings</strong> → click <strong>⬇ Download Updated HTML</strong><br>
+        5. Deploy that file to your hosting URL (Netlify / GitHub Pages / SharePoint / server)<br>
+        6. Users open the URL → Firebase connects silently → they just log in. Done.
       </div>
       <div class="fr">
         <div class="fg"><label>API Key <span class="req">*</span></label><input id="n-fb-apikey" placeholder="AIzaSy..."/></div>
         <div class="fg"><label>Project ID <span class="req">*</span></label><input id="n-fb-pid" placeholder="my-project-12345"/></div>
       </div>
       <div class="fr">
-        <div class="fg"><label>Auth Domain</label><input id="n-fb-auth" placeholder="my-project.firebaseapp.com"/></div>
-        <div class="fg"><label>Storage Bucket</label><input id="n-fb-bucket" placeholder="my-project.appspot.com"/></div>
+        <div class="fg"><label>Auth Domain <span style="font-weight:400;color:var(--ink3)">(auto-filled)</span></label><input id="n-fb-auth" placeholder="auto: projectId.firebaseapp.com"/></div>
+        <div class="fg"><label>App ID <span style="font-weight:400;color:var(--ink3)">(optional)</span></label><input id="n-fb-appid" placeholder="1:123456:web:abc..."/></div>
       </div>
-      <div class="fg"><label>App ID</label><input id="n-fb-appid" placeholder="1:123456:web:abc..."/></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+      <div style="display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap">
         <button class="bp" onclick="testFirebase()">🧪 Test Connection</button>
+        <button class="bg" onclick="downloadUpdatedHTML()" id="btn-dl-html" style="display:none">⬇ Download Updated HTML</button>
         <div id="n-fbs" class="ns-badge ns-idle" style="display:none"></div>
       </div>
-      <div class="notif-info" style="margin-top:12px">
-        ℹ️ Once connected, all users, events, and settings sync in real-time across every browser. The first browser to connect uploads existing local data to Firebase. <strong>Free Firestore tier: 50K reads + 20K writes/day.</strong>
+      <div style="background:linear-gradient(135deg,rgba(251,146,60,.1),rgba(245,158,11,.06));border:1.5px solid rgba(251,146,60,.3);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:.78rem;line-height:1.7;color:#92400e">
+        <strong>🔑 How it works:</strong> When you save Firebase config and click <strong>Download Updated HTML</strong>, the Firebase credentials are embedded inside the HTML file. Anyone who opens that file auto-connects to Firebase — no setup screen, no sharing credentials separately. Just share the file.
       </div>
     </div>
   </div>
@@ -996,6 +1001,10 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 
 <div id="toast-stack"></div>
 
+<script id="fb-embed-cfg" type="application/json">
+{"apiKey":"","projectId":"","authDomain":"","storageBucket":"","appId":""}
+</script>
+
 <script>
 'use strict';
 const SK = 'uipath_slots_v1';
@@ -1010,9 +1019,26 @@ let _fbApp = null, _fbDb = null, _fbUnsub = null;
 let _fbCfg = null; // loaded from localStorage
 
 function loadFbCfg() {
+  // 1. Try embedded config in HTML (baked in by admin)
+  try {
+    const el = document.getElementById('fb-embed-cfg');
+    if (el) {
+      const cfg = JSON.parse(el.textContent.trim());
+      if (cfg && cfg.apiKey && cfg.projectId) return cfg;
+    }
+  } catch(e) {}
+  // 2. Fallback to localStorage (manually entered on this browser)
   try { const r = localStorage.getItem('uipath_fb_cfg'); return r ? JSON.parse(r) : null; } catch { return null; }
 }
-function saveFbCfg(cfg) { localStorage.setItem('uipath_fb_cfg', JSON.stringify(cfg)); }
+function saveFbCfg(cfg) {
+  // Save to localStorage for this browser session
+  localStorage.setItem('uipath_fb_cfg', JSON.stringify(cfg));
+  // Also update the embedded block in the DOM (for current session)
+  try {
+    const el = document.getElementById('fb-embed-cfg');
+    if (el) el.textContent = '\n' + JSON.stringify(cfg) + '\n';
+  } catch(e) {}
+}
 
 async function initFirebase(cfg) {
   if (!cfg || !cfg.apiKey || !cfg.projectId) return false;
@@ -1163,29 +1189,48 @@ function syncEndDate() {
 }
 
 /* ─ AUTH ─ */
-async function doLogin() {
-  const u = g('l-user').value.trim(), p = g('l-pass').value;
-  g('lerr').innerHTML = '⏳ Signing in…';
-  // Try to connect Firebase first if configured
+async function initLoginScreen() {
+  // Wait for Firebase SDK (loaded as ES module — async)
+  await new Promise(res => {
+    if (window._fbModules) return res();
+    let n = 0;
+    const t = setInterval(() => { n++; if (window._fbModules || n > 40) { clearInterval(t); res(); } }, 100);
+  });
+  // Read config embedded in the HTML by admin (or from localStorage fallback)
   const fbCfg = loadFbCfg();
-  if (fbCfg && fbCfg.apiKey) {
+  if (fbCfg && fbCfg.apiKey && fbCfg.projectId) {
+    const sub = g('l-sub');
+    if (sub) sub.textContent = 'Connecting to shared database…';
     const ok = await initFirebase(fbCfg);
     if (ok) {
-      // Pull latest data from Firebase before auth check
       const remote = await fbGet('uipath', 'db');
       if (remote) {
-        if (remote.users) DB.users = remote.users;
-        if (remote.events) DB.events = remote.events;
+        if (remote.users)    DB.users    = remote.users;
+        if (remote.events)   DB.events   = remote.events;
         if (remote.activity) DB.activity = remote.activity;
-        if (remote.theme) DB.theme = remote.theme;
+        if (remote.theme)    DB.theme    = remote.theme;
+        try { localStorage.setItem(SK, JSON.stringify(DB)); } catch(e) {}
       }
-      // Also pull notif
       const remoteNotif = await fbGet('uipath', 'notif');
       if (remoteNotif) DB.notif = remoteNotif;
+      if (sub) sub.textContent = 'Enter your credentials to continue';
+    } else {
+      if (sub) sub.textContent = '⚠ Could not connect — using local data';
     }
   }
+  // Always show login form — no setup screen needed when hosted on a URL
+}
+
+async function doLogin() {
+  const u = g('l-user').value.trim(), p = g('l-pass').value;
+  const btn = g('btn-login-main');
+  if (btn) btn.textContent = '⏳ Signing in…';
   const f = DB.users.find(x => x.username === u && x.password === p);
-  if (!f) { s('lerr', '⚠ Invalid username or password'); return; }
+  if (!f) {
+    s('lerr', '⚠ Invalid username or password');
+    if (btn) btn.textContent = 'Sign In →';
+    return;
+  }
   s('lerr', ''); CU = f;
   const u2 = DB.users.find(x => x.id === CU.id);
   if (u2) u2.lastLogin = Date.now();
@@ -1193,8 +1238,8 @@ async function doLogin() {
   g('login-screen').classList.add('gone');
   g('app').classList.add('on');
   g('l-user').value = ''; g('l-pass').value = '';
+  if (btn) btn.textContent = 'Sign In →';
   applyTheme(DB.theme || 'light');
-  // Start live listener
   if (_fbDb) fbListen();
   initApp();
 }
@@ -2232,6 +2277,11 @@ function openNotifModal() {
   sv('n-fb-auth', fbCfg.authDomain||''); sv('n-fb-bucket', fbCfg.storageBucket||'');
   sv('n-fb-appid', fbCfg.appId||'');
   ['n-ss','n-ts','n-ws','n-ejs','n-fbs'].forEach(id => { const el = g(id); if (el) el.style.display='none'; });
+  // Show Firebase connection status and download button
+  const fbStatus = g('fb-in-app-status');
+  if (fbStatus) fbStatus.style.display = _fbDb ? '' : 'none';
+  const dlBtn = g('btn-dl-html');
+  if (dlBtn) dlBtn.style.display = _fbDb ? '' : 'none';
   selNTab('slack'); openOv('ov-notif');
 }
 async function saveNotif() {
@@ -2263,30 +2313,74 @@ async function saveNotif() {
   };
   if (fbCfg.apiKey && fbCfg.projectId) {
     saveFbCfg(fbCfg);
+    // Embed config into the HTML script block
+    embedFbConfigInHTML(fbCfg);
     // Attempt to connect now
     const ok = await initFirebase(fbCfg);
     if (ok) {
-      // Upload current local DB to Firebase on first connect
       const existing = await fbGet('uipath', 'db');
       if (!existing) {
-        await persist(); // push local data up
+        await persist();
         toast('✓ Firebase connected & data uploaded!', 'ok');
       } else {
-        // Pull remote data
         if (existing.users) DB.users = existing.users;
         if (existing.events) DB.events = existing.events;
         if (existing.activity) DB.activity = existing.activity;
         toast('✓ Firebase connected & synced from cloud!', 'ok');
       }
       fbListen();
+      // Offer download of updated HTML with config baked in
+      showDownloadBanner();
     } else {
       toast('⚠ Firebase config invalid — check credentials', 'warn');
     }
   }
   persist(); closeOv('ov-notif');
   logAct('settings', 'Updated notification settings');
-  if (fbCfg.apiKey) {} else toast('✓ Notification settings saved');
+  if (!fbCfg.apiKey) toast('✓ Notification settings saved');
   startReminders();
+}
+
+function embedFbConfigInHTML(cfg) {
+  // Update the embedded <script id="fb-embed-cfg"> block in the live DOM
+  try {
+    const el = document.getElementById('fb-embed-cfg');
+    if (el) el.textContent = '\n' + JSON.stringify(cfg) + '\n';
+  } catch(e) {}
+}
+
+function downloadUpdatedHTML() {
+  // Get the full current HTML with embedded Firebase config
+  const html = document.documentElement.outerHTML;
+  const blob = new Blob(['<!DOCTYPE html>\n' + html], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'uipath_slots.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  logAct('export', 'Downloaded updated HTML with Firebase config embedded');
+  toast('✓ Updated HTML downloaded — share this file with your team');
+}
+
+function showDownloadBanner() {
+  // Show a toast with download action
+  const stack = g('toast-stack');
+  const ti = document.createElement('div');
+  ti.className = 'toast-i';
+  ti.style.cssText = 'background:#1c3a1c;max-width:360px;gap:10px;align-items:flex-start;flex-direction:column;';
+  ti.innerHTML = \`<div style="display:flex;align-items:center;gap:8px;width:100%">
+    <div class="ti-dot ok"></div>
+    <span style="flex:1;font-size:.82rem">Firebase config embedded in HTML. <strong>Download the updated file</strong> and share it — everyone who opens it will auto-connect.</span>
+  </div>
+  <button onclick="downloadUpdatedHTML();this.closest('.toast-i').remove()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:7px 14px;color:#fff;font-family:var(--font-head);font-size:.76rem;font-weight:700;cursor:pointer;width:100%">⬇ Download Updated HTML</button>\`;
+  stack.appendChild(ti);
+  // Don't auto-remove — user must click download or dismiss
+  const dismiss = document.createElement('button');
+  dismiss.textContent = '✕';
+  dismiss.style.cssText = 'position:absolute;top:8px;right:8px;background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:.8rem;';
+  dismiss.onclick = () => ti.remove();
+  ti.style.position = 'relative';
+  ti.appendChild(dismiss);
 }
 function selNTab(ch) {
   ['slack','telegram','whatsapp','email','firebase'].forEach(c => {
@@ -2315,8 +2409,11 @@ async function testFirebase() {
   try {
     await fbSet('uipath', 'ping', { ts: Date.now(), by: CU?.name || 'test' });
     const r = await fbGet('uipath', 'ping');
-    if (r && r.ts) show('ns-ok','✅ Connected! Firebase is working.');
-    else show('ns-err','❌ Read/write test failed');
+    if (r && r.ts) {
+      show('ns-ok','✅ Connected! Firebase is working.');
+      const dlBtn = g('btn-dl-html');
+      if (dlBtn) dlBtn.style.display = '';
+    } else show('ns-err','❌ Read/write test failed');
   } catch(e) { show('ns-err','❌ '+e.message); }
 }
 
@@ -2413,6 +2510,8 @@ function renderNotifSec(area) {
     <div style="background:var(--ambg);border:1px solid rgba(138,92,0,.25);border-radius:12px;padding:14px 18px;margin-bottom:16px;font-size:.82rem;color:var(--am);line-height:1.6">
       ⏰ <strong>Daily Reminders:</strong> Telegram will receive today's interview slots every 3 hours from 8:00 AM to 9:00 PM automatically while you're logged in.
     </div>
+    <!-- Firebase sync banner -->
+    ${_fbDb ? '<div style="background:rgba(251,146,60,.08);border:1.5px solid rgba(251,146,60,.3);border-radius:13px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:13px"><span style=\"font-size:1.4rem\">🔥</span><div><div style=\"font-family:var(--font-head);font-size:.88rem;font-weight:800;color:#b45309\">Firebase Real-Time Sync Active</div><div style=\"font-size:.78rem;color:#92400e;margin-top:2px\">All users, events and settings sync live across every browser sharing this Firebase project.</div></div></div>' : '<div style=\"background:var(--rdbg);border:1.5px solid rgba(192,40,40,.2);border-radius:13px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:13px\"><span style=\"font-size:1.4rem\">⚠️</span><div><div style=\"font-family:var(--font-head);font-size:.88rem;font-weight:800;color:var(--rd)\">Firebase Not Connected</div><div style=\"font-size:.78rem;color:var(--rd);margin-top:2px;opacity:.8\">Data is local-only. Configure Firebase below to enable cross-browser sync.</div></div><button class=\"bsm\" style=\"margin-left:auto\" onclick=\"openNotifModal();selNTab('firebase')\">⚙ Setup</button></div>'}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:22px">
       ${chs.map(({ch,icon,title,desc,ok})=>`<div class="notif-status-card ${ok?'configured':''}">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
@@ -2872,6 +2971,10 @@ document.addEventListener('touchend', e=>{
   if (dx<-60&&g('sidebar').classList.contains('open')) closeSb();
   else if (dx>60&&!g('sidebar').classList.contains('open')) toggleSb();
 }, {passive:true});
+
+/* ─ AUTO-INIT LOGIN SCREEN ─ */
+// Run when page loads to check Firebase config and show appropriate panel
+document.addEventListener('DOMContentLoaded', () => { initLoginScreen(); });
 </script>
 </body>
 </html>
