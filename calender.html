@@ -2416,24 +2416,26 @@ function downloadUpdatedHTML() {
 }
 
 function showDownloadBanner() {
-  // Show a toast with download action
   const stack = g('toast-stack');
+  if (!stack) return;
   const ti = document.createElement('div');
   ti.className = 'toast-i';
-  ti.style.cssText = 'background:#1c3a1c;max-width:360px;gap:10px;align-items:flex-start;flex-direction:column;';
-  ti.innerHTML = \`<div style="display:flex;align-items:center;gap:8px;width:100%">
-    <div class="ti-dot ok"></div>
-    <span style="flex:1;font-size:.82rem">Firebase config embedded in HTML. <strong>Download the updated file</strong> and share it — everyone who opens it will auto-connect.</span>
-  </div>
-  <button onclick="downloadUpdatedHTML();this.closest('.toast-i').remove()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:7px 14px;color:#fff;font-family:var(--font-head);font-size:.76rem;font-weight:700;cursor:pointer;width:100%">⬇ Download Updated HTML</button>\`;
-  stack.appendChild(ti);
-  // Don't auto-remove — user must click download or dismiss
+  ti.style.cssText = 'background:#1c3a1c;max-width:380px;gap:10px;align-items:flex-start;flex-direction:column;position:relative;';
+  const msg = document.createElement('div');
+  msg.style.cssText = 'display:flex;align-items:center;gap:8px;width:100%';
+  msg.innerHTML = '<div class="ti-dot ok"></div><span style="flex:1;font-size:.82rem">Firebase config saved. <strong>Download the updated HTML</strong> and deploy it to your hosting URL.</span>';
+  const dlBtn = document.createElement('button');
+  dlBtn.textContent = '⬇ Download Updated HTML';
+  dlBtn.style.cssText = 'background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:7px 14px;color:#fff;font-family:var(--font-head);font-size:.76rem;font-weight:700;cursor:pointer;width:100%';
+  dlBtn.onclick = function() { downloadUpdatedHTML(); ti.remove(); };
   const dismiss = document.createElement('button');
   dismiss.textContent = '✕';
-  dismiss.style.cssText = 'position:absolute;top:8px;right:8px;background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:.8rem;';
-  dismiss.onclick = () => ti.remove();
-  ti.style.position = 'relative';
+  dismiss.style.cssText = 'position:absolute;top:6px;right:8px;background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:.8rem;';
+  dismiss.onclick = function() { ti.remove(); };
+  ti.appendChild(msg);
+  ti.appendChild(dlBtn);
   ti.appendChild(dismiss);
+  stack.appendChild(ti);
 }
 function selNTab(ch) {
   ['slack','telegram','whatsapp','email','firebase'].forEach(c => {
@@ -2564,7 +2566,7 @@ function renderNotifSec(area) {
       ⏰ <strong>Daily Reminders:</strong> Telegram will receive today's interview slots every 3 hours from 8:00 AM to 9:00 PM automatically while you're logged in.
     </div>
     <!-- Firebase sync banner -->
-    ${_fbDb ? '<div style="background:rgba(251,146,60,.08);border:1.5px solid rgba(251,146,60,.3);border-radius:13px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:13px"><span style=\"font-size:1.4rem\">🔥</span><div><div style=\"font-family:var(--font-head);font-size:.88rem;font-weight:800;color:#b45309\">Firebase Real-Time Sync Active</div><div style=\"font-size:.78rem;color:#92400e;margin-top:2px\">All users, events and settings sync live across every browser sharing this Firebase project.</div></div></div>' : '<div style=\"background:var(--rdbg);border:1.5px solid rgba(192,40,40,.2);border-radius:13px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:13px\"><span style=\"font-size:1.4rem\">⚠️</span><div><div style=\"font-family:var(--font-head);font-size:.88rem;font-weight:800;color:var(--rd)\">Firebase Not Connected</div><div style=\"font-size:.78rem;color:var(--rd);margin-top:2px;opacity:.8\">Data is local-only. Configure Firebase below to enable cross-browser sync.</div></div><button class=\"bsm\" style=\"margin-left:auto\" onclick=\"openNotifModal();selNTab('firebase')\">⚙ Setup</button></div>'}
+    ${_fbDb ? '<div style="background:rgba(251,146,60,.08);border:1.5px solid rgba(251,146,60,.3);border-radius:13px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:13px"><span style="font-size:1.4rem">🔥</span><div><div style="font-family:var(--font-head);font-size:.88rem;font-weight:800;color:#b45309">Firebase Live</div><div style="font-size:.78rem;color:#92400e;margin-top:2px">All data syncs in real-time across every browser.</div></div></div>' : '<div style="background:var(--rdbg);border:1.5px solid rgba(192,40,40,.2);border-radius:13px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:13px"><span style="font-size:1.4rem">⚠️</span><div style="flex:1"><div style="font-family:var(--font-head);font-size:.88rem;font-weight:800;color:var(--rd)">Firebase Not Connected</div><div style="font-size:.78rem;color:var(--rd);margin-top:2px;opacity:.8">Data is local only. Configure Firebase in Notifications.</div></div></div>'}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:22px">
       ${chs.map(({ch,icon,title,desc,ok})=>`<div class="notif-status-card ${ok?'configured':''}">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
