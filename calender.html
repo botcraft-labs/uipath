@@ -947,32 +947,29 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
     </div>
     <div class="ntab-body" id="nb-firebase">
       <div id="fb-in-app-status" style="margin-bottom:12px;padding:10px 13px;border-radius:9px;font-size:.78rem;line-height:1.6;background:var(--grbg);border:1px solid rgba(15,122,80,.2);color:var(--gr);display:none">
-        ✅ <strong>Firebase is live.</strong> All browsers with this file sync in real-time.
+        ✅ <strong>Firebase is live and syncing.</strong>
       </div>
-      <div class="nh">
-        <strong>One-time setup by admin — users need zero configuration:</strong><br>
-        1. Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → New Project<br>
-        2. <strong>Build → Firestore Database</strong> → Create → <strong>Test mode</strong><br>
-        3. <strong>Project Settings ⚙ → Your Apps → Web → Register App</strong> → copy <code>apiKey</code> and <code>projectId</code><br>
-        4. Paste below → <strong>Save Settings</strong> → click <strong>⬇ Download Updated HTML</strong><br>
-        5. Deploy that file to your hosting URL (Netlify / GitHub Pages / SharePoint / server)<br>
-        6. Users open the URL → Firebase connects silently → they just log in. Done.
+      <div id="fb-not-embedded-warn" style="margin-bottom:12px;padding:10px 13px;border-radius:9px;font-size:.78rem;line-height:1.6;background:var(--rdbg);border:1px solid rgba(192,40,40,.2);color:var(--rd);display:none">
+        ⚠️ <strong>Config not yet embedded in hosted file.</strong> Save settings then click ⬇ Download Updated HTML and re-deploy — otherwise users on other devices can't log in.
       </div>
       <div class="fr">
         <div class="fg"><label>API Key <span class="req">*</span></label><input id="n-fb-apikey" placeholder="AIzaSy..."/></div>
         <div class="fg"><label>Project ID <span class="req">*</span></label><input id="n-fb-pid" placeholder="my-project-12345"/></div>
       </div>
       <div class="fr">
-        <div class="fg"><label>Auth Domain <span style="font-weight:400;color:var(--ink3)">(auto-filled)</span></label><input id="n-fb-auth" placeholder="auto: projectId.firebaseapp.com"/></div>
+        <div class="fg"><label>Auth Domain <span style="font-weight:400;color:var(--ink3)">(auto: projectId.firebaseapp.com)</span></label><input id="n-fb-auth" placeholder="leave blank to auto-fill"/></div>
         <div class="fg"><label>App ID <span style="font-weight:400;color:var(--ink3)">(optional)</span></label><input id="n-fb-appid" placeholder="1:123456:web:abc..."/></div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap">
         <button class="bp" onclick="testFirebase()">🧪 Test Connection</button>
-        <button class="bg" onclick="downloadUpdatedHTML()" id="btn-dl-html" style="display:none">⬇ Download Updated HTML</button>
+        <button class="bg" onclick="downloadUpdatedHTML()" id="btn-dl-html">⬇ Download Updated HTML</button>
         <div id="n-fbs" class="ns-badge ns-idle" style="display:none"></div>
       </div>
       <div style="background:linear-gradient(135deg,rgba(251,146,60,.1),rgba(245,158,11,.06));border:1.5px solid rgba(251,146,60,.3);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:.78rem;line-height:1.7;color:#92400e">
-        <strong>🔑 How it works:</strong> When you save Firebase config and click <strong>Download Updated HTML</strong>, the Firebase credentials are embedded inside the HTML file. Anyone who opens that file auto-connects to Firebase — no setup screen, no sharing credentials separately. Just share the file.
+        <strong>📋 Steps after saving:</strong><br>
+        1. Click <strong>⬇ Download Updated HTML</strong> — this bakes your Firebase config into the file<br>
+        2. Deploy/upload that file to your hosting URL (replacing the old one)<br>
+        3. Done — everyone who opens the URL auto-connects and can log in
       </div>
     </div>
   </div>
@@ -1212,31 +1209,28 @@ function syncEndDate() {
 
 // Called on page load — only initialises Firebase in the background.
 // Admin login always works from local DB — no Firebase dependency.
+// Global promise that resolves when Firebase is ready (or confirmed unavailable)
+let _fbReady = null;
+
 async function initLoginScreen() {
-  // Kick off Firebase init in the background (don't await — never blocks login)
   const fbCfg = loadFbCfg();
   if (fbCfg && fbCfg.apiKey && fbCfg.projectId) {
-    // Wait for SDK then connect — all async, login form is already usable
-    (async () => {
+    // Create a promise that other code can await
+    _fbReady = (async () => {
+      // Wait for Firebase ES module to load
       await new Promise(res => {
         if (window._fbModules) return res();
         let n = 0;
-        const t = setInterval(() => { n++; if (window._fbModules || n > 40) { clearInterval(t); res(); } }, 100);
+        const t = setInterval(() => { n++; if (window._fbModules || n > 50) { clearInterval(t); res(); } }, 100);
       });
       const ok = await initFirebase(fbCfg);
       if (ok) {
         const remote = await fbGet('uipath', 'db');
         if (remote) {
-          // Merge non-admin users and events from Firebase into local DB
-          if (remote.users) {
-            // Keep local admin intact, merge in all other users from Firebase
-            const adminUser = DB.users.find(u => u.username === 'admin');
-            DB.users = remote.users;
-            // Ensure admin is always present with local copy (not overwritten by Firebase)
-            if (adminUser && !DB.users.find(u => u.username === 'admin')) {
-              DB.users.unshift(adminUser);
-            }
-          }
+          const adminUser = DB.users.find(u => u.username === 'admin');
+          if (remote.users) DB.users = remote.users;
+          // Always keep admin account intact
+          if (!DB.users.find(u => u.username === 'admin') && adminUser) DB.users.unshift(adminUser);
           if (remote.events)   DB.events   = remote.events;
           if (remote.activity) DB.activity = remote.activity;
           if (remote.theme)    DB.theme    = remote.theme;
@@ -1245,50 +1239,113 @@ async function initLoginScreen() {
         const remoteNotif = await fbGet('uipath', 'notif');
         if (remoteNotif) DB.notif = remoteNotif;
       }
+      return ok;
     })();
+  } else {
+    _fbReady = Promise.resolve(false); // no Firebase configured
   }
-  // Login form is always immediately ready — no waiting
 }
 
 async function doLogin() {
   const u = g('l-user').value.trim(), p = g('l-pass').value;
   const btn = g('btn-login-main');
-  if (btn) btn.textContent = '⏳ Signing in…';
+  const errEl = g('lerr');
 
-  // Step 1: always check local DB first (admin always works this way)
-  let f = DB.users.find(x => x.username === u && x.password === p);
+  if (!u || !p) { s('lerr', '⚠ Please enter username and password'); return; }
 
-  // Step 2: if not found locally and Firebase is connected, try fetching latest users
-  // (handles case where Firebase loaded after user started typing)
-  if (!f && _fbDb) {
-    const remote = await fbGet('uipath', 'db');
-    if (remote && remote.users) {
-      const adminUser = DB.users.find(x => x.username === 'admin');
-      DB.users = remote.users;
-      if (adminUser && !DB.users.find(x => x.username === 'admin')) DB.users.unshift(adminUser);
-      if (remote.events)   DB.events   = remote.events;
-      if (remote.activity) DB.activity = remote.activity;
-      try { localStorage.setItem(SK, JSON.stringify(DB)); } catch(e) {}
-    }
-    f = DB.users.find(x => x.username === u && x.password === p);
+  // Admin: always authenticate locally — never blocked by Firebase
+  if (u === 'admin') {
+    const f = DB.users.find(x => x.username === 'admin' && x.password === p);
+    if (!f) { s('lerr', '⚠ Invalid admin password'); return; }
+    return _completeLogin(f);
   }
 
-  if (!f) {
-    s('lerr', '⚠ Invalid username or password');
+  // Non-admin: wait for Firebase to finish loading before authenticating
+  if (btn) btn.textContent = '⏳ Connecting…';
+  s('lerr', '');
+
+  const fbCfg = loadFbCfg();
+  if (!fbCfg || !fbCfg.apiKey) {
+    // No Firebase configured — try local only
+    const f = DB.users.find(x => x.username === u && x.password === p);
+    if (!f) { s('lerr', '⚠ Invalid username or password'); if (btn) btn.textContent = 'Sign In →'; return; }
+    return _completeLogin(f);
+  }
+
+  // Wait for Firebase init to complete (it started in initLoginScreen)
+  let fbOk = false;
+  try { fbOk = await Promise.race([_fbReady, new Promise(res => setTimeout(() => res(false), 8000))]); } catch(e) {}
+
+  if (!fbOk) {
     if (btn) btn.textContent = 'Sign In →';
+    s('lerr', '⚠ Could not connect to server. Check your internet and try again.');
     return;
   }
-  s('lerr', ''); CU = f;
+
+  // Always fetch latest from Firebase so we have current user list
+  const remote = await fbGet('uipath', 'db');
+  if (remote && remote.users) {
+    const adminUser = DB.users.find(x => x.username === 'admin');
+    DB.users = remote.users;
+    if (!DB.users.find(x => x.username === 'admin') && adminUser) DB.users.unshift(adminUser);
+    if (remote.events)   DB.events   = remote.events;
+    if (remote.activity) DB.activity = remote.activity;
+    try { localStorage.setItem(SK, JSON.stringify(DB)); } catch(e) {}
+  }
+
+  const f = DB.users.find(x => x.username === u && x.password === p);
+  if (!f) {
+    if (btn) btn.textContent = 'Sign In →';
+    // Check if username exists at all (wrong password vs no account)
+    const userExists = DB.users.find(x => x.username === u);
+    if (!userExists) {
+      showUserNotFoundModal(u);
+    } else {
+      s('lerr', '⚠ Incorrect password');
+    }
+    return;
+  }
+  _completeLogin(f);
+}
+
+function _completeLogin(f) {
+  const btn = g('btn-login-main');
+  s('lerr', '');
+  CU = f;
   const u2 = DB.users.find(x => x.id === CU.id);
   if (u2) u2.lastLogin = Date.now();
   persist();
   g('login-screen').classList.add('gone');
   g('app').classList.add('on');
-  g('l-user').value = ''; g('l-pass').value = '';
+  sv('l-user', ''); sv('l-pass', '');
   if (btn) btn.textContent = 'Sign In →';
   applyTheme(DB.theme || 'light');
   if (_fbDb) fbListen();
   initApp();
+}
+
+function showUserNotFoundModal(username) {
+  const btn = g('btn-login-main');
+  if (btn) btn.textContent = 'Sign In →';
+  // Show a clear modal
+  let mo = g('ov-user-not-found');
+  if (!mo) {
+    mo = document.createElement('div');
+    mo.id = 'ov-user-not-found';
+    mo.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);padding:16px';
+    document.body.appendChild(mo);
+  }
+  mo.innerHTML = '<div style="background:var(--sf-solid,#fff);border-radius:18px;padding:36px 32px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)">' +
+    '<div style="font-size:2.5rem;margin-bottom:12px">🚫</div>' +
+    '<div style="font-family:var(--font-head,sans-serif);font-size:1.2rem;font-weight:800;color:var(--ink,#111);margin-bottom:8px">Account Not Found</div>' +
+    '<div style="font-size:.88rem;color:var(--ink3,#666);line-height:1.6;margin-bottom:20px">No account found for <strong>' + username + '</strong>.<br>Please contact your admin to get access.</div>' +
+    '<button onclick="closeUserNotFoundModal()" style="background:var(--acc,#e5192a);color:#fff;border:none;border-radius:10px;padding:11px 28px;font-family:var(--font-head,sans-serif);font-weight:700;font-size:.88rem;cursor:pointer;width:100%">OK - Contact Admin</button>' +
+    '</div>';
+  mo.style.display = 'flex';
+}
+function closeUserNotFoundModal() {
+  var m = document.getElementById('ov-user-not-found');
+  if (m) m.remove();
 }
 g('l-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 g('l-user').addEventListener('keydown', e => { if (e.key === 'Enter') g('l-pass').focus(); });
@@ -2330,11 +2387,13 @@ function openNotifModal() {
   sv('n-fb-auth', fbCfg.authDomain||''); sv('n-fb-bucket', fbCfg.storageBucket||'');
   sv('n-fb-appid', fbCfg.appId||'');
   ['n-ss','n-ts','n-ws','n-ejs','n-fbs'].forEach(id => { const el = g(id); if (el) el.style.display='none'; });
-  // Show Firebase connection status and download button
+  // Show Firebase connection/embedding status
   const fbStatus = g('fb-in-app-status');
   if (fbStatus) fbStatus.style.display = _fbDb ? '' : 'none';
-  const dlBtn = g('btn-dl-html');
-  if (dlBtn) dlBtn.style.display = _fbDb ? '' : 'none';
+  // Check if config is actually baked into the hosted file
+  const embeddedCfg = (() => { try { const el = g('fb-embed-cfg'); if (!el) return null; const c = JSON.parse(el.textContent.trim()); return (c && c.apiKey) ? c : null; } catch(e) { return null; } })();
+  const warnEl = g('fb-not-embedded-warn');
+  if (warnEl) warnEl.style.display = (_fbDb && !embeddedCfg) ? '' : 'none';
   selNTab('slack'); openOv('ov-notif');
 }
 async function saveNotif() {
@@ -2395,48 +2454,52 @@ async function saveNotif() {
 }
 
 function embedFbConfigInHTML(cfg) {
-  // Update the embedded <script id="fb-embed-cfg"> block in the live DOM
   try {
     const el = document.getElementById('fb-embed-cfg');
     if (el) el.textContent = '\n' + JSON.stringify(cfg) + '\n';
   } catch(e) {}
 }
 
-function downloadUpdatedHTML() {
-  // Get the full current HTML with embedded Firebase config
-  const html = document.documentElement.outerHTML;
-  const blob = new Blob(['<!DOCTYPE html>\n' + html], { type: 'text/html;charset=utf-8' });
+async function downloadUpdatedHTML() {
+  const cfg = loadFbCfgRaw();
+  if (!cfg || !cfg.apiKey) { toast('\u26a0 No Firebase config — save settings first', 'warn'); return; }
+  const marker = /<script id="fb-embed-cfg" type="application\/json">[\s\S]*?<\/script>/;
+  const replacement = '<script id="fb-embed-cfg" type="application/json">\n' + JSON.stringify(cfg) + '\n<\/script>';
+  try {
+    // Fetch source file (works when hosted at a URL)
+    const res = await fetch(location.href);
+    let html = await res.text();
+    if (marker.test(html)) {
+      html = html.replace(marker, replacement);
+      _triggerDownload(html);
+      logAct('export', 'Downloaded HTML with Firebase config');
+      toast('\u2713 Downloaded — deploy this file to your hosting URL');
+    } else {
+      toast('\u26a0 Could not find config block in source', 'warn');
+    }
+  } catch(e) {
+    // Fallback for file:// or CORS issues — patch live DOM then serialize
+    embedFbConfigInHTML(cfg);
+    _triggerDownload('<!DOCTYPE html>\n' + document.documentElement.outerHTML);
+    toast('\u2713 Downloaded with config embedded');
+  }
+}
+
+function _triggerDownload(html) {
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'uipath_slots.html';
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
   URL.revokeObjectURL(a.href);
-  logAct('export', 'Downloaded updated HTML with Firebase config embedded');
-  toast('✓ Updated HTML downloaded — share this file with your team');
 }
 
-function showDownloadBanner() {
-  const stack = g('toast-stack');
-  if (!stack) return;
-  const ti = document.createElement('div');
-  ti.className = 'toast-i';
-  ti.style.cssText = 'background:#1c3a1c;max-width:380px;gap:10px;align-items:flex-start;flex-direction:column;position:relative;';
-  const msg = document.createElement('div');
-  msg.style.cssText = 'display:flex;align-items:center;gap:8px;width:100%';
-  msg.innerHTML = '<div class="ti-dot ok"></div><span style="flex:1;font-size:.82rem">Firebase config saved. <strong>Download the updated HTML</strong> and deploy it to your hosting URL.</span>';
-  const dlBtn = document.createElement('button');
-  dlBtn.textContent = '⬇ Download Updated HTML';
-  dlBtn.style.cssText = 'background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:7px 14px;color:#fff;font-family:var(--font-head);font-size:.76rem;font-weight:700;cursor:pointer;width:100%';
-  dlBtn.onclick = function() { downloadUpdatedHTML(); ti.remove(); };
-  const dismiss = document.createElement('button');
-  dismiss.textContent = '✕';
-  dismiss.style.cssText = 'position:absolute;top:6px;right:8px;background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:.8rem;';
-  dismiss.onclick = function() { ti.remove(); };
-  ti.appendChild(msg);
-  ti.appendChild(dlBtn);
-  ti.appendChild(dismiss);
-  stack.appendChild(ti);
+function loadFbCfgRaw() {
+  try { const r = localStorage.getItem('uipath_fb_cfg'); return r ? JSON.parse(r) : null; } catch { return null; }
 }
+
 function selNTab(ch) {
   ['slack','telegram','whatsapp','email','firebase'].forEach(c => {
     const nt = g('nt-'+c), nb = g('nb-'+c);
