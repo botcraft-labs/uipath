@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -60,7 +59,7 @@
   --font-head: 'Syne', sans-serif;
   --font-body: 'DM Sans', sans-serif;
   --font-mono: 'DM Mono', monospace;
-  --mesh: 
+  --mesh:
     radial-gradient(ellipse 60% 50% at 15% 15%, rgba(229,25,42,0.1) 0%, transparent 60%),
     radial-gradient(ellipse 50% 40% at 85% 8%, rgba(99,160,255,0.10) 0%, transparent 55%),
     radial-gradient(ellipse 40% 55% at 70% 85%, rgba(15,122,80,0.08) 0%, transparent 55%),
@@ -97,30 +96,25 @@
   --s3: 0 6px 20px rgba(0,0,0,0.4), 0 2px 6px rgba(0,0,0,0.25);
   --s4: 0 12px 36px rgba(0,0,0,0.5), 0 4px 10px rgba(0,0,0,0.3);
   --s5: 0 24px 64px rgba(0,0,0,0.65), 0 8px 20px rgba(0,0,0,0.35);
-  --mesh: 
+  --mesh:
     radial-gradient(ellipse 60% 50% at 15% 15%, rgba(229,25,42,0.14) 0%, transparent 60%),
     radial-gradient(ellipse 50% 40% at 85% 8%, rgba(80,100,255,0.08) 0%, transparent 55%),
     radial-gradient(ellipse 40% 55% at 70% 85%, rgba(15,90,60,0.12) 0%, transparent 55%),
     linear-gradient(135deg, #0b0c18 0%, #0e1020 50%, #0b0e14 100%);
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { height: 100%; -webkit-text-size-adjust: 100%; }
 body { height: 100%; font-family: var(--font-body); background: var(--bg); background-image: var(--mesh); background-attachment: fixed; color: var(--ink); overflow: hidden; transition: background .4s, color .3s; font-size: 14px; line-height: 1.5; }
-
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--bd2); border-radius: 99px; }
 button, input, select, textarea { font-family: inherit; }
-
 @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes scaleIn { from { opacity: 0; transform: scale(.93) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 @keyframes toastIn { from { opacity: 0; transform: translateX(20px) scale(.96); } to { opacity: 1; transform: translateX(0) scale(1); } }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
 @keyframes glowPulse { 0%,100% { opacity: .7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
-
-/* ═══ LOGIN ═══ */
 #login-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 16px; transition: opacity .4s, visibility .4s; }
 #login-screen.gone { opacity: 0; visibility: hidden; pointer-events: none; }
 .lcard { width: 100%; max-width: 840px; background: var(--g1); backdrop-filter: blur(32px) saturate(2); -webkit-backdrop-filter: blur(32px) saturate(2); border-radius: 28px; box-shadow: var(--s5), 0 0 0 1px rgba(255,255,255,0.7) inset; display: grid; grid-template-columns: 300px 1fr; overflow: hidden; animation: scaleIn .55s cubic-bezier(.34,1.4,.64,1); border: 1px solid var(--g-bd); }
@@ -155,14 +149,10 @@ button, input, select, textarea { font-family: inherit; }
 .btn-login::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,.15) 0%, transparent 60%); }
 .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(229,25,42,.5); }
 .btn-login:active { transform: translateY(0); }
+.btn-login:disabled { opacity: .7; cursor: not-allowed; transform: none; }
 #lerr { color: var(--rd); font-size: .78rem; margin-top: 10px; min-height: 18px; }
-/* Firebase setup CSS removed — config baked into hosted file */
-
-/* ═══ APP SHELL ═══ */
 #app { display: none; height: 100dvh; flex-direction: column; }
 #app.on { display: flex; }
-
-/* ═══ TOPBAR ═══ */
 .topbar { height: var(--th); background: var(--g1); backdrop-filter: blur(20px) saturate(1.6); -webkit-backdrop-filter: blur(20px) saturate(1.6); border-bottom: 1px solid var(--g-bd); display: flex; align-items: center; flex-shrink: 0; z-index: 100; transition: background .3s, border-color .3s; gap: 0; box-shadow: 0 1px 0 rgba(255,255,255,.8) inset, 0 2px 8px rgba(60,60,120,.06); }
 .tb-logo { width: var(--tw); flex-shrink: 0; display: flex; align-items: center; padding: 0 18px; border-right: 1px solid var(--bd); height: 100%; gap: 8px; }
 .tb-logomark { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, var(--acc), var(--acc2)); display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 800; color: #fff; font-family: var(--font-head); flex-shrink: 0; box-shadow: 0 2px 8px rgba(229,25,42,.35); }
@@ -203,8 +193,6 @@ button, input, select, textarea { font-family: inherit; }
 .udi:hover { background: var(--sf2); color: var(--ink); }
 .udi.danger:hover { background: var(--rdbg); color: var(--rd); }
 .ud-div { height: 1px; background: var(--bd); margin: 4px 0; }
-
-/* ═══ LAYOUT ═══ */
 .layout { display: flex; flex: 1; overflow: hidden; }
 .sidebar { width: var(--tw); flex-shrink: 0; background: linear-gradient(170deg, rgba(26,8,8,0.94) 0%, rgba(16,4,4,0.97) 100%); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; flex-direction: column; overflow-y: auto; transition: transform .25s cubic-bezier(.4,0,.2,1), box-shadow .25s; border-right: 1px solid rgba(229,25,42,0.2); }
 [data-theme="dark"] .sidebar { background: linear-gradient(170deg, rgba(22,4,4,0.97) 0%, rgba(12,2,2,0.99) 100%); border-right: 1px solid rgba(229,25,42,0.15); }
@@ -229,11 +217,7 @@ button, input, select, textarea { font-family: inherit; }
 .mc-d.mco { opacity: .25; }
 .mc-d.mch::after { content: ''; position: absolute; bottom: 1px; left: 50%; transform: translateX(-50%); width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,.5); }
 .mc-d.mct.mch::after { background: rgba(255,255,255,.8); }
-
-/* ═══ CONTENT ═══ */
 .content { flex: 1; overflow: hidden; display: flex; flex-direction: column; background: transparent; }
-
-/* ═══ DASHBOARD ═══ */
 .dashboard { flex: 1; overflow-y: auto; padding: 24px; }
 .dw-eyebrow { font-family: var(--font-mono); font-size: .63rem; letter-spacing: .12em; text-transform: uppercase; color: var(--acc); margin-bottom: 6px; animation: fadeUp .3s ease; }
 .dw-greeting { font-family: var(--font-head); font-size: 1.7rem; font-weight: 800; letter-spacing: -.04em; margin-bottom: 4px; animation: fadeUp .3s .04s ease both; }
@@ -275,8 +259,6 @@ button, input, select, textarea { font-family: inherit; }
 .act-av { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: .66rem; font-weight: 800; color: #fff; flex-shrink: 0; }
 .act-msg { font-size: .8rem; line-height: 1.5; flex: 1; }
 .act-time { font-family: var(--font-mono); font-size: .66rem; color: var(--ink4); margin-top: 2px; }
-
-/* ═══ CAL TOOLBAR ═══ */
 .cal-tb { padding: 9px 16px; border-bottom: 1px solid var(--bd); display: flex; align-items: center; gap: 8px; flex-shrink: 0; background: var(--g1); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); flex-wrap: wrap; }
 .fsel { background: var(--sf2); border: 1px solid var(--bd); border-radius: 20px; padding: 5px 11px; font-family: var(--font-head); font-size: .69rem; font-weight: 700; color: var(--ink2); outline: none; cursor: pointer; transition: all .14s; appearance: none; -webkit-appearance: none; padding-right: 22px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238c8880' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
 .fsel:hover, .fsel:focus { border-color: var(--bd2); background-color: var(--sf3); }
@@ -285,11 +267,6 @@ button, input, select, textarea { font-family: inherit; }
 .sbox input { background: none; border: none; outline: none; font-size: .8rem; color: var(--ink); width: 140px; transition: width .2s; }
 .sbox input:focus { width: 190px; }
 .sbox input::placeholder { color: var(--ink4); }
-.leg-bar { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; padding: 6px 16px; background: var(--sf); border-bottom: 1px solid var(--bd); flex-shrink: 0; }
-.leg-i { display: flex; align-items: center; gap: 5px; font-size: .68rem; color: var(--ink2); padding: 3px 8px; border-radius: 12px; background: var(--sf2); border: 1px solid var(--bd); }
-.leg-dot { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
-
-/* ═══ MONTH VIEW ═══ */
 .month-wrap { flex: 1; overflow: auto; padding: 12px 14px 16px; }
 .wday-row { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; margin-bottom: 4px; position: sticky; top: 0; background: transparent; z-index: 2; padding-bottom: 5px; }
 .wday-lbl { text-align: center; font-family: var(--font-mono); font-size: .6rem; text-transform: uppercase; letter-spacing: .1em; color: var(--ink3); padding: 3px 0; }
@@ -307,8 +284,6 @@ button, input, select, textarea { font-family: inherit; }
 .ech.res { background: var(--sf3) !important; color: var(--ink4) !important; }
 .more-c { font-size: .6rem; color: var(--ink3); margin-top: 3px; font-family: var(--font-mono); cursor: pointer; }
 .more-c:hover { color: var(--acc); }
-
-/* ═══ WEEK VIEW ═══ */
 .week-outer { flex: 1; overflow: auto; }
 .wk-grid { display: grid; grid-template-columns: 50px repeat(7,1fr); }
 .wk-corner, .wk-chdr { position: sticky; top: 0; background: rgba(230,232,245,.85); backdrop-filter: blur(12px); z-index: 3; border-bottom: 2px solid var(--bd); padding: 10px 4px; }
@@ -324,8 +299,6 @@ button, input, select, textarea { font-family: inherit; }
 .wkev { position: absolute; left: 3px; right: 3px; border-radius: 7px; padding: 4px 7px; font-size: .63rem; font-weight: 600; cursor: pointer; overflow: hidden; transition: all .14s; z-index: 1; }
 .wkev:hover { opacity: .88; box-shadow: var(--s3); z-index: 2; transform: scale(1.01); }
 .wkev.res { background: var(--sf3) !important; color: var(--ink4) !important; border: 1px dashed var(--bd2) !important; }
-
-/* ═══ AGENDA VIEW ═══ */
 .agenda-wrap { flex: 1; overflow: auto; padding: 16px; }
 .ag-day { margin-bottom: 18px; animation: fadeUp .2s ease both; }
 .ag-dhdr { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1.5px solid var(--bd); }
@@ -339,8 +312,6 @@ button, input, select, textarea { font-family: inherit; }
 .ag-body { flex: 1; min-width: 0; }
 .ag-name { font-family: var(--font-head); font-size: .86rem; font-weight: 700; margin-bottom: 4px; }
 .ag-meta { font-size: .72rem; color: var(--ink3); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-
-/* ═══ DETAIL PANEL ═══ */
 .detail-panel { position: fixed; top: var(--th); right: 0; bottom: 0; width: 370px; background: var(--g1); backdrop-filter: blur(28px) saturate(1.8); -webkit-backdrop-filter: blur(28px) saturate(1.8); border-left: 1px solid var(--g-bd); z-index: 150; overflow-y: auto; transform: translateX(100%); transition: transform .3s cubic-bezier(.4,0,.2,1), box-shadow .3s; }
 .detail-panel.open { transform: translateX(0); box-shadow: var(--s5); }
 .dp-hd { padding: 18px 20px; border-bottom: 1px solid var(--bd); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--g1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 2; }
@@ -352,8 +323,6 @@ button, input, select, textarea { font-family: inherit; }
 .dp-block { background: var(--sf2); border: 1px solid var(--bd); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
 .dp-lbl { font-family: var(--font-mono); font-size: .6rem; color: var(--ink3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .08em; }
 .dp-val { font-size: .86rem; font-weight: 500; }
-
-/* ═══ COMMAND PALETTE ═══ */
 .cmd-ov { position: fixed; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(10px); z-index: 800; display: flex; align-items: flex-start; justify-content: center; padding-top: 80px; opacity: 0; pointer-events: none; transition: opacity .2s; }
 .cmd-ov.open { opacity: 1; pointer-events: all; }
 .cmd-box { background: var(--g1); backdrop-filter: blur(32px) saturate(2); -webkit-backdrop-filter: blur(32px) saturate(2); border: 1px solid var(--g-bd); border-radius: 18px; width: 100%; max-width: 570px; box-shadow: var(--s5); transform: translateY(-10px) scale(.97); transition: transform .22s cubic-bezier(.34,1.4,.64,1); overflow: hidden; }
@@ -371,8 +340,6 @@ button, input, select, textarea { font-family: inherit; }
 .cmd-is { font-size: .72rem; color: var(--ink3); margin-top: 1px; }
 .cmd-ft { padding: 9px 20px; border-top: 1px solid var(--bd); background: var(--sf2); display: flex; gap: 14px; font-size: .7rem; color: var(--ink3); }
 .cmd-ft kbd { background: var(--sf); border: 1px solid var(--bd); border-radius: 4px; padding: 1px 6px; font-family: var(--font-mono); font-size: .62rem; }
-
-/* ═══ PANELS ═══ */
 .panel { flex: 1; overflow: auto; padding: 20px; }
 .ph { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 8px; }
 .ph h2 { font-family: var(--font-head); font-size: 1.3rem; font-weight: 800; letter-spacing: -.03em; }
@@ -402,8 +369,6 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 .tdn { font-family: var(--font-head); font-size: .8rem; font-weight: 700; }
 .tds { font-size: .7rem; color: var(--ink3); margin-top: 2px; }
 .td-a { display: flex; gap: 5px; flex-wrap: wrap; }
-
-/* ═══ BUTTONS ═══ */
 .bp { background: linear-gradient(135deg, var(--acc) 0%, var(--acc2) 100%); color: #fff; border: none; border-radius: 10px; padding: 9px 18px; font-family: var(--font-head); font-size: .75rem; font-weight: 700; letter-spacing: .03em; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 3px 14px rgba(229,25,42,.3), inset 0 1px 0 rgba(255,255,255,.22); transition: transform .2s cubic-bezier(.34,1.4,.64,1), box-shadow .2s; will-change: transform; position: relative; overflow: hidden; }
 .bp::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.18) 0%,transparent 60%); pointer-events:none; }
 .bp:hover { box-shadow: var(--sh-acc), inset 0 1px 0 rgba(255,255,255,.22); transform: translateY(-2px) scale(1.02); }
@@ -417,8 +382,6 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 .bsm:hover { border-color: var(--g-bd2); color: var(--ink); background: var(--g1); box-shadow: var(--s1); transform: translateY(-1px); }
 .bsm:active { transform: translateY(0); }
 .bsm.d:hover { border-color: var(--rd); color: var(--rd); background: var(--rdbg); }
-
-/* ═══ BADGES ═══ */
 .wmb { display: inline-block; font-family: var(--font-mono); font-size: .58rem; text-transform: uppercase; letter-spacing: .06em; padding: 2px 7px; border-radius: 5px; }
 .wmb-r { background: var(--grbg); color: var(--gr); }
 .wmb-o { background: var(--blbg); color: var(--bl); }
@@ -438,8 +401,6 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 .prb-high { background: #ffedd5; color: #9a3412; }
 .prb-urgent { background: #fee2e2; color: #991b1b; }
 .catb { display: inline-block; font-family: var(--font-mono); font-size: .6rem; padding: 2px 7px; border-radius: 4px; background: var(--sf3); color: var(--ink2); border: 1px solid var(--bd); }
-
-/* ═══ MODALS ═══ */
 .ov { position: fixed; inset: 0; background: rgba(10,8,30,.6); backdrop-filter: blur(16px); display: flex; align-items: flex-end; justify-content: center; z-index: 500; opacity: 0; pointer-events: none; transition: opacity .22s; }
 .ov.open { opacity: 1; pointer-events: all; }
 .modal { background: var(--g1); backdrop-filter: blur(32px) saturate(1.8); -webkit-backdrop-filter: blur(32px) saturate(1.8); border-radius: 24px 24px 0 0; width: 100%; max-width: 640px; max-height: 94dvh; overflow-y: auto; box-shadow: var(--s5); transform: translateY(24px); transition: transform .28s cubic-bezier(.4,0,.2,1); border: 1px solid var(--g-bd); border-bottom: none; }
@@ -466,7 +427,7 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 .peye { position: absolute; right: 11px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--ink3); font-size: .85rem; padding: 0; opacity: .6; transition: opacity .2s; }
 .peye:hover { opacity: 1; }
 .cr-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 3px; }
-.csw { width: 26px; height: 26px; border-radius: 7px; cursor: pointer; border: 2.5px solid transparent; transition: transform .14px, border-color .14s; }
+.csw { width: 26px; height: 26px; border-radius: 7px; cursor: pointer; border: 2.5px solid transparent; transition: transform .14s, border-color .14s; }
 .csw:hover { transform: scale(1.2); }
 .csw.pk { border-color: var(--ink); transform: scale(1.1); }
 .dt-box { background: var(--sf2); border: 1.5px solid var(--bd); border-radius: 13px; padding: 14px 16px; margin-bottom: 12px; }
@@ -479,11 +440,7 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 .dt-input-wrap:focus-within { border-color: var(--acc); box-shadow: 0 0 0 3px var(--accbg); }
 .dt-input-icon { font-size: .9rem; flex-shrink: 0; line-height: 1; }
 .dt-input { flex: 1; background: transparent; border: none; outline: none; font-family: var(--font-mono); font-size: .85rem; color: var(--ink); min-width: 0; padding: 0; }
-.dt-input::-webkit-calendar-picker-indicator { cursor: pointer; opacity: .55; width: 18px; height: 18px; filter: var(--cal-icon-filter, none); }
 .dt-divider { color: var(--ink3); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; padding-top: 24px; flex-shrink: 0; }
-.kpi { cursor: default; transition: transform .15s, box-shadow .15s; }
-.kpi[onclick] { cursor: pointer; }
-.kpi[onclick]:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,.13); }
 .notif-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
 .ntab { display: flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 9px; border: 1.5px solid var(--bd); background: var(--sf); cursor: pointer; transition: all .16s; font-family: var(--font-head); font-size: .72rem; font-weight: 700; color: var(--ink2); }
 .ntab:hover { border-color: var(--bd2); background: var(--g2); }
@@ -505,8 +462,6 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 .sc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .sc-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; background: var(--sf2); border-radius: 9px; border: 1px solid var(--bd); }
 .sc-item kbd { background: var(--sf); border: 1px solid var(--bd); border-radius: 4px; padding: 2px 7px; font-family: var(--font-mono); font-size: .64rem; color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.06); }
-
-/* ═══ TOAST ═══ */
 #toast-stack { position: fixed; bottom: 20px; right: 16px; display: flex; flex-direction: column-reverse; gap: 8px; z-index: 9999; pointer-events: none; max-width: 340px; }
 .toast-i { background: var(--ink); color: var(--bg); border-radius: 11px; padding: 11px 16px; font-size: .82rem; font-family: var(--font-head); font-weight: 600; display: flex; align-items: center; gap: 10px; box-shadow: var(--s4); pointer-events: all; animation: toastIn .3s cubic-bezier(.34,1.4,.64,1); }
 .ti-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
@@ -523,8 +478,6 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 .notif-status-card { background: var(--g1); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1.5px solid var(--bd); border-radius: 14px; padding: 20px; transition: all .16s; }
 .notif-status-card:hover { box-shadow: var(--s2); }
 .notif-status-card.configured { border-color: var(--gr); background: var(--grbg); }
-
-/* ═══ MOBILE ═══ */
 .sb-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 200; opacity: 0; pointer-events: none; transition: opacity .25s; }
 .sb-ov.open { opacity: 1; pointer-events: all; }
 @media (max-width: 768px) {
@@ -555,7 +508,6 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-screen">
   <div class="lcard">
     <div class="ll">
@@ -567,66 +519,65 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
       </div>
       <div class="ll-tag">Interview Slot Booking &amp;<br>Team Coordination Platform</div>
       <div class="ll-feats">
-        <div class="ll-feat"><div class="ll-fi">🎯</div>Role-based access control</div>
-        <div class="ll-feat"><div class="ll-fi">🔔</div>Telegram · Slack · WhatsApp</div>
-        <div class="ll-feat"><div class="ll-fi">📅</div>Multi-day slot scheduling</div>
-        <div class="ll-feat"><div class="ll-fi">📊</div>Analytics &amp; activity log</div>
-        <div class="ll-feat"><div class="ll-fi">⚡</div>3-hour daily reminders</div>
-        <div class="ll-feat"><div class="ll-fi">🌙</div>Dark &amp; light themes</div>
+        <div class="ll-feat"><div class="ll-fi">\ud83c\udfaf</div>Role-based access control</div>
+        <div class="ll-feat"><div class="ll-fi">\ud83d\udd14</div>Telegram · Slack · WhatsApp</div>
+        <div class="ll-feat"><div class="ll-fi">\ud83d\udcc5</div>Multi-day slot scheduling</div>
+        <div class="ll-feat"><div class="ll-fi">\ud83d\udcca</div>Analytics &amp; activity log</div>
+        <div class="ll-feat"><div class="ll-fi">\u26a1</div>3-hour daily reminders</div>
+        <div class="ll-feat"><div class="ll-fi">\ud83c\udf19</div>Dark &amp; light themes</div>
       </div>
-      <div class="ll-ver">UiPath Slots v1.0 · Production</div>
+      <div class="ll-ver">UiPath Slots v1.1 · Production</div>
     </div>
     <div class="lr">
       <div class="lr-eyebrow">Welcome back</div>
       <div class="lr-h">Sign in to your<br>workspace</div>
       <div class="lr-s" id="l-sub">Enter your credentials to continue</div>
       <div class="lf"><label>Username</label><input id="l-user" placeholder="Enter username" autocomplete="username"/></div>
-      <div class="lf"><label>Password</label><div class="pw"><input id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password"/><button class="eye-btn" onclick="tv('l-pass',this)">👁</button></div></div>
+      <div class="lf"><label>Password</label><div class="pw"><input id="l-pass" type="password" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022" autocomplete="current-password"/><button class="eye-btn" onclick="tv('l-pass',this)">\ud83d\udc41</button></div></div>
       <button class="btn-login" id="btn-login-main" onclick="doLogin()">Sign In →</button>
       <div id="lerr"></div>
       <div style="margin-top:14px;text-align:center;font-size:.72rem;color:var(--ink4)">
-        Having trouble? <button onclick="resetLocalData()" style="background:none;border:none;color:var(--acc);cursor:pointer;font-size:.72rem;font-family:var(--font-body);text-decoration:underline;padding:0">Reset local data</button> (keeps Firebase data intact)
+        Having trouble? <button onclick="resetLocalData()" style="background:none;border:none;color:var(--acc);cursor:pointer;font-size:.72rem;font-family:var(--font-body);text-decoration:underline;padding:0">Reset local data</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
   <div class="topbar">
-    <button class="hmbg" onclick="toggleSb()">☰</button>
+    <button class="hmbg" onclick="toggleSb()">\u2630</button>
     <div class="tb-logo">
       <div class="tb-logomark">UI</div>
       <div class="tb-brand">UiPath<span class="ac"> Slots</span><span class="sub">Interview Booking</span></div>
-      <div id="fb-badge" style="display:none;font-size:.58rem;background:#fff3;border-radius:4px;padding:2px 6px;color:#fff;font-family:var(--font-mono);margin-left:4px;letter-spacing:.04em" title="Firebase real-time sync active">🔥 Live</div>
+      <div id="fb-badge" style="display:none;font-size:.58rem;background:#fff3;border-radius:4px;padding:2px 6px;color:#fff;font-family:var(--font-mono);margin-left:4px;letter-spacing:.04em" title="Firebase real-time sync active">\ud83d\udd25 Live</div>
     </div>
     <div class="tb-mid">
       <div class="vtabs" id="vtabs">
-        <button class="vtab on" onclick="setView('month')">Month</button>
-        <button class="vtab" onclick="setView('week')">Week</button>
+        <button class="vtab" onclick="setView('month')">Month</button>
+        <button class="vtab on" onclick="setView('week')">Week</button>
         <button class="vtab" onclick="setView('agenda')">Agenda</button>
       </div>
       <div class="nav-btns">
-        <button class="tbn" onclick="navDir(-1)" title="Previous">‹</button>
-        <button class="tbn" onclick="navDir(1)" title="Next">›</button>
+        <button class="tbn" onclick="navDir(-1)" title="Previous">\u2039</button>
+        <button class="tbn" onclick="navDir(1)" title="Next">\u203a</button>
       </div>
       <div class="tb-period" id="tb-period"></div>
       <button class="btn-today" onclick="goToday()">Today</button>
     </div>
     <div class="tb-right">
       <button class="btn-new" id="btn-new" onclick="openEvtModal(todayISO())"><span style="font-size:1.1rem;line-height:1">+</span><span>Book Slot</span></button>
-      <button class="ib" onclick="openCmd()" title="Search (⌘K)">🔍</button>
-      <button class="ib" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">🌙</button>
+      <button class="ib" onclick="openCmd()" title="Search (\u2318K)">\ud83d\udd0d</button>
+      <button class="ib" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">\ud83c\udf19</button>
       <div class="upill" onclick="toggleDrop()" id="upill">
         <div class="uav" id="uav"></div>
         <span class="uname" id="uname"></span>
         <span class="rbadge" id="urb"></span>
         <div class="udrop" id="udrop">
           <div class="ud-head"><div class="udn" id="ud-n"></div><div class="udu" id="ud-u"></div></div>
-          <button class="udi" onclick="showSec('dash')">🏠 Dashboard</button>
-          <button class="udi" onclick="openProfile()">👤 My Profile</button>
-          <button class="udi" onclick="openChangePwd(null)">🔑 Change Password</button>
-          <button class="udi" id="notif-mi" onclick="openNotifModal()">🔔 Notifications</button>
+          <button class="udi" onclick="showSec('dash')">\ud83c\udfe0 Dashboard</button>
+          <button class="udi" onclick="openProfile()">\ud83d\udc64 My Profile</button>
+          <button class="udi" onclick="openChangePwd(null)">\ud83d\udd11 Change Password</button>
+          <button class="udi" id="notif-mi" onclick="openNotifModal()">\ud83d\udd14 Notifications</button>
           <button class="udi" onclick="openShortcuts()">⌨️ Keyboard Shortcuts</button>
           <div class="ud-div"></div>
           <button class="udi danger" onclick="doLogout()">→ Sign Out</button>
@@ -640,17 +591,16 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
     <nav class="sidebar" id="sidebar">
       <div class="sb-sec">
         <h5>Main</h5>
-        <button class="sbb" id="sb-dash" onclick="showSec('dash');closeSb()"><span class="sb-icon">🏠</span>Dashboard</button>
-        <button class="sbb on" id="sb-calendar" onclick="showSec('calendar');closeSb()"><span class="sb-icon">📅</span>Calendar</button>
-        <button class="sbb" id="sb-events" onclick="showSec('events');closeSb()"><span class="sb-icon">🗂</span>My Slots<span class="sb-cnt" id="sbc-e">0</span></button>
+        <button class="sbb" id="sb-dash" onclick="showSec('dash');closeSb()"><span class="sb-icon">\ud83c\udfe0</span>Dashboard</button>
+        <button class="sbb on" id="sb-calendar" onclick="showSec('calendar');closeSb()"><span class="sb-icon">\ud83d\udcc5</span>Calendar</button>
+        <button class="sbb" id="sb-events" onclick="showSec('events');closeSb()"><span class="sb-icon">\ud83d\uddc2</span>My Slots<span class="sb-cnt" id="sbc-e">0</span></button>
       </div>
       <div class="sb-div"></div>
       <div class="sb-sec" id="admin-sb" style="display:none">
         <h5>Admin</h5>
-        <button class="sbb" id="sb-users" onclick="showSec('users');closeSb()"><span class="sb-icon">👥</span>Users<span class="sb-cnt" id="sbc-u">0</span></button>
-        <button class="sbb" id="sb-notif" onclick="showSec('notif');closeSb()"><span class="sb-icon">🔔</span>Notifications</button>
-        <button class="sbb" id="sb-activity" onclick="showSec('activity');closeSb()"><span class="sb-icon">📋</span>Activity Log</button>
-
+        <button class="sbb" id="sb-users" onclick="showSec('users');closeSb()"><span class="sb-icon">\ud83d\udc65</span>Users<span class="sb-cnt" id="sbc-u">0</span></button>
+        <button class="sbb" id="sb-notif" onclick="showSec('notif');closeSb()"><span class="sb-icon">\ud83d\udd14</span>Notifications</button>
+        <button class="sbb" id="sb-activity" onclick="showSec('activity');closeSb()"><span class="sb-icon">\ud83d\udccb</span>Activity Log</button>
       </div>
       <div class="mc-wrap" id="mini-cal"></div>
     </nav>
@@ -658,7 +608,6 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
   </div>
 </div>
 
-<!-- Detail Panel -->
 <div class="detail-panel" id="detail-panel">
   <div class="dp-hd">
     <div class="dp-hd-title">Slot Details</div>
@@ -667,20 +616,18 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
   <div class="dp-body" id="dp-body"></div>
 </div>
 
-<!-- Command Palette -->
 <div class="cmd-ov" id="cmd-ov" onclick="closeCmd(event)">
   <div class="cmd-box">
     <div class="cmd-iw">
-      <span style="font-size:1rem;color:var(--ink3)">🔍</span>
-      <input class="cmd-in" id="cmd-in" placeholder="Search slots, users, actions…" oninput="cmdSearch(this.value)" onkeydown="cmdKey(event)"/>
+      <span style="font-size:1rem;color:var(--ink3)">\ud83d\udd0d</span>
+      <input class="cmd-in" id="cmd-in" placeholder="Search slots, users, actions\u2026" oninput="cmdSearch(this.value)" onkeydown="cmdKey(event)"/>
       <span style="font-family:var(--font-mono);font-size:.62rem;background:var(--sf3);border:1px solid var(--bd);border-radius:4px;padding:2px 7px;color:var(--ink3)">ESC</span>
     </div>
     <div class="cmd-results" id="cmd-res"></div>
-    <div class="cmd-ft"><span><kbd>↑↓</kbd> navigate</span><span><kbd>↵</kbd> select</span><span><kbd>ESC</kbd> close</span></div>
+    <div class="cmd-ft"><span><kbd>\u2191\u2193</kbd> navigate</span><span><kbd>\u21b5</kbd> select</span><span><kbd>ESC</kbd> close</span></div>
   </div>
 </div>
 
-<!-- Event Modal -->
 <div class="ov" id="ov-ev" onclick="closeOv('ov-ev',event)">
 <div class="modal" style="max-width:660px">
   <div class="mhd">
@@ -688,107 +635,53 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
     <button class="mclose" onclick="closeOv('ov-ev')">✕</button>
   </div>
   <div class="mbody">
-    <div class="fr full"><div class="fg"><label>Event Name <span class="req">*</span></label><input id="e-name" placeholder="e.g. Technical Interview – Frontend Engineer" oninput="this.style.outline='';this.style.background=''"/></div></div>
+    <div class="fr full"><div class="fg"><label>Event Name <span class="req">*</span></label><input id="e-name" placeholder="e.g. Technical Interview \u2013 Frontend Engineer" oninput="this.style.outline='';this.style.background=''"/></div></div>
     <div class="dt-box">
-      <div class="dt-hdr">📅 Date &amp; Time Range</div>
+      <div class="dt-hdr">\ud83d\udcc5 Date &amp; Time Range</div>
       <div class="dt-mobile-grid">
         <div class="dt-cell">
-          <div class="dt-cell-lbl">🟢 Start</div>
+          <div class="dt-cell-lbl">\ud83d\udfe2 Start</div>
           <div class="dt-cell-row">
-            <div class="dt-input-wrap">
-              <span class="dt-input-icon">📅</span>
-              <input id="e-sd" type="date" class="dt-input" oninput="syncEndDate();this.style.outline='';this.style.background=''" />
-            </div>
-            <div class="dt-input-wrap">
-              <span class="dt-input-icon">⏰</span>
-              <input id="e-st" type="time" class="dt-input" value="09:00" />
-            </div>
+            <div class="dt-input-wrap"><span class="dt-input-icon">\ud83d\udcc5</span><input id="e-sd" type="date" class="dt-input" oninput="syncEndDate();this.style.outline='';this.style.background=''" /></div>
+            <div class="dt-input-wrap"><span class="dt-input-icon">\u23f0</span><input id="e-st" type="time" class="dt-input" value="09:00" /></div>
           </div>
         </div>
         <div class="dt-divider">→</div>
         <div class="dt-cell">
-          <div class="dt-cell-lbl">🔴 End</div>
+          <div class="dt-cell-lbl">\ud83d\udd34 End</div>
           <div class="dt-cell-row">
-            <div class="dt-input-wrap">
-              <span class="dt-input-icon">📅</span>
-              <input id="e-ed" type="date" class="dt-input" />
-            </div>
-            <div class="dt-input-wrap">
-              <span class="dt-input-icon">⏰</span>
-              <input id="e-et" type="time" class="dt-input" value="10:00" />
-            </div>
+            <div class="dt-input-wrap"><span class="dt-input-icon">\ud83d\udcc5</span><input id="e-ed" type="date" class="dt-input" /></div>
+            <div class="dt-input-wrap"><span class="dt-input-icon">\u23f0</span><input id="e-et" type="time" class="dt-input" value="10:00" /></div>
           </div>
         </div>
       </div>
     </div>
     <div class="fr">
-      <div class="fg">
-        <label>Candidate Name <span class="req">*</span></label>
-        <input id="e-cand" placeholder="Full name" readonly style="background:var(--sf3);color:var(--ink2);cursor:default;opacity:.85"/>
-        <div style="font-size:.68rem;color:var(--ink3);margin-top:4px">Auto-filled as the booking user's name.</div>
-      </div>
+      <div class="fg"><label>Candidate Name <span class="req">*</span></label><input id="e-cand" placeholder="Full name" readonly style="background:var(--sf3);color:var(--ink2);cursor:default;opacity:.85"/><div style="font-size:.68rem;color:var(--ink3);margin-top:4px">Auto-filled as booking user's name.</div></div>
       <div class="fg"><label>Company Name <span class="req">*</span></label><input id="e-comp" placeholder="Company" oninput="this.style.outline='';this.style.background=''"/></div>
     </div>
     <div class="fr t3">
       <div class="fg"><label>Location</label><input id="e-loc" placeholder="Office / Video link"/></div>
-      <div class="fg"><label>Work Mode</label>
-        <select id="e-wm"><option value="onsite">On-site</option><option value="remote">Remote</option><option value="hybrid">Hybrid</option></select>
-      </div>
-      <div class="fg"><label>Category</label>
-        <select id="e-cat"><option value="interview">Interview</option><option value="technical">Technical</option><option value="hr">HR Round</option><option value="final">Final Round</option><option value="meeting">Meeting</option><option value="other">Other</option></select>
-      </div>
+      <div class="fg"><label>Work Mode</label><select id="e-wm"><option value="onsite">On-site</option><option value="remote">Remote</option><option value="hybrid">Hybrid</option></select></div>
+      <div class="fg"><label>Category</label><select id="e-cat"><option value="interview">Interview</option><option value="technical">Technical</option><option value="hr">HR Round</option><option value="final">Final Round</option><option value="meeting">Meeting</option><option value="other">Other</option></select></div>
     </div>
     <div class="fr">
-      <div class="fg"><label>Priority</label>
-        <select id="e-pri"><option value="medium">Medium</option><option value="low">Low</option><option value="high">High</option><option value="urgent">Urgent</option></select>
-      </div>
-      <div class="fg"><label>Status</label>
-        <select id="e-sts"><option value="confirmed">Confirmed</option><option value="draft">Draft</option><option value="cancelled">Cancelled</option><option value="completed">Completed</option></select>
-      </div>
+      <div class="fg"><label>Priority</label><select id="e-pri"><option value="medium">Medium</option><option value="low">Low</option><option value="high">High</option><option value="urgent">Urgent</option></select></div>
+      <div class="fg"><label>Status</label><select id="e-sts"><option value="confirmed">Confirmed</option><option value="draft">Draft</option><option value="cancelled">Cancelled</option><option value="completed">Completed</option></select></div>
     </div>
     <div class="fg"><label>Event Color</label><div class="cr-row" id="e-cr"></div></div>
-    <div class="fg"><label>Notes</label><textarea id="e-notes" placeholder="Interview format, topics, instructions, links…"></textarea></div>
-<!-- RECURRENCE — admin only -->
+    <div class="fg"><label>Notes</label><textarea id="e-notes" placeholder="Interview format, topics, instructions, links\u2026"></textarea></div>
     <div id="e-recur-wrap" style="display:none;margin-top:4px">
       <div class="dt-box" style="margin-bottom:12px">
         <div class="dt-hdr">&#x1F501; Recurrence</div>
-        <div class="fg" style="margin-bottom:10px">
-          <label>Repeat</label>
-          <select id="e-recur" onchange="onRecurChange()">
-            <option value="none">Does not repeat</option>
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
-            <option value="custom">Custom</option>
-          </select>
-        </div>
+        <div class="fg" style="margin-bottom:10px"><label>Repeat</label><select id="e-recur" onchange="onRecurChange()"><option value="none">Does not repeat</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="custom">Custom</option></select></div>
         <div id="e-recur-opts" style="display:none">
           <div class="fr" id="e-recur-interval-row">
-            <div class="fg">
-              <label>Every</label>
-              <div style="display:flex;align-items:center;gap:8px">
-                <input id="e-recur-every" type="number" min="1" max="99" value="1" style="width:80px"/>
-                <span id="e-recur-unit" style="color:var(--ink3);font-size:.82rem">day(s)</span>
-              </div>
-            </div>
-            <div class="fg">
-              <label>End After</label>
-              <select id="e-recur-end-type" onchange="onRecurEndChange()">
-                <option value="count">Number of occurrences</option>
-                <option value="date">Specific end date</option>
-                <option value="never">Never (max 52)</option>
-              </select>
-            </div>
+            <div class="fg"><label>Every</label><div style="display:flex;align-items:center;gap:8px"><input id="e-recur-every" type="number" min="1" max="99" value="1" style="width:80px"/><span id="e-recur-unit" style="color:var(--ink3);font-size:.82rem">day(s)</span></div></div>
+            <div class="fg"><label>End After</label><select id="e-recur-end-type" onchange="onRecurEndChange()"><option value="count">Number of occurrences</option><option value="date">Specific end date</option><option value="never">Never (max 52)</option></select></div>
           </div>
-          <div id="e-recur-count-row" class="fg">
-            <label>Occurrences</label>
-            <input id="e-recur-count" type="number" min="1" max="52" value="5"/>
-          </div>
-          <div id="e-recur-date-row" class="fg" style="display:none">
-            <label>Repeat Until</label>
-            <input id="e-recur-until" type="date"/>
-          </div>
+          <div id="e-recur-count-row" class="fg"><label>Occurrences</label><input id="e-recur-count" type="number" min="1" max="52" value="5"/></div>
+          <div id="e-recur-date-row" class="fg" style="display:none"><label>Repeat Until</label><input id="e-recur-until" type="date"/></div>
           <div id="e-recur-days-row" style="display:none;margin-bottom:10px">
             <label style="font-family:var(--font-head);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink2);display:block;margin-bottom:7px">Repeat On</label>
             <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -805,164 +698,105 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
         </div>
       </div>
     </div>
-    <div style="background:var(--blbg);border:1px solid rgba(26,74,154,.2);border-radius:9px;padding:11px 14px;font-size:.76rem;color:var(--bl);line-height:1.6">
-      &#x1F514; Configured notification channels will receive an alert when you save.
-    </div>
+    <div style="background:var(--blbg);border:1px solid rgba(26,74,154,.2);border-radius:9px;padding:11px 14px;font-size:.76rem;color:var(--bl);line-height:1.6">&#x1F514; Configured notification channels will receive an alert when you save.</div>
   </div>
   <div class="mfoot">
-    <button class="bdanger" id="em-del" style="display:none" onclick="deleteEvtM()">🗑 Delete</button>
+    <button class="bdanger" id="em-del" style="display:none" onclick="deleteEvtM()">\ud83d\uddd1 Delete</button>
     <button class="bg" onclick="closeOv('ov-ev')">Cancel</button>
     <button class="bp" onclick="saveEvent()">💾 Save Slot</button>
   </div>
 </div></div>
 
-<!-- User Modal -->
 <div class="ov" id="ov-usr" onclick="closeOv('ov-usr',event)">
 <div class="modal" style="max-width:500px">
   <div class="mhd"><div><h3 id="um-ttl">New User</h3></div><button class="mclose" onclick="closeOv('ov-usr')">✕</button></div>
   <div class="mbody">
+    <div class="fr"><div class="fg"><label>Full Name <span class="req">*</span></label><input id="u-name" placeholder="Display name"/></div><div class="fg"><label>Username <span class="req">*</span></label><input id="u-un" placeholder="login id" autocomplete="off"/></div></div>
+    <div class="fr full"><div class="fg"><label>Email Address <span class="req" id="u-er">*</span></label><input id="u-email" type="email" placeholder="user@company.com" autocomplete="off"/><div style="font-size:.69rem;color:var(--ink3);margin-top:4px" id="u-eh">Invitation with login credentials will be sent to this email.</div></div></div>
     <div class="fr">
-      <div class="fg"><label>Full Name <span class="req">*</span></label><input id="u-name" placeholder="Display name"/></div>
-      <div class="fg"><label>Username <span class="req">*</span></label><input id="u-un" placeholder="login id" autocomplete="off"/></div>
-    </div>
-    <div class="fr full">
-      <div class="fg">
-        <label>Email Address <span class="req" id="u-er">*</span></label>
-        <input id="u-email" type="email" placeholder="user@company.com" autocomplete="off"/>
-        <div style="font-size:.69rem;color:var(--ink3);margin-top:4px" id="u-eh">Invitation with login credentials will be sent to this email.</div>
-      </div>
-    </div>
-    <div class="fr">
-      <div class="fg">
-        <label>Password <span class="req" id="u-pr">*</span></label>
-        <div class="pw2"><input id="u-pw" type="password" placeholder="Password" autocomplete="new-password"/><button class="peye" onclick="tv('u-pw',this)">👁</button></div>
-        <div style="font-size:.69rem;color:var(--ink3);margin-top:4px" id="u-ph"></div>
-      </div>
-      <div class="fg">
-        <label>Role <span class="req">*</span></label>
-        <select id="u-role"><option value="viewer">Viewer</option><option value="editor">Editor</option><option value="admin">Admin</option></select>
-        <div style="font-size:.68rem;color:var(--ink3);margin-top:4px" id="u-rh"></div>
-      </div>
+      <div class="fg"><label>Password <span class="req" id="u-pr">*</span></label><div class="pw2"><input id="u-pw" type="password" placeholder="Password" autocomplete="new-password"/><button class="peye" onclick="tv('u-pw',this)">\ud83d\udc41</button></div><div style="font-size:.69rem;color:var(--ink3);margin-top:4px" id="u-ph"></div></div>
+      <div class="fg"><label>Role <span class="req">*</span></label><select id="u-role"><option value="viewer">Viewer</option><option value="editor">Editor</option><option value="admin">Admin</option></select><div style="font-size:.68rem;color:var(--ink3);margin-top:4px" id="u-rh"></div></div>
     </div>
     <div class="fg"><label>Avatar Color</label><div class="cr-row" id="u-cr"></div></div>
-    <div id="u-invite-row" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--grbg);border:1px solid rgba(15,122,80,.2);border-radius:9px;font-size:.78rem;color:var(--gr)">
-      <span style="font-size:1rem">📧</span>
-      <span>An invitation email with login credentials will be sent automatically on save.</span>
-    </div>
-    <div id="u-noemail-row" style="display:none;align-items:center;gap:10px;padding:10px 14px;background:var(--ambg);border:1px solid rgba(138,92,0,.2);border-radius:9px;font-size:.78rem;color:var(--am)">
-      <span style="font-size:1rem">⚠️</span>
-      <span>EmailJS not configured. Go to <strong>Notifications → Email</strong> to set up invitations.</span>
-    </div>
+    <div id="u-invite-row" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--grbg);border:1px solid rgba(15,122,80,.2);border-radius:9px;font-size:.78rem;color:var(--gr)"><span style="font-size:1rem">\ud83d\udce7</span><span>An invitation email with login credentials will be sent automatically on save.</span></div>
+    <div id="u-noemail-row" style="display:none;align-items:center;gap:10px;padding:10px 14px;background:var(--ambg);border:1px solid rgba(138,92,0,.2);border-radius:9px;font-size:.78rem;color:var(--am)"><span style="font-size:1rem">⚠️</span><span>EmailJS not configured. Go to <strong>Notifications → Email</strong> to set up invitations.</span></div>
   </div>
-  <div class="mfoot">
-    <button class="bdanger" id="um-del" style="display:none" onclick="delUsrM()">🗑 Delete</button>
-    <button class="bg" onclick="closeOv('ov-usr')">Cancel</button>
-    <button class="bp" onclick="saveUser()">💾 Save &amp; Send Invite</button>
-  </div>
+  <div class="mfoot"><button class="bdanger" id="um-del" style="display:none" onclick="delUsrM()">\ud83d\uddd1 Delete</button><button class="bg" onclick="closeOv('ov-usr')">Cancel</button><button class="bp" onclick="saveUser()">💾 Save &amp; Send Invite</button></div>
 </div></div>
 
-<!-- Password Modal -->
 <div class="ov" id="ov-pwd" onclick="closeOv('ov-pwd',event)">
 <div class="modal" style="max-width:420px">
   <div class="mhd"><div><h3>Change Password</h3><div class="mhs" id="pwd-lbl"></div></div><button class="mclose" onclick="closeOv('ov-pwd')">✕</button></div>
   <div class="mbody">
-    <div class="fg" id="pwd-cw">
-      <label>Current Password</label>
-      <div class="pw2"><input id="pwd-c" type="password" placeholder="Current password"/><button class="peye" onclick="tv('pwd-c',this)">👁</button></div>
-    </div>
-    <div class="fg">
-      <label>New Password <span class="req">*</span></label>
-      <div class="pw2"><input id="pwd-n" type="password" placeholder="Min 6 characters" oninput="pwdStr()"/><button class="peye" onclick="tv('pwd-n',this)">👁</button></div>
-      <div class="pwd-track"><div class="pwd-fill" id="pwd-bar"></div></div>
-      <div style="font-size:.68rem;color:var(--ink3);margin-top:3px" id="pwd-sl"></div>
-    </div>
-    <div class="fg">
-      <label>Confirm Password <span class="req">*</span></label>
-      <div class="pw2"><input id="pwd-cf" type="password" placeholder="Repeat password"/><button class="peye" onclick="tv('pwd-cf',this)">👁</button></div>
-    </div>
+    <div class="fg" id="pwd-cw"><label>Current Password</label><div class="pw2"><input id="pwd-c" type="password" placeholder="Current password"/><button class="peye" onclick="tv('pwd-c',this)">\ud83d\udc41</button></div></div>
+    <div class="fg"><label>New Password <span class="req">*</span></label><div class="pw2"><input id="pwd-n" type="password" placeholder="Min 6 characters" oninput="pwdStr()"/><button class="peye" onclick="tv('pwd-n',this)">\ud83d\udc41</button></div><div class="pwd-track"><div class="pwd-fill" id="pwd-bar"></div></div><div style="font-size:.68rem;color:var(--ink3);margin-top:3px" id="pwd-sl"></div></div>
+    <div class="fg"><label>Confirm Password <span class="req">*</span></label><div class="pw2"><input id="pwd-cf" type="password" placeholder="Repeat password"/><button class="peye" onclick="tv('pwd-cf',this)">\ud83d\udc41</button></div></div>
     <div id="pwd-err" style="color:var(--rd);font-size:.79rem;min-height:16px;margin-top:4px;"></div>
   </div>
-  <div class="mfoot"><button class="bg" onclick="closeOv('ov-pwd')">Cancel</button><button class="bp" onclick="doChangePwd()">🔑 Update Password</button></div>
+  <div class="mfoot"><button class="bg" onclick="closeOv('ov-pwd')">Cancel</button><button class="bp" onclick="doChangePwd()">\ud83d\udd11 Update Password</button></div>
 </div></div>
 
-<!-- Profile Modal -->
 <div class="ov" id="ov-prof" onclick="closeOv('ov-prof',event)">
 <div class="modal" style="max-width:420px">
   <div class="mhd"><div><h3>My Profile</h3></div><button class="mclose" onclick="closeOv('ov-prof')">✕</button></div>
   <div class="mbody">
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:16px;background:var(--sf2);border-radius:12px;border:1px solid var(--bd);">
       <div id="prof-av" style="width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:1.3rem;font-weight:800;color:#fff;flex-shrink:0;"></div>
-      <div>
-        <div style="font-family:var(--font-head);font-size:1rem;font-weight:800" id="prof-n"></div>
-        <div style="font-family:var(--font-mono);font-size:.74rem;color:var(--ink3)" id="prof-u"></div>
-        <div style="margin-top:6px" id="prof-rb"></div>
-      </div>
+      <div><div style="font-family:var(--font-head);font-size:1rem;font-weight:800" id="prof-n"></div><div style="font-family:var(--font-mono);font-size:.74rem;color:var(--ink3)" id="prof-u"></div><div style="margin-top:6px" id="prof-rb"></div></div>
     </div>
-    <div class="fr">
-      <div class="fg"><label>Display Name</label><input id="prof-ni"/></div>
-      <div class="fg"><label>Avatar Color</label><div class="cr-row" id="prof-cr"></div></div>
-    </div>
+    <div class="fr"><div class="fg"><label>Display Name</label><input id="prof-ni"/></div><div class="fg"><label>Avatar Color</label><div class="cr-row" id="prof-cr"></div></div></div>
     <div class="fg" style="margin-top:4px">
-      <label>My Telegram Chat ID <span style="font-size:.68rem;color:var(--ink3);font-weight:400">(optional — get notified on your device)</span></label>
-      <input id="prof-tg" placeholder="e.g. 123456789 — message @userinfobot to get your ID" autocomplete="off"/>
-      <div style="font-size:.69rem;color:var(--ink3);margin-top:4px;line-height:1.5">
-        📱 You'll receive a personal Telegram message when any slot is created, updated, or deleted.
-        <br>Need help? Message <strong>@userinfobot</strong> on Telegram — it replies with your Chat ID.
-      </div>
+      <label>My Telegram Chat ID <span style="font-size:.68rem;color:var(--ink3);font-weight:400">(optional)</span></label>
+      <input id="prof-tg" placeholder="e.g. 123456789 \u2014 message @userinfobot to get your ID" autocomplete="off"/>
+      <div style="font-size:.69rem;color:var(--ink3);margin-top:4px;line-height:1.5">\ud83d\udcf1 You'll receive personal Telegram messages for slot changes. Message <strong>@userinfobot</strong> on Telegram to get your Chat ID.</div>
     </div>
   </div>
   <div class="mfoot"><button class="bg" onclick="closeOv('ov-prof')">Cancel</button><button class="bp" onclick="saveProfile()">Save Profile</button></div>
 </div></div>
 
-<!-- Notification Modal -->
 <div class="ov" id="ov-notif" onclick="closeOv('ov-notif',event)">
 <div class="modal" style="max-width:600px">
-  <div class="mhd"><div><h3>🔔 Notification Settings</h3><div class="mhs">Configure channels + daily reminders</div></div><button class="mclose" onclick="closeOv('ov-notif')">✕</button></div>
+  <div class="mhd"><div><h3>\ud83d\udd14 Notification Settings</h3><div class="mhs">Configure channels + daily reminders</div></div><button class="mclose" onclick="closeOv('ov-notif')">✕</button></div>
   <div class="mbody">
-    <div class="notif-info" style="margin-bottom:16px">ℹ️ Notifications are sent directly from your browser. Telegram: all activities. Slack & WhatsApp: event saves. <strong>Daily reminders</strong> run every 3 hours from 8 AM – 9 PM via Telegram for today's events.</div>
+    <div class="notif-info" style="margin-bottom:16px">\u2139\ufe0f Notifications sent directly from your browser. Telegram: all activities. Slack &amp; WhatsApp: event saves. <strong>Daily reminders</strong> every 3 hours 8 AM\u20139 PM via Telegram.</div>
     <div class="notif-tabs">
-      <div class="ntab on" onclick="selNTab('slack')" id="nt-slack">💬 Slack</div>
-      <div class="ntab" onclick="selNTab('telegram')" id="nt-telegram">✈️ Telegram</div>
-      <div class="ntab" onclick="selNTab('whatsapp')" id="nt-whatsapp">📱 WhatsApp</div>
-      <div class="ntab" onclick="selNTab('email')" id="nt-email">📧 Email (Invites)</div>
-      <div class="ntab" onclick="selNTab('firebase')" id="nt-firebase">🔥 Firebase Sync</div>
+      <div class="ntab on" onclick="selNTab('slack')" id="nt-slack">\ud83d\udcac Slack</div>
+      <div class="ntab" onclick="selNTab('telegram')" id="nt-telegram">\u2708\ufe0f Telegram</div>
+      <div class="ntab" onclick="selNTab('whatsapp')" id="nt-whatsapp">\ud83d\udcf1 WhatsApp</div>
+      <div class="ntab" onclick="selNTab('email')" id="nt-email">\ud83d\udce7 Email</div>
+      <div class="ntab" onclick="selNTab('firebase')" id="nt-firebase">\ud83d\udd25 Firebase</div>
+      <div class="ntab" onclick="selNTab('tgbot')" id="nt-tgbot">\ud83e\udd16 TG Bot</div>
     </div>
     <div class="ntab-body on" id="nb-slack">
       <div class="nh"><strong>Setup Slack Webhook:</strong><br>1. Go to <a href="https://api.slack.com/apps" target="_blank">api.slack.com/apps</a> → Create App → Incoming Webhooks<br>2. Toggle "Activate Incoming Webhooks" → Add to Workspace → Choose channel<br>3. Copy the Webhook URL and paste below</div>
       <div class="fg"><label>Webhook URL <span class="req">*</span></label><input id="n-su" placeholder="https://hooks.slack.com/services/T.../B.../..."/></div>
       <div class="fg"><label>Channel (optional)</label><input id="n-sc" placeholder="#interviews"/></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testNotif('slack')">🧪 Send Test</button><div id="n-ss" class="ns-badge ns-idle" style="display:none"></div></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testNotif('slack')">\ud83e\uddea Send Test</button><div id="n-ss" class="ns-badge ns-idle" style="display:none"></div></div>
     </div>
     <div class="ntab-body" id="nb-telegram">
-      <div class="nh"><strong>Setup Telegram Bot:</strong><br>1. Message <a href="https://t.me/BotFather" target="_blank">@BotFather</a> → <code>/newbot</code> → copy <strong>Bot Token</strong><br>2. Add bot to channel/group as <strong>Admin</strong><br>3. Get Chat ID from <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a> or <code>getUpdates</code><br>4. Channel IDs start with <code>-100</code></div>
+      <div class="nh"><strong>Setup Telegram Bot:</strong><br>1. Message <a href="https://t.me/BotFather" target="_blank">@BotFather</a> → <code>/newbot</code> → copy <strong>Bot Token</strong><br>2. Add bot to channel/group as <strong>Admin</strong><br>3. Get Chat ID from <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a><br>4. Channel IDs start with <code>-100</code></div>
       <div class="fg"><label>Bot Token <span class="req">*</span></label><input id="n-tt" placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"/></div>
       <div class="fg"><label>Chat ID <span class="req">*</span></label><input id="n-tc" placeholder="-1001234567890 or @channel_username"/></div>
       <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:9px;padding:12px 14px;margin-bottom:10px">
-        <div style="font-family:var(--font-head);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2);margin-bottom:8px">⏰ Pre-Event Alerts</div>
-        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;margin-bottom:6px">
-          <input type="checkbox" id="n-t-pre15" style="accent-color:var(--acc);width:15px;height:15px"/>
-          <span style="font-size:.82rem">Send Telegram alert <strong>15 minutes before</strong> each event starts</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:9px;cursor:pointer">
-          <input type="checkbox" id="n-t-pre60" style="accent-color:var(--acc);width:15px;height:15px"/>
-          <span style="font-size:.82rem">Send Telegram alert <strong>1 hour before</strong> each event starts</span>
-        </label>
+        <div style="font-family:var(--font-head);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2);margin-bottom:8px">\u23f0 Pre-Event Alerts</div>
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;margin-bottom:6px"><input type="checkbox" id="n-t-pre15" style="accent-color:var(--acc);width:15px;height:15px"/><span style="font-size:.82rem">Send Telegram alert <strong>15 minutes before</strong> each event starts</span></label>
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer"><input type="checkbox" id="n-t-pre60" style="accent-color:var(--acc);width:15px;height:15px"/><span style="font-size:.82rem">Send Telegram alert <strong>1 hour before</strong> each event starts</span></label>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testNotif('telegram')">🧪 Send Test</button><div id="n-ts" class="ns-badge ns-idle" style="display:none"></div></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testNotif('telegram')">\ud83e\uddea Send Test</button><div id="n-ts" class="ns-badge ns-idle" style="display:none"></div></div>
     </div>
     <div class="ntab-body" id="nb-whatsapp">
       <div class="nh"><strong>Setup WhatsApp via CallMeBot:</strong><br>1. Add <strong>+34 644 55 64 26</strong> to contacts<br>2. Send: <code>I allow callmebot to send me messages</code><br>3. You'll receive API key within minutes<br>4. Guide: <a href="https://www.callmebot.com/blog/free-api-whatsapp-messages/" target="_blank">callmebot.com →</a></div>
       <div class="fg"><label>Phone (with country code) <span class="req">*</span></label><input id="n-wp" placeholder="+919876543210"/></div>
       <div class="fg"><label>API Key <span class="req">*</span></label><input id="n-wk" placeholder="Your CallMeBot API key"/></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testNotif('whatsapp')">🧪 Send Test</button><div id="n-ws" class="ns-badge ns-idle" style="display:none"></div></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testNotif('whatsapp')">\ud83e\uddea Send Test</button><div id="n-ws" class="ns-badge ns-idle" style="display:none"></div></div>
     </div>
     <div class="ntab-body" id="nb-email">
       <div class="nh">
         <strong>Setup EmailJS for Invitation Emails:</strong><br>
         1. Sign up free at <a href="https://www.emailjs.com" target="_blank">emailjs.com</a> → Dashboard<br>
-        2. <strong>Email Services</strong> → Add Service (Gmail, Outlook, etc.) → Copy <strong>Service ID</strong><br>
+        2. <strong>Email Services</strong> → Add Service → Copy <strong>Service ID</strong><br>
         3. <strong>Email Templates</strong> → Create Template → Copy <strong>Template ID</strong><br>
-        4. <span style="background:#fff3cd;border-radius:4px;padding:1px 6px;color:#856404">❗ CRITICAL: In template settings, set the <strong>To Email</strong> field to <code>{{to_email}}</code></span><br>
+        4. <span style="background:#fff3cd;border-radius:4px;padding:1px 6px;color:#856404">\u2757 In template settings, set <strong>To Email</strong> field to <code>{{to_email}}</code></span><br>
         5. <strong>Account → API Keys</strong> → Copy <strong>Public Key</strong><br>
         6. Template variables: <code>{{to_name}}</code> <code>{{to_email}}</code> <code>{{username}}</code> <code>{{password}}</code> <code>{{role}}</code> <code>{{app_url}}</code> <code>{{invited_by}}</code>
       </div>
@@ -972,43 +806,75 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
         <div class="fg"><label>Template ID <span class="req">*</span></label><input id="n-ejtid" placeholder="template_xxxxxxx"/></div>
       </div>
       <div class="fg"><label>App URL (shown in email)</label><input id="n-ejurl" placeholder="https://yoursite.com or leave blank"/></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testEmailInvite()">🧪 Send Test Email</button><div id="n-ejs" class="ns-badge ns-idle" style="display:none"></div></div>
-      <div class="notif-info" style="margin-top:12px">
-        ℹ️ Free EmailJS tier allows <strong>200 emails/month</strong>. Invitation emails are sent only when you create a new user — not on edits.
-      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testEmailInvite()">\ud83e\uddea Send Test Email</button><div id="n-ejs" class="ns-badge ns-idle" style="display:none"></div></div>
+      <div class="notif-info" style="margin-top:12px">\u2139\ufe0f Free EmailJS tier allows <strong>200 emails/month</strong>.</div>
     </div>
     <div class="ntab-body" id="nb-firebase">
-      <div id="fb-in-app-status" style="margin-bottom:12px;padding:10px 13px;border-radius:9px;font-size:.78rem;line-height:1.6;background:var(--grbg);border:1px solid rgba(15,122,80,.2);color:var(--gr);display:none">
-        ✅ <strong>Firebase is live and syncing.</strong>
-      </div>
-      <div id="fb-not-embedded-warn" style="margin-bottom:12px;padding:10px 13px;border-radius:9px;font-size:.78rem;line-height:1.6;background:var(--ambg);border:1px solid rgba(138,92,0,.25);color:var(--am);display:none">
-        ⚠️ <strong>Project ID not yet in hosted file.</strong> Click ⬇ Download Updated HTML, commit it to GitHub, and you're done — no other sharing needed.
-      </div>
+      <div id="fb-in-app-status" style="margin-bottom:12px;padding:10px 13px;border-radius:9px;font-size:.78rem;line-height:1.6;background:var(--grbg);border:1px solid rgba(15,122,80,.2);color:var(--gr);display:none">\u2705 <strong>Firebase is live and syncing.</strong></div>
       <div class="fr">
         <div class="fg"><label>API Key <span class="req">*</span></label><input id="n-fb-apikey" placeholder="AIzaSy..."/></div>
         <div class="fg"><label>Project ID <span class="req">*</span></label><input id="n-fb-pid" placeholder="my-project-12345"/></div>
       </div>
       <div class="fr">
-        <div class="fg"><label>Auth Domain <span style="font-weight:400;color:var(--ink3)">(auto: projectId.firebaseapp.com)</span></label><input id="n-fb-auth" placeholder="leave blank to auto-fill"/></div>
+        <div class="fg"><label>Auth Domain <span style="font-weight:400;color:var(--ink3)">(auto)</span></label><input id="n-fb-auth" placeholder="leave blank to auto-fill"/></div>
         <div class="fg"><label>App ID <span style="font-weight:400;color:var(--ink3)">(optional)</span></label><input id="n-fb-appid" placeholder="1:123456:web:abc..."/></div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap">
-        <button class="bp" onclick="testFirebase()">🧪 Test Connection</button>
+        <button class="bp" onclick="testFirebase()">\ud83e\uddea Test Connection</button>
         <button class="bg" onclick="downloadUpdatedHTML()" id="btn-dl-html">⬇ Download Updated HTML</button>
         <div id="n-fbs" class="ns-badge ns-idle" style="display:none"></div>
       </div>
       <div style="background:linear-gradient(135deg,rgba(251,146,60,.1),rgba(245,158,11,.06));border:1.5px solid rgba(251,146,60,.3);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:.78rem;line-height:1.7;color:#92400e">
-        <strong>📋 One-time setup (do this once only):</strong><br>
+        <strong>\ud83d\udccb One-time setup:</strong><br>
         1. Paste your Firebase <code>apiKey</code> and <code>projectId</code> → <strong>Save Settings</strong><br>
-        2. Click <strong>⬇ Download Updated HTML</strong> → commit it to GitHub (replaces old file)<br>
-        3. Done forever — the file only needs the projectId embedded; full config is fetched automatically from Firestore on every device
+        2. Click <strong>⬇ Download Updated HTML</strong> → commit to GitHub<br>
+        3. Done \u2014 all devices sync automatically
+      </div>
+    </div>
+    <div class="ntab-body" id="nb-tgbot">
+      <div class="nh">
+        <strong>\ud83e\udd16 Telegram Bot \u2014 Free Slot Checking &amp; Conversational Booking</strong><br><br>
+        Let your team message your bot: <em>"free slots tomorrow"</em> or use <code>/book</code> to interactively reserve a slot \u2014 all synced live with Firebase.<br><br>
+        <strong>\u26a1 Setup (~5 min, free):</strong><br>
+        1. Go to <a href="https://workers.cloudflare.com" target="_blank">workers.cloudflare.com</a> → Sign up → <strong>Create Worker</strong><br>
+        2. In the code editor, <strong>delete all default code</strong>, paste the downloaded script → <strong>Deploy</strong><br>
+        3. In Worker <strong>Settings → Variables</strong>, add 4 secrets:<br>
+        &nbsp;&nbsp;\u2022 <code>BOT_TOKEN</code> \u2014 your bot token (from Telegram tab)<br>
+        &nbsp;&nbsp;\u2022 <code>FB_PROJECT_ID</code> \u2014 Firebase project ID<br>
+        &nbsp;&nbsp;\u2022 <code>FB_API_KEY</code> \u2014 Firebase Web API key<br>
+        &nbsp;&nbsp;\u2022 <code>ADMIN_CHAT_ID</code> \u2014 your personal Telegram chat ID<br>
+        4. Copy your Worker URL → paste below → click <strong>🔗 Set Webhook</strong><br><br>
+        <strong>Bot commands:</strong> <code>/today</code> · <code>/week</code> · <code>/free tomorrow</code> · <code>/slots 25/06</code> · <code>/book</code> · <code>/cancel</code><br>
+        Or just type naturally: <em>"free slots next monday"</em>
+      </div>
+      <div class="fg">
+        <label>Worker URL <span style="font-weight:400;color:var(--ink3)">(after deploying)</span></label>
+        <input id="n-bot-url" placeholder="https://your-bot.workers.dev"/>
+        <div style="font-size:.68rem;color:var(--ink3);margin-top:4px">Paste your Cloudflare Worker URL here, then click Set Webhook.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;align-items:center">
+        <button class="bp" onclick="downloadBotWorker()">⬇ Download Worker Script</button>
+        <button class="bg" onclick="setTgWebhook()">🔗 Set Webhook</button>
+        <div id="n-bots" class="ns-badge ns-idle" style="display:none"></div>
+      </div>
+      <div style="margin-top:14px;background:var(--ambg);border:1.5px solid rgba(138,92,0,.25);border-radius:11px;padding:14px 16px;font-size:.76rem;color:var(--am);line-height:1.8">
+        <strong>⚠️ Critical: Update Firestore Security Rules</strong><br>
+        This also fixes multi-device login! In <a href="https://console.firebase.google.com" target="_blank" style="color:var(--am);font-weight:600">Firebase Console</a> → Firestore Database → Rules:<br>
+        <code style="display:block;margin:8px 0 4px;padding:10px 12px;background:rgba(0,0,0,.07);border-radius:8px;font-size:.71rem;white-space:pre;color:var(--ink)">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}</code>
+        Click <strong>Publish</strong>. This lets all devices read/write data.
       </div>
     </div>
   </div>
   <div class="mfoot"><button class="bg" onclick="closeOv('ov-notif')">Close</button><button class="bp" onclick="saveNotif()">💾 Save Settings</button></div>
 </div></div>
 
-<!-- Shortcuts Modal -->
 <div class="ov" id="ov-sc" onclick="closeOv('ov-sc',event)">
 <div class="modal" style="max-width:560px">
   <div class="mhd"><div><h3>⌨️ Keyboard Shortcuts</h3></div><button class="mclose" onclick="closeOv('ov-sc')">✕</button></div>
@@ -1037,6 +903,7 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 {"projectId":""}
 </script>
 
+
 <script>
 'use strict';
 const SK = 'uipath_slots_v1';
@@ -1048,7 +915,7 @@ const PRI_C = { low:'#22c55e', medium:'#eab308', high:'#f97316', urgent:'#ef4444
 
 // ── FIREBASE STATE ──
 let _fbApp = null, _fbDb = null, _fbUnsub = null;
-let _fbCfg = null; // loaded from localStorage
+let _fbCfg = null;
 
 function getEmbeddedProjectId() {
   try {
@@ -1059,7 +926,6 @@ function getEmbeddedProjectId() {
 }
 
 function loadFbCfg() {
-  // 1. Full config in localStorage (set by admin on this browser, or fetched from Firestore)
   try { const r = localStorage.getItem('uipath_fb_cfg'); if (r) { const c = JSON.parse(r); if (c && c.apiKey && c.projectId) return c; } } catch(e) {}
   return null;
 }
@@ -1069,14 +935,10 @@ function saveFbCfg(cfg) {
 }
 
 async function bootstrapFirebase() {
-  // Try full config from localStorage first (fastest path)
   const cached = loadFbCfg();
   if (cached) return cached;
-
-  // Try fetching full config from Firestore REST API using just the projectId
   const pid = getEmbeddedProjectId();
   if (!pid) return null;
-
   try {
     const url = 'https://firestore.googleapis.com/v1/projects/' + pid + '/databases/(default)/documents/uipath/config';
     const res = await fetch(url);
@@ -1086,7 +948,7 @@ async function bootstrapFirebase() {
     const cfg = {};
     Object.keys(fields).forEach(k => { cfg[k] = fields[k].stringValue || ''; });
     if (cfg.apiKey && cfg.projectId) {
-      saveFbCfg(cfg); // cache locally
+      saveFbCfg(cfg);
       return cfg;
     }
   } catch(e) {}
@@ -1150,19 +1012,15 @@ function fbListen() {
   if (!_fbDb) return;
   if (_fbUnsub) { try { _fbUnsub(); } catch(e) {} }
   const { collection, onSnapshot } = window._fbModules;
-  // Listen to main DB doc
   const { doc } = window._fbModules;
   _fbUnsub = onSnapshot(doc(_fbDb, 'uipath', 'db'), snap => {
     if (!snap.exists()) return;
     const remote = snap.data();
-    // Merge remote into DB without overwriting notif (stored locally too)
     if (remote.users) DB.users = remote.users;
     if (remote.events) DB.events = remote.events;
     if (remote.activity) DB.activity = remote.activity;
     if (remote.theme) { DB.theme = remote.theme; applyTheme(remote.theme); }
-    // Persist locally as cache
     try { localStorage.setItem(SK, JSON.stringify(DB)); } catch(e) {}
-    // Refresh UI if logged in
     if (CU) {
       const fresh = DB.users.find(u => u.id === CU.id);
       if (fresh) CU = fresh;
@@ -1172,11 +1030,9 @@ function fbListen() {
   });
 }
 
-// Main persist — saves to localStorage AND Firebase if connected
 async function persist() {
   try { localStorage.setItem(SK, JSON.stringify(DB)); } catch(e) { console.warn('localStorage error:', e); }
   if (_fbDb) {
-    // Push to Firebase — store users/events/activity/theme (not passwords in plaintext ideally, but kept for simplicity)
     const payload = {
       users: DB.users,
       events: DB.events,
@@ -1185,7 +1041,6 @@ async function persist() {
       updatedAt: Date.now()
     };
     fbSet('uipath', 'db', payload).catch(e => console.error('Firebase persist error:', e));
-    // Also persist notif separately (per-user/local only)
     if (DB.notif) fbSet('uipath', 'notif', DB.notif).catch(() => {});
   }
 }
@@ -1209,14 +1064,14 @@ function dbInit() {
   if (!Array.isArray(db.activity)) db.activity = [];
   if (!db.notif) db.notif = { slack:{url:'',ch:''}, telegram:{token:'',chat:''}, whatsapp:{phone:'',key:''} };
   if (!db.theme) db.theme = 'light';
-  // Always guarantee admin exists
   if (!db.users.some(u => u.username === 'admin')) {
     db.users.unshift({ ...DEFAULT_ADMIN, created: Date.now() });
   }
   return db;
 }
 
-let DB = dbInit(), CU = null, VIEW = 'month', curDate = new Date(), SEC = 'calendar';
+// FIX 1: VIEW = 'week' (default week view)
+let DB = dbInit(), CU = null, VIEW = 'week', curDate = new Date(), SEC = 'calendar';
 let editEvtId = null, editUsrId = null, pwdUid = null;
 let selEC = EC[0], selUC = UC[0], selPC = UC[0];
 let miniDate = new Date();
@@ -1225,7 +1080,7 @@ let cmdItems = [], cmdIdx = 0;
 let lastDel = null;
 let reminderIntervalId = null;
 let preEventIntervalId = null;
-let sentPreAlerts = new Set(); // track already-sent pre-event alerts
+let sentPreAlerts = new Set();
 
 /* ─ UTILS ─ */
 function g(id) { return document.getElementById(id); }
@@ -1252,36 +1107,25 @@ function fmtNum(n) {
   return n.toLocaleString();
 }
 
-/* ─ START DATE → END DATE SYNC ─ */
 function syncEndDate() {
   const sd = gv('e-sd'), ed = gv('e-ed');
   if (!ed || ed < sd) sv('e-ed', sd);
 }
 
 /* ─ AUTH ─ */
-
-// Called on page load — only initialises Firebase in the background.
-// Admin login always works from local DB — no Firebase dependency.
-// Global promise — resolves true when Firebase is connected, false if unavailable
 let _fbReady = null;
 
 async function initLoginScreen() {
   _fbReady = (async () => {
-    // Bootstrap: get full Firebase config (from localStorage cache OR Firestore REST)
     const fbCfg = await bootstrapFirebase();
     if (!fbCfg) return false;
-
-    // Wait for Firebase ES module SDK to finish loading
     await new Promise(res => {
       if (window._fbModules) return res();
       let n = 0;
       const t = setInterval(() => { n++; if (window._fbModules || n > 50) { clearInterval(t); res(); } }, 100);
     });
-
     const ok = await initFirebase(fbCfg);
     if (!ok) return false;
-
-    // Load data from Firestore
     const remote = await fbGet('uipath', 'db');
     if (remote) {
       const adminUser = DB.users.find(u => u.username === 'admin');
@@ -1298,63 +1142,69 @@ async function initLoginScreen() {
   })();
 }
 
+// FIX 2: Multi-device login — sync Firebase BEFORE authenticating
 async function doLogin() {
   const u = g('l-user').value.trim(), p = g('l-pass').value;
   const btn = g('btn-login-main');
-  const errEl = g('lerr');
-
   if (!u || !p) { s('lerr', '⚠ Please enter username and password'); return; }
-
-  // Admin: always authenticate locally — never blocked by Firebase
-  if (u === 'admin') {
-    const f = DB.users.find(x => x.username === 'admin' && x.password === p);
-    if (!f) { s('lerr', '⚠ Invalid admin password'); return; }
-    return _completeLogin(f);
-  }
-
-  // Non-admin: wait for Firebase to finish loading before authenticating
-  if (btn) btn.textContent = '⏳ Connecting…';
+  if (btn) { btn.textContent = '⏳ Signing in…'; btn.disabled = true; }
   s('lerr', '');
 
+  // ═══════════════════════════════════════════════════════════════
+  // KEY FIX: Sync user list from Firebase BEFORE authenticating.
+  // This allows users created on device A to login from device B.
+  // ═══════════════════════════════════════════════════════════════
   const fbCfg = loadFbCfg();
-  if (!fbCfg || !fbCfg.apiKey) {
-    // No Firebase configured — try local only
+  if (fbCfg && fbCfg.apiKey && fbCfg.projectId) {
+    try {
+      if (!_fbDb) {
+        await Promise.race([
+          initFirebase(fbCfg),
+          new Promise(res => setTimeout(res, 6000))
+        ]);
+      }
+      if (_fbDb) {
+        const remote = await Promise.race([
+          fbGet('uipath', 'db'),
+          new Promise(res => setTimeout(() => res(null), 5000))
+        ]);
+        if (remote) {
+          const localAdmin = DB.users.find(x => x.username === 'admin');
+          if (remote.users && Array.isArray(remote.users)) {
+            DB.users = remote.users;
+            if (!DB.users.find(x => x.username === 'admin') && localAdmin) {
+              DB.users.unshift(localAdmin);
+            }
+            if (localAdmin && u === 'admin') {
+              const ra = DB.users.find(x => x.username === 'admin');
+              if (ra) ra.password = localAdmin.password;
+            }
+          }
+          if (remote.events)   DB.events   = remote.events;
+          if (remote.activity) DB.activity = remote.activity;
+          if (remote.theme)    DB.theme    = remote.theme;
+          try { localStorage.setItem(SK, JSON.stringify(DB)); } catch(e) {}
+        }
+      }
+    } catch(syncErr) {
+      console.warn('Pre-login Firebase sync failed (non-fatal):', syncErr);
+    }
+  } else if (u !== 'admin') {
     const f = DB.users.find(x => x.username === u && x.password === p);
-    if (!f) { s('lerr', '⚠ Invalid username or password'); if (btn) btn.textContent = 'Sign In →'; return; }
+    if (btn) { btn.textContent = 'Sign In →'; btn.disabled = false; }
+    if (!f) {
+      s('lerr', '⚠ Login failed. Ask your admin to configure Firebase sync (Notifications → 🔥 Firebase) so all devices share user data.');
+      return;
+    }
     return _completeLogin(f);
-  }
-
-  // Wait for Firebase init to complete (it started in initLoginScreen)
-  let fbOk = false;
-  try { fbOk = await Promise.race([_fbReady, new Promise(res => setTimeout(() => res(false), 8000))]); } catch(e) {}
-
-  if (!fbOk) {
-    if (btn) btn.textContent = 'Sign In →';
-    s('lerr', '⚠ Could not connect to server. Check your internet and try again.');
-    return;
-  }
-
-  // Always fetch latest from Firebase so we have current user list
-  const remote = await fbGet('uipath', 'db');
-  if (remote && remote.users) {
-    const adminUser = DB.users.find(x => x.username === 'admin');
-    DB.users = remote.users;
-    if (!DB.users.find(x => x.username === 'admin') && adminUser) DB.users.unshift(adminUser);
-    if (remote.events)   DB.events   = remote.events;
-    if (remote.activity) DB.activity = remote.activity;
-    try { localStorage.setItem(SK, JSON.stringify(DB)); } catch(e) {}
   }
 
   const f = DB.users.find(x => x.username === u && x.password === p);
+  if (btn) { btn.textContent = 'Sign In →'; btn.disabled = false; }
   if (!f) {
-    if (btn) btn.textContent = 'Sign In →';
-    // Check if username exists at all (wrong password vs no account)
     const userExists = DB.users.find(x => x.username === u);
-    if (!userExists) {
-      showUserNotFoundModal(u);
-    } else {
-      s('lerr', '⚠ Incorrect password');
-    }
+    if (!userExists) showUserNotFoundModal(u);
+    else s('lerr', '⚠ Incorrect password');
     return;
   }
   _completeLogin(f);
@@ -1370,7 +1220,7 @@ function _completeLogin(f) {
   g('login-screen').classList.add('gone');
   g('app').classList.add('on');
   sv('l-user', ''); sv('l-pass', '');
-  if (btn) btn.textContent = 'Sign In →';
+  if (btn) { btn.textContent = 'Sign In →'; btn.disabled = false; }
   applyTheme(DB.theme || 'light');
   if (_fbDb) fbListen();
   initApp();
@@ -1378,8 +1228,7 @@ function _completeLogin(f) {
 
 function showUserNotFoundModal(username) {
   const btn = g('btn-login-main');
-  if (btn) btn.textContent = 'Sign In →';
-  // Show a clear modal
+  if (btn) { btn.textContent = 'Sign In →'; btn.disabled = false; }
   let mo = g('ov-user-not-found');
   if (!mo) {
     mo = document.createElement('div');
@@ -1427,7 +1276,6 @@ function initApp() {
   g('admin-sb').style.display = CU.role === 'admin' ? '' : 'none';
   g('btn-new').style.display = CU.role === 'viewer' ? 'none' : '';
   g('notif-mi').style.display = CU.role === 'admin' ? '' : 'none';
-  // Show Firebase live badge
   const fbBadge = g('fb-badge');
   if (fbBadge) fbBadge.style.display = _fbDb ? 'inline-block' : 'none';
   updateCounts(); showSec('dash'); buildMiniCal();
@@ -1490,7 +1338,6 @@ async function sendActivityNotification(type, msg) {
   if (n.whatsapp?.phone && n.whatsapp?.key) {
     try { await fetch(`https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(n.whatsapp.phone.trim())}&text=${encodeURIComponent(fullMsg)}&apikey=${encodeURIComponent(n.whatsapp.key.trim())}`, {mode:'no-cors'}); } catch(e) {}
   }
-  // Telegram — all activities
   if (n.telegram?.token && n.telegram?.chat) {
     try {
       await fetch(`https://api.telegram.org/bot${n.telegram.token.trim()}/sendMessage`, {
@@ -1501,14 +1348,12 @@ async function sendActivityNotification(type, msg) {
   }
 }
 
-/* ─ DAILY REMINDER (every 3 hrs, 8am–9pm) ─ */
+/* ─ REMINDERS ─ */
 function startReminders() {
   stopReminders();
   checkAndSendReminder();
   checkPreEventAlerts();
-  // 3-hour daily reminders — check every 15 min
   reminderIntervalId = setInterval(checkAndSendReminder, 15 * 60 * 1000);
-  // Pre-event alerts — check every 1 min
   preEventIntervalId = setInterval(checkPreEventAlerts, 60 * 1000);
 }
 function stopReminders() {
@@ -1522,8 +1367,8 @@ let lastReminderHour = -1;
 async function checkPreEventAlerts() {
   const n = DB.notif || {};
   if (!n.telegram?.token || !n.telegram?.chat) return;
-  const pre15 = n.telegram?.pre15 !== false; // default ON
-  const pre60 = n.telegram?.pre60 === true;  // default OFF
+  const pre15 = n.telegram?.pre15 !== false;
+  const pre60 = n.telegram?.pre60 === true;
   if (!pre15 && !pre60) return;
   const now = new Date();
   const nowMs = now.getTime();
@@ -1531,30 +1376,19 @@ async function checkPreEventAlerts() {
     const evStart = new Date((ev.sd||ev.date) + 'T' + (ev.st||'00:00'));
     const diffMs = evStart - nowMs;
     const diffMin = diffMs / 60000;
-    // 15-min alert
     if (pre15 && diffMin > 0 && diffMin <= 15) {
       const key = ev.id + '_15';
-      if (!sentPreAlerts.has(key)) {
-        sentPreAlerts.add(key);
-        await sendPreEventTelegram(ev, 15);
-      }
+      if (!sentPreAlerts.has(key)) { sentPreAlerts.add(key); await sendPreEventTelegram(ev, 15); }
     }
-    // 60-min alert
     if (pre60 && diffMin > 0 && diffMin <= 60) {
       const key = ev.id + '_60';
-      if (!sentPreAlerts.has(key)) {
-        sentPreAlerts.add(key);
-        await sendPreEventTelegram(ev, 60);
-      }
+      if (!sentPreAlerts.has(key)) { sentPreAlerts.add(key); await sendPreEventTelegram(ev, 60); }
     }
   }
-  // Clean up old keys (events that have passed)
   for (const key of sentPreAlerts) {
     const evId = key.split('_')[0];
     const ev = DB.events.find(e => e.id === evId);
-    if (!ev || new Date((ev.sd||ev.date) + 'T' + (ev.st||'00:00')) < now) {
-      sentPreAlerts.delete(key);
-    }
+    if (!ev || new Date((ev.sd||ev.date) + 'T' + (ev.st||'00:00')) < now) sentPreAlerts.delete(key);
   }
 }
 
@@ -1563,19 +1397,13 @@ async function sendPreEventTelegram(ev, minsAhead) {
   if (!n.telegram?.token || !n.telegram?.chat) return;
   const booker = DB.users.find(u => u.id === ev.createdBy);
   const msg = `⏰ *UPCOMING SLOT ALERT — ${minsAhead} min${minsAhead > 1 ? 's' : ''} away!*\n\n` +
-    `📌 *${ev.name}*\n` +
-    `👤 Candidate: ${ev.cand || '—'}\n` +
-    `🏢 Company: ${ev.comp || '—'}\n` +
-    `⏰ *${ev.st} – ${ev.et}*\n` +
-    `📅 ${fmtDate(ev.sd || ev.date)}\n` +
-    `📍 ${ev.loc || '—'} · ${ev.wm || 'onsite'}\n` +
-    `⚡ Priority: ${ev.priority || '—'}\n` +
-    (booker ? `👥 Booked by: ${booker.name}\n` : '') +
-    `\n— UiPath Slots`;
+    `📌 *${ev.name}*\n👤 Candidate: ${ev.cand || '—'}\n🏢 Company: ${ev.comp || '—'}\n` +
+    `⏰ *${ev.st} – ${ev.et}*\n📅 ${fmtDate(ev.sd || ev.date)}\n` +
+    `📍 ${ev.loc || '—'} · ${ev.wm || 'onsite'}\n⚡ Priority: ${ev.priority || '—'}\n` +
+    (booker ? `👥 Booked by: ${booker.name}\n` : '') + `\n— UiPath Slots`;
   try {
     await fetch(`https://api.telegram.org/bot${n.telegram.token.trim()}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: n.telegram.chat.trim(), text: msg, parse_mode: 'Markdown' })
     });
   } catch(e) {}
@@ -1584,13 +1412,10 @@ async function sendPreEventTelegram(ev, minsAhead) {
 function checkAndSendReminder() {
   const now = new Date();
   const h = now.getHours();
-  // Only between 8am (8) and 9pm (21)
   if (h < 8 || h > 21) return;
-  // Fire at 8, 11, 14, 17, 20 (every 3 hours starting 8am, last at ≤21)
   const fireHours = [8, 11, 14, 17, 20];
-  const shouldFire = fireHours.includes(h);
-  if (!shouldFire) return;
-  if (lastReminderHour === h) return; // already sent this hour
+  if (!fireHours.includes(h)) return;
+  if (lastReminderHour === h) return;
   lastReminderHour = h;
   sendDailyReminder();
 }
@@ -1625,7 +1450,6 @@ async function sendDailyReminder() {
 function renderDash(area) {
   const now = new Date(), td = todayISO();
   const isAdmin = CU.role === 'admin';
-  // For non-admin: show only their own events
   const myEvts = isAdmin ? DB.events : DB.events.filter(e => e.createdBy === CU.id);
   const total = myEvts.length;
   const upcoming = myEvts.filter(e => new Date((e.sd||e.date)+'T'+e.st) > now).length;
@@ -1635,11 +1459,7 @@ function renderDash(area) {
   const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   const upEvts = [...myEvts].filter(e => new Date((e.sd||e.date)+'T'+e.st) > now)
     .sort((a,b) => (a.sd||a.date).localeCompare(b.sd||b.date) || a.st.localeCompare(b.st)).slice(0, 7);
-  // Activity: admin sees all; non-admin sees only their own
-  const recentAct = isAdmin
-    ? DB.activity.slice(0, 6)
-    : DB.activity.filter(a => a.userId === CU.id).slice(0, 6);
-
+  const recentAct = isAdmin ? DB.activity.slice(0, 6) : DB.activity.filter(a => a.userId === CU.id).slice(0, 6);
   const d = document.createElement('div'); d.className = 'dashboard';
   d.innerHTML = `
     <div class="dw-eyebrow">${now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</div>
@@ -1700,6 +1520,7 @@ function renderDash(area) {
 }
 
 /* ─ CALENDAR ─ */
+// FIX 1 companion: vtab on = week by default
 function setView(v) {
   VIEW = v;
   document.querySelectorAll('.vtab').forEach((t,i) => t.classList.toggle('on', ['month','week','agenda'][i] === v));
@@ -1753,9 +1574,7 @@ function renderCal(area) {
   else buildAgenda(area);
 }
 
-// Returns filtered events based on role:
-// Admin sees all; Non-admin sees own events + others as reserved
-function getFiltered(forRender = false) {
+function getFiltered() {
   let ev = DB.events;
   if (CF.wm) ev = ev.filter(e => e.wm === CF.wm);
   if (CF.pri) ev = ev.filter(e => e.priority === CF.pri);
@@ -1798,9 +1617,7 @@ function buildMonth(area) {
         chip.innerHTML = `<span class="ec-dot" style="background:${PRI_C[ev.priority||'medium']}"></span><span style="overflow:hidden;text-overflow:ellipsis;flex:1">${ev.st?.slice(0,5)||''} ${ev.name}</span>`;
         chip.onclick = e => { e.stopPropagation(); openDetail(ev.id); };
       } else {
-        const ownerU = DB.users.find(u => u.id === ev.createdBy);
-        const ownerLbl = (ownerU && ownerU.role === 'admin') ? 'by Admin' : '';
-        chip.className = 'ech res'; chip.textContent = `🔒 ${ev.st?.slice(0,5)||''} Reserved ${ownerLbl}`.trim(); chip.onclick = e => e.stopPropagation();
+        chip.className = 'ech res'; chip.textContent = `🔒 ${ev.st?.slice(0,5)||''} Reserved`; chip.onclick = e => e.stopPropagation();
       }
       cell.appendChild(chip);
     });
@@ -1857,9 +1674,7 @@ function buildWeek(area) {
         slot.innerHTML = `<div style="font-weight:700;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${ev.name}</div><div style="opacity:.7;font-size:.6rem;margin-top:2px">${ev.st}–${ev.et}</div>`;
         slot.onclick = e => { e.stopPropagation(); openDetail(ev.id); };
       } else {
-        const wkOwner = DB.users.find(u => u.id === ev.createdBy);
-        const wkResLbl = (wkOwner && wkOwner.role === 'admin') ? '🔒 Admin Reserved' : '🔒 Reserved';
-        slot.className = 'wkev res'; slot.style.cssText = `top:${sm}px;height:${hp}px;`; slot.textContent = wkResLbl;
+        slot.className = 'wkev res'; slot.style.cssText = `top:${sm}px;height:${hp}px;`; slot.textContent = '🔒 Reserved';
       }
       slot.style.position = 'absolute';
       const hr2 = anch.querySelector('.wk-hr'); hr2.style.position = 'relative'; hr2.appendChild(slot);
@@ -1903,11 +1718,9 @@ function buildAgenda(area) {
           </div>`;
         row.onclick = () => openDetail(ev.id);
       } else {
-        const ownerU2 = DB.users.find(u => u.id === ev.createdBy);
-        const resLbl = (ownerU2 && ownerU2.role === 'admin') ? '🔒 Reserved by Admin' : '🔒 Reserved by another user';
         row.innerHTML = `<div class="ag-bar" style="background:var(--bd2)"></div>
           <div class="ag-time">${ev.st}<br><span style="opacity:.55">${ev.et}</span></div>
-          <div class="ag-body"><div class="ag-name" style="color:var(--ink3)">${resLbl}</div>
+          <div class="ag-body"><div class="ag-name" style="color:var(--ink3)">🔒 Reserved by another user</div>
           <div class="ag-meta"><span>${fmtDate(ds)}</span></div></div>`;
       }
       dg.appendChild(row);
@@ -1946,17 +1759,11 @@ function openDetail(id) {
   const ev = DB.events.find(e => e.id===id); if (!ev) return;
   const isOwn = ev.createdBy === CU.id;
   const canEdit = CU.role === 'admin' || isOwn;
-  // Non-admin can only see own events' details; others just show reserved
   if (CU.role !== 'admin' && !isOwn) {
-    const lockOwner = DB.users.find(u => u.id === ev.createdBy);
-    const lockIsAdmin = lockOwner && lockOwner.role === 'admin';
-    const lockMsg = lockIsAdmin
-      ? `This time slot is reserved by <strong>${lockOwner.name}</strong> (Admin).`
-      : 'This time slot is reserved by another team member.<br>You cannot view their details.';
     g('dp-body').innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--ink3)">
       <div style="font-size:2.5rem;margin-bottom:14px">🔒</div>
       <div style="font-family:var(--font-head);font-weight:800;font-size:1rem;color:var(--ink2);margin-bottom:6px">Reserved Slot</div>
-      <div style="font-size:.84rem">${lockMsg}</div>
+      <div style="font-size:.84rem">This time slot is reserved by another team member.</div>
       <div style="margin-top:16px;background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;font-size:.82rem">
         <div>📅 ${fmtDate(ev.sd||ev.date)}${ev.sd!==ev.ed?' → '+fmtDate(ev.ed):''}</div>
         <div style="margin-top:4px">⏰ ${ev.st} – ${ev.et}</div>
@@ -2092,7 +1899,6 @@ function openEvtModal(ds, st='09:00', et='10:00', ev=null) {
   sv('e-name', ev?.name||'');
   sv('e-sd', ev?.sd||ds); sv('e-st', ev?.st||st);
   sv('e-ed', ev?.ed||ds); sv('e-et', ev?.et||et);
-  // Candidate auto-filled as current user's name (read-only)
   sv('e-cand', ev?.cand||CU.name);
   sv('e-comp', ev?.comp||'');
   sv('e-loc', ev?.loc||''); sv('e-wm', ev?.wm||'onsite');
@@ -2101,16 +1907,13 @@ function openEvtModal(ds, st='09:00', et='10:00', ev=null) {
   sv('e-notes', ev?.notes||'');
   selEC = ev?.color||EC[0]; buildCR('e-cr', EC, 'ev', selEC);
   g('em-del').style.display = ev ? '' : 'none';
-  // Recurrence — admin only, hidden for non-admin
   const recurWrap = g('e-recur-wrap');
   if (recurWrap) recurWrap.style.display = CU.role === 'admin' ? '' : 'none';
-  // Reset recurrence fields
   sv('e-recur', ev?.recur?.type||'none');
   sv('e-recur-every', ev?.recur?.every||1);
   sv('e-recur-end-type', ev?.recur?.endType||'count');
   sv('e-recur-count', ev?.recur?.count||5);
   sv('e-recur-until', ev?.recur?.until||'');
-  // Reset weekday checkboxes
   document.querySelectorAll('.rcb').forEach(cb => {
     cb.checked = (ev?.recur?.days||[]).includes(parseInt(cb.value));
   });
@@ -2119,23 +1922,20 @@ function openEvtModal(ds, st='09:00', et='10:00', ev=null) {
   openOv('ov-ev');
 }
 function slotsOverlap(asd, aed, ast, aet, bsd, bed, bst, bet) {
-  // Check if date ranges overlap
   if (aed < bsd || bed < asd) return false;
-  // Check time overlap on overlapping days
   const toMin = t => { if (!t) return 0; const [h,m]=(t||'00:00').split(':'); return +h*60+(+m||0); };
   const aS=toMin(ast), aE=toMin(aet)||1439, bS=toMin(bst), bE=toMin(bet)||1439;
   return aS < bE && bS < aE;
 }
-
 function findOverlappingSlots(evData) {
   return DB.events.filter(e => {
-    if (e.id === evData.id) return false; // skip self when editing
+    if (e.id === evData.id) return false;
     return slotsOverlap(evData.sd, evData.ed||evData.sd, evData.st, evData.et,
                         e.sd, e.ed||e.sd, e.st, e.et);
   });
 }
 
-/* ─ RECURRENCE UI ─ */
+/* ─ RECURRENCE ─ */
 function onRecurChange() {
   const val = gv('e-recur');
   const opts = g('e-recur-opts');
@@ -2162,7 +1962,7 @@ function updateRecurPreview() {
   const fmt = d => new Date(d+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
   const shown = dates.slice(0,5);
   const more = dates.length > 5 ? ` <span style="opacity:.7">+${dates.length-5} more</span>` : '';
-  prev.innerHTML = `&#x1F4C5; <strong>${dates.length} occurrence${dates.length!==1?'s':''}</strong><br>${shown.map(fmt).join(' &nbsp;&#183;&nbsp; ')}${more}`;
+  prev.innerHTML = `📅 <strong>${dates.length} occurrence${dates.length!==1?'s':''}</strong><br>${shown.map(fmt).join(' &nbsp;·&nbsp; ')}${more}`;
 }
 function generateRecurDates() {
   const type = gv('e-recur');
@@ -2175,7 +1975,6 @@ function generateRecurDates() {
   const checkedDays = Array.from(document.querySelectorAll('.rcb:checked')).map(cb => parseInt(cb.value));
   const dates = [];
   let cur = new Date(startDs + 'T12:00');
-  const dur = Math.max(0, (new Date((gv('e-ed')||startDs)+'T12:00') - new Date(startDs+'T12:00')) / 86400000);
   while (dates.length < maxCount) {
     const ds = isoD(cur.getFullYear(), cur.getMonth(), cur.getDate());
     if (endType === 'date' && untilDs && ds > untilDs) break;
@@ -2186,13 +1985,12 @@ function generateRecurDates() {
         dates.push(ds);
       }
     }
-    // Advance
     if (type === 'daily') cur.setDate(cur.getDate() + every);
     else if (type === 'weekly') cur.setDate(cur.getDate() + (checkedDays.length > 0 ? 1 : every * 7));
     else if (type === 'monthly') cur.setMonth(cur.getMonth() + every);
     else if (type === 'yearly') cur.setFullYear(cur.getFullYear() + every);
     else if (type === 'custom') cur.setDate(cur.getDate() + every);
-    if (dates.length >= 52) break; // hard cap
+    if (dates.length >= 52) break;
   }
   return dates;
 }
@@ -2200,20 +1998,12 @@ function getRecurConfig() {
   const type = gv('e-recur');
   if (type === 'none' || CU.role !== 'admin') return null;
   const checkedDays = Array.from(document.querySelectorAll('.rcb:checked')).map(cb => parseInt(cb.value));
-  return {
-    type,
-    every: parseInt(gv('e-recur-every'))||1,
-    endType: gv('e-recur-end-type'),
-    count: parseInt(gv('e-recur-count'))||5,
-    until: gv('e-recur-until')||'',
-    days: checkedDays
-  };
+  return { type, every: parseInt(gv('e-recur-every'))||1, endType: gv('e-recur-end-type'), count: parseInt(gv('e-recur-count'))||5, until: gv('e-recur-until')||'', days: checkedDays };
 }
 
 async function proceedSaveEvent(evData, isNew) {
   const recurDates = (isNew && evData.recur && evData.recur.type !== 'none') ? generateRecurDates() : [];
   if (recurDates.length > 1) {
-    // Create recurring slots — skip first date (that's the main evData)
     const startDs = evData.sd;
     const dur = Math.max(0, (new Date((evData.ed||startDs)+'T12:00') - new Date(startDs+'T12:00')) / 86400000);
     let created = 0;
@@ -2240,9 +2030,7 @@ async function proceedSaveEvent(evData, isNew) {
 
 async function saveEvent() {
   const name=gv('e-name').trim(), sd=gv('e-sd'), st=gv('e-st'), ed=gv('e-ed'), et=gv('e-et');
-  // Candidate is auto-filled from user, company still required
   const cand=gv('e-cand').trim()||CU.name, comp=gv('e-comp').trim();
-  // Highlight missing required fields
   let missing = false;
   [['e-name',name],['e-sd',sd],['e-comp',comp]].forEach(([id,val]) => {
     const el = document.getElementById(id);
@@ -2263,29 +2051,19 @@ async function saveEvent() {
     color: selEC, createdBy: editEvtId ? (DB.events.find(e=>e.id===editEvtId)?.createdBy||CU.id) : CU.id,
     date: sd, start: st, end: et
   };
-
-  // Check for overlapping slots
   const overlaps = findOverlappingSlots(evData);
-  if (overlaps.length > 0) {
-    showSlotConflictWarning(evData, isNew, overlaps);
-    return;
-  }
-
+  if (overlaps.length > 0) { showSlotConflictWarning(evData, isNew, overlaps); return; }
   await proceedSaveEvent(evData, isNew);
 }
 
 function showSlotConflictWarning(evData, isNew, overlaps) {
-  // Remove existing conflict modal if any
   const existing = document.getElementById('ov-conflict');
   if (existing) existing.remove();
-
   const ov = overlaps[0];
   const ownerUser = DB.users.find(u => u.id === ov.createdBy);
   const ownerIsAdmin = ownerUser && ownerUser.role === 'admin';
-  // Only reveal who blocked it if the owner is an admin
   const ownerDisplay = ownerIsAdmin ? ownerUser.name : 'another user';
   const isAdminCU = CU.role === 'admin';
-
   const modal = document.createElement('div');
   modal.id = 'ov-conflict';
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);';
@@ -2302,30 +2080,23 @@ function showSlotConflictWarning(evData, isNew, overlaps) {
         <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:18px;">
           <div style="font-size:0.68rem;font-weight:700;color:#9ca3af;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;">Conflicting Slot</div>
           ${isAdminCU ? `<div style="font-size:0.9rem;font-weight:700;color:#111827;margin-bottom:4px;">${ov.name}</div>` : ''}
-          <div style="font-size:0.78rem;color:#6b7280;margin-bottom:2px;">&#128197; ${fmtDate(ov.sd)} &nbsp;&#9679;&nbsp; &#9200; ${ov.st||'—'} – ${ov.et||'—'}</div>
-          <div style="font-size:0.78rem;color:#6b7280;">&#128274; Blocked by: <strong style="color:#374151;">${ownerDisplay}</strong></div>
+          <div style="font-size:0.78rem;color:#6b7280;margin-bottom:2px;">📅 ${fmtDate(ov.sd)} &nbsp;·&nbsp; ⏰ ${ov.st||'—'} – ${ov.et||'—'}</div>
+          <div style="font-size:0.78rem;color:#6b7280;">🔒 Blocked by: <strong style="color:#374151;">${ownerDisplay}</strong></div>
         </div>
         <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:13px 16px;margin-bottom:20px;display:flex;gap:10px;align-items:flex-start;">
-          <span style="font-size:1rem;flex-shrink:0;">&#128274;</span>
+          <span style="font-size:1rem;flex-shrink:0;">🔒</span>
           <div style="font-size:0.8rem;color:#92400e;line-height:1.6;">
             <strong>This time slot is blocked by ${ownerDisplay}.</strong><br>
             ${isAdminCU ? 'As admin, you can still override and book this slot.' : 'Please contact your <strong>admin</strong> to resolve the conflict or choose a different time.'}
           </div>
         </div>
         <div style="display:flex;gap:10px;flex-direction:column;">
-          <button onclick="confirmOverlapBook()" style="background:#e5192a;color:#fff;border:none;border-radius:10px;padding:13px;font-size:0.9rem;font-weight:700;cursor:pointer;width:100%;">
-            Book Anyway
-          </button>
-          <button onclick="document.getElementById('ov-conflict').remove()" style="background:#f3f4f6;color:#374151;border:none;border-radius:10px;padding:13px;font-size:0.9rem;font-weight:600;cursor:pointer;width:100%;">
-            Choose Different Slot
-          </button>
+          <button onclick="confirmOverlapBook()" style="background:#e5192a;color:#fff;border:none;border-radius:10px;padding:13px;font-size:0.9rem;font-weight:700;cursor:pointer;width:100%;">Book Anyway</button>
+          <button onclick="document.getElementById('ov-conflict').remove()" style="background:#f3f4f6;color:#374151;border:none;border-radius:10px;padding:13px;font-size:0.9rem;font-weight:600;cursor:pointer;width:100%;">Choose Different Slot</button>
         </div>
       </div>
-    </div>
-  `;
+    </div>`;
   document.body.appendChild(modal);
-
-  // Store pending data globally for confirm action
   window._pendingConflictData = { evData, isNew, overlaps };
 }
 
@@ -2334,7 +2105,6 @@ async function confirmOverlapBook() {
   document.getElementById('ov-conflict')?.remove();
   if (!evData) return;
   await proceedSaveEvent(evData, isNew);
-  // Send conflict alert to Telegram
   sendConflictTelegram(evData, overlaps);
 }
 
@@ -2349,24 +2119,15 @@ async function sendConflictTelegram(evData, overlaps) {
     const ou = DB.users.find(u => u.id === ov.createdBy);
     return `  • "${ov.name}" by ${ou ? ou.name : 'Unknown'} (${ov.st||'?'} – ${ov.et||'?'})`;
   }).join('\n');
-  const msg = `⚠️ SLOT CONFLICT ALERT — UiPath Interview Slots\n\n` +
-    `A new slot was booked despite a conflict!\n\n` +
-    `🆕 New Booking:\n` +
-    `  📌 ${evData.name}\n` +
-    `  👤 Candidate: ${evData.cand||'—'}\n` +
-    `  📅 ${fmtDate(evData.sd)} → ${fmtDate(evData.ed||evData.sd)}\n` +
-    `  ⏰ ${evData.st||'—'} – ${evData.et||'—'}\n` +
-    `  👥 Booked by: ${bookedByName}\n\n` +
-    `❌ Conflicting Slot(s):\n${conflictLines}\n\n` +
-    `⚡ Action Required: Please review and resolve this conflict.\n— UiPath Slots`;
+  const msg = `⚠️ SLOT CONFLICT ALERT — UiPath Interview Slots\n\nNew slot booked despite conflict!\n\n🆕 New Booking:\n  📌 ${evData.name}\n  👤 ${evData.cand||'—'}\n  📅 ${fmtDate(evData.sd)}\n  ⏰ ${evData.st||'—'} – ${evData.et||'—'}\n  👥 Booked by: ${bookedByName}\n\n❌ Conflicting:\n${conflictLines}\n\n⚡ Please review and resolve.\n— UiPath Slots`;
   try {
     await fetch(`https://api.telegram.org/bot${n.telegram.token.trim()}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: n.telegram.chat.trim(), text: msg })
     });
-  } catch(e) { console.error('Conflict telegram failed', e); }
+  } catch(e) {}
 }
+
 function deleteEvtM() {
   if (!editEvtId) return;
   const ev = DB.events.find(e=>e.id===editEvtId);
@@ -2384,9 +2145,9 @@ function buildMsg(ev, isNew) {
   const multi = ev.sd !== ev.ed;
   const wml = {onsite:'On-site',remote:'Remote',hybrid:'Hybrid'}[ev.wm]||ev.wm||'On-site';
   return `${isNew?'🆕 New Slot Booked':'✏️ Slot Updated'} — UiPath Interview Slots\n\n`+
-    `📌 ${ev.name}\n`+`👤 Candidate: ${ev.cand||'—'}\n`+`🏢 Company: ${ev.comp||'—'}\n`+
-    `📅 ${fmtDate(ev.sd||ev.date)}${multi?' → '+fmtDate(ev.ed):''}\n`+`⏰ ${ev.st} – ${ev.et}\n`+
-    `📍 Location: ${ev.loc||'—'}\n`+`💼 Mode: ${wml}\n`+`⚡ Priority: ${ev.priority||'—'}\n`+
+    `📌 ${ev.name}\n👤 Candidate: ${ev.cand||'—'}\n🏢 Company: ${ev.comp||'—'}\n`+
+    `📅 ${fmtDate(ev.sd||ev.date)}${multi?' → '+fmtDate(ev.ed):''}\n⏰ ${ev.st} – ${ev.et}\n`+
+    `📍 Location: ${ev.loc||'—'}\n💼 Mode: ${wml}\n⚡ Priority: ${ev.priority||'—'}\n`+
     `📊 Status: ${ev.status||'—'}\n`+(ev.notes?`\n📝 Notes: ${ev.notes.slice(0,200)}\n`:'')+`\n— UiPath Slots`;
 }
 
@@ -2395,11 +2156,9 @@ async function sendNotifications(ev, isNew, isDelete) {
   if (n.slack?.url && n.slack.url.startsWith('https://hooks.slack.com/')) {
     try { const r = await fetch(n.slack.url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text:msg}) }); results.push('Slack '+(r.ok?'✓':'✗')); } catch(e) { results.push('Slack ✗'); }
   }
-  // Admin-level Telegram channel
   if (n.telegram?.token && n.telegram?.chat) {
     try { const r = await fetch(`https://api.telegram.org/bot${n.telegram.token.trim()}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:n.telegram.chat.trim(),text:msg,parse_mode:'HTML'}) }); const d=await r.json(); results.push('Telegram '+(d.ok?'✓':'✗')); } catch(e) { results.push('Telegram ✗'); }
   }
-  // Per-user Telegram DMs — notify all users who have set their Chat ID
   if (n.telegram?.token) {
     const token = n.telegram.token.trim();
     const userMsg = buildUserMsg(ev, isNew, isDelete);
@@ -2407,11 +2166,10 @@ async function sendNotifications(ev, isNew, isDelete) {
     for (const u of usersToNotify) {
       try { await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:u.telegramChatId.trim(), text:userMsg, parse_mode:'HTML'}) }); } catch(e) {}
     }
-    // Also notify the current user if they have a personal chat ID set
     if (CU.telegramChatId && CU.telegramChatId.trim()) {
       try { await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:CU.telegramChatId.trim(), text:userMsg, parse_mode:'HTML'}) }); } catch(e) {}
     }
-    if (usersToNotify.length > 0 || CU.telegramChatId) results.push(`DMs ✓ (${usersToNotify.length+1})`);
+    if (usersToNotify.length > 0 || CU.telegramChatId) results.push(`DMs ✓`);
   }
   if (n.whatsapp?.phone && n.whatsapp?.key) {
     try { await fetch(`https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(n.whatsapp.phone.trim())}&text=${encodeURIComponent(msg)}&apikey=${encodeURIComponent(n.whatsapp.key.trim())}`, {mode:'no-cors'}); results.push('WhatsApp ✓'); } catch(e) { results.push('WhatsApp ✗'); }
@@ -2419,17 +2177,12 @@ async function sendNotifications(ev, isNew, isDelete) {
   if (results.length) toast('Notified: '+results.join(' · '), 'info');
 }
 
-// Short per-user DM — only date/time, no sensitive details
 function buildUserMsg(ev, isNew, isDelete) {
   const action = isDelete ? '🗑 Slot Deleted' : isNew ? '✅ New Slot Booked' : '✏️ Slot Updated';
   const dateStr = ev.sd ? new Date(ev.sd+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : '';
   const endDateStr = (ev.ed && ev.ed !== ev.sd) ? ' → ' + new Date(ev.ed+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) : '';
   const timeStr = ev.st ? (ev.st + (ev.et ? ' – ' + ev.et : '')) : '';
-  return `<b>UiPath Slots</b>
-${action}
-
-📅 <b>Date:</b> ${dateStr}${endDateStr}
-⏰ <b>Time:</b> ${timeStr}`;
+  return `<b>UiPath Slots</b>\n${action}\n\n📅 <b>Date:</b> ${dateStr}${endDateStr}\n⏰ <b>Time:</b> ${timeStr}`;
 }
 
 async function testNotif(ch) {
@@ -2437,7 +2190,7 @@ async function testNotif(ch) {
   const stEl = g(stId); if (!stEl) return;
   const show = (cls, msg) => { stEl.style.display='inline-flex'; stEl.className='ns-badge '+cls; stEl.innerHTML=msg; };
   show('ns-sending', '⏳ Sending…');
-  const testMsg = `🧪 UiPath Interview Slots — Test Notification\n\nYour ${ch} integration is working correctly!\n\nSent: ${new Date().toLocaleString()}\n— UiPath Slots`;
+  const testMsg = `🧪 UiPath Interview Slots — Test Notification\n\nYour ${ch} integration is working!\n\nSent: ${new Date().toLocaleString()}\n— UiPath Slots`;
   try {
     if (ch === 'slack') {
       const url = gv('n-su').trim();
@@ -2471,59 +2224,48 @@ function openNotifModal() {
   sv('n-wp', n.whatsapp?.phone||''); sv('n-wk', n.whatsapp?.key||'');
   sv('n-ejpk', n.email?.publicKey||''); sv('n-ejsid', n.email?.serviceId||'');
   sv('n-ejtid', n.email?.templateId||''); sv('n-ejurl', n.email?.appUrl||'');
-  // Firebase config from localStorage
   const fbCfg = loadFbCfg() || {};
   sv('n-fb-apikey', fbCfg.apiKey||''); sv('n-fb-pid', fbCfg.projectId||'');
-  sv('n-fb-auth', fbCfg.authDomain||''); sv('n-fb-bucket', fbCfg.storageBucket||'');
-  sv('n-fb-appid', fbCfg.appId||'');
-  ['n-ss','n-ts','n-ws','n-ejs','n-fbs'].forEach(id => { const el = g(id); if (el) el.style.display='none'; });
-  // Show Firebase connection/embedding status
+  sv('n-fb-auth', fbCfg.authDomain||''); sv('n-fb-appid', fbCfg.appId||'');
+  // FIX 3: clear bot badge + restore URL
+  ['n-ss','n-ts','n-ws','n-ejs','n-fbs','n-bots'].forEach(id => { const el = g(id); if (el) el.style.display='none'; });
+  if (g('n-bot-url') && n.botWorkerUrl) sv('n-bot-url', n.botWorkerUrl);
   const fbStatus = g('fb-in-app-status');
   if (fbStatus) fbStatus.style.display = _fbDb ? '' : 'none';
-  // Check if config is actually baked into the hosted file
   const embeddedCfg = (() => { try { const el = g('fb-embed-cfg'); if (!el) return null; const c = JSON.parse(el.textContent.trim()); return (c && c.apiKey) ? c : null; } catch(e) { return null; } })();
   const warnEl = g('fb-not-embedded-warn');
   if (warnEl) warnEl.style.display = (_fbDb && !embeddedCfg) ? '' : 'none';
   selNTab('slack'); openOv('ov-notif');
 }
+
 async function saveNotif() {
   if (!DB.notif) DB.notif = {};
   DB.notif.slack = { url:gv('n-su').trim(), ch:gv('n-sc').trim() };
   DB.notif.telegram = {
-    token: gv('n-tt').trim(),
-    chat: gv('n-tc').trim(),
+    token: gv('n-tt').trim(), chat: gv('n-tc').trim(),
     pre15: g('n-t-pre15') ? g('n-t-pre15').checked : true,
     pre60: g('n-t-pre60') ? g('n-t-pre60').checked : false
   };
   DB.notif.whatsapp = { phone:gv('n-wp').trim(), key:gv('n-wk').trim() };
   DB.notif.email = {
-    publicKey: gv('n-ejpk').trim(),
-    serviceId: gv('n-ejsid').trim(),
-    templateId: gv('n-ejtid').trim(),
-    appUrl: gv('n-ejurl').trim()
+    publicKey: gv('n-ejpk').trim(), serviceId: gv('n-ejsid').trim(),
+    templateId: gv('n-ejtid').trim(), appUrl: gv('n-ejurl').trim()
   };
-  if (DB.notif.email.publicKey) {
-    try { emailjs.init(DB.notif.email.publicKey); } catch(e) {}
-  }
-  // Save Firebase config separately in localStorage (not in DB to avoid sharing credentials)
+  if (DB.notif.email.publicKey) { try { emailjs.init(DB.notif.email.publicKey); } catch(e) {} }
+  // FIX 3: save bot URL
+  if (g('n-bot-url') && gv('n-bot-url').trim()) DB.notif.botWorkerUrl = gv('n-bot-url').trim();
   const fbCfg = {
-    apiKey: gv('n-fb-apikey').trim(),
-    projectId: gv('n-fb-pid').trim(),
-    authDomain: gv('n-fb-auth').trim(),
-    storageBucket: gv('n-fb-bucket').trim(),
-    appId: gv('n-fb-appid').trim()
+    apiKey: gv('n-fb-apikey').trim(), projectId: gv('n-fb-pid').trim(),
+    authDomain: gv('n-fb-auth').trim(), appId: gv('n-fb-appid').trim()
   };
   if (fbCfg.apiKey && fbCfg.projectId) {
     saveFbCfg(fbCfg);
     embedFbConfigInHTML(fbCfg);
     const ok = await initFirebase(fbCfg);
     if (ok) {
-      // Store full config in Firestore at uipath/config so any device can bootstrap
-      // using only the projectId (no file sharing needed)
       const cfgToStore = {};
       Object.keys(fbCfg).forEach(k => { if (fbCfg[k]) cfgToStore[k] = fbCfg[k]; });
       await fbSet('uipath', 'config', cfgToStore);
-
       const existing = await fbGet('uipath', 'db');
       if (!existing) {
         await persist();
@@ -2546,6 +2288,10 @@ async function saveNotif() {
   startReminders();
 }
 
+function showDownloadBanner() {
+  toast('✓ Firebase connected! Click ⬇ Download Updated HTML to update GitHub file.', 'info');
+}
+
 function embedFbConfigInHTML(cfg) {
   try {
     const el = document.getElementById('fb-embed-cfg');
@@ -2556,8 +2302,7 @@ function embedFbConfigInHTML(cfg) {
 async function downloadUpdatedHTML() {
   const cfg = loadFbCfgRaw() || loadFbCfg();
   const pid = (cfg && cfg.projectId) || getEmbeddedProjectId();
-  if (!pid) { toast('\u26a0 No Firebase Project ID — save settings first', 'warn'); return; }
-  // Only embed projectId — full config is fetched from Firestore automatically
+  if (!pid) { toast('⚠ No Firebase Project ID — save settings first', 'warn'); return; }
   const embedData = { projectId: pid };
   const marker = /<script id="fb-embed-cfg" type="application\/json">[\s\S]*?<\/script>/;
   const replacement = '<script id="fb-embed-cfg" type="application/json">\n' + JSON.stringify(embedData) + '\n<\/script>';
@@ -2568,16 +2313,15 @@ async function downloadUpdatedHTML() {
       html = html.replace(marker, replacement);
       _triggerDownload(html);
       logAct('export', 'Downloaded HTML with projectId embedded');
-      toast('\u2713 Downloaded — commit this file to GitHub');
+      toast('✓ Downloaded — commit this file to GitHub');
     } else {
-      toast('\u26a0 Could not find config block in source', 'warn');
+      toast('⚠ Could not find config block in source', 'warn');
     }
   } catch(e) {
-    // Fallback
     const el = document.getElementById('fb-embed-cfg');
     if (el) el.textContent = '\n' + JSON.stringify(embedData) + '\n';
     _triggerDownload('<!DOCTYPE html>\n' + document.documentElement.outerHTML);
-    toast('\u2713 Downloaded — commit to GitHub');
+    toast('✓ Downloaded — commit to GitHub');
   }
 }
 
@@ -2586,8 +2330,7 @@ function _triggerDownload(html) {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'uipath_slots.html';
-  document.body.appendChild(a);
-  a.click();
+  document.body.appendChild(a); a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(a.href);
 }
@@ -2596,12 +2339,69 @@ function loadFbCfgRaw() {
   try { const r = localStorage.getItem('uipath_fb_cfg'); return r ? JSON.parse(r) : null; } catch { return null; }
 }
 
+// FIX 3: selNTab includes 'tgbot' + bot helper functions
 function selNTab(ch) {
-  ['slack','telegram','whatsapp','email','firebase'].forEach(c => {
+  ['slack','telegram','whatsapp','email','firebase','tgbot'].forEach(c => {
     const nt = g('nt-'+c), nb = g('nb-'+c);
     if (nt) nt.classList.toggle('on', c===ch);
     if (nb) nb.classList.toggle('on', c===ch);
   });
+}
+
+function downloadBotWorker() {
+  const cfg = loadFbCfg() || {};
+  const token = DB.notif?.telegram?.token || 'YOUR_BOT_TOKEN';
+  const pid   = cfg.projectId || 'YOUR_PROJECT_ID';
+  const key   = cfg.apiKey    || 'YOUR_API_KEY';
+  const admin = DB.notif?.telegram?.chat || 'YOUR_ADMIN_CHAT_ID';
+  const instructions = [
+    '// UiPath Interview Slots — Telegram Bot (Cloudflare Worker)',
+    '// Deploy FREE at https://workers.cloudflare.com',
+    '//',
+    '// Add 4 Environment Variables in Worker Settings → Variables → Secrets:',
+    `//   BOT_TOKEN     = ${token}`,
+    `//   FB_PROJECT_ID = ${pid}`,
+    `//   FB_API_KEY    = ${key}`,
+    `//   ADMIN_CHAT_ID = ${admin}`,
+    '',
+    '// Commands: /today /week /free <date> /slots <date> /book /cancel',
+    '',
+  ].join('\n');
+  fetch('telegram_bot_worker.js')
+    .then(r => r.ok ? r.text() : Promise.reject())
+    .then(code => triggerWorkerDownload(instructions + code))
+    .catch(() => {
+      const stub = instructions +
+        'export default {\n  async fetch(request, env) {\n    // Paste your full bot logic here\n    return new Response("Bot is running!");\n  }\n};';
+      triggerWorkerDownload(stub);
+      toast('⚠ Worker file not found — stub downloaded with instructions', 'warn');
+    });
+}
+
+function triggerWorkerDownload(content) {
+  const blob = new Blob([content], { type: 'text/javascript;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'telegram_bot_worker.js';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(a.href);
+  toast('✓ Worker script downloaded — paste into Cloudflare Workers editor');
+}
+
+async function setTgWebhook() {
+  const stEl = g('n-bots');
+  const show = (cls, msg) => { if (stEl) { stEl.style.display='inline-flex'; stEl.className='ns-badge '+cls; stEl.innerHTML=msg; } };
+  const workerUrl = gv('n-bot-url').trim();
+  const token = gv('n-tt').trim() || DB.notif?.telegram?.token?.trim();
+  if (!token) { show('ns-err', '❌ Enter bot token in the Telegram tab first'); return; }
+  if (!workerUrl) { show('ns-err', '❌ Enter your Worker URL above'); return; }
+  show('ns-sending', '⏳ Setting webhook…');
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/setWebhook?url=${encodeURIComponent(workerUrl)}`);
+    const d = await res.json();
+    if (d.ok) { show('ns-ok', '✅ Webhook set! Bot is live.'); toast('✓ Telegram webhook set successfully!'); }
+    else show('ns-err', `❌ ${d.description || 'Failed'}`);
+  } catch(e) { show('ns-err', '❌ Network error — check token and URL'); }
 }
 
 async function testFirebase() {
@@ -2614,24 +2414,19 @@ async function testFirebase() {
   const cfg = {
     apiKey, projectId: pid,
     authDomain: gv('n-fb-auth').trim()||pid+'.firebaseapp.com',
-    storageBucket: gv('n-fb-bucket').trim()||pid+'.appspot.com',
     appId: gv('n-fb-appid').trim()
   };
   const ok = await initFirebase(cfg);
   if (!ok) { show('ns-err','❌ Connection failed — check keys'); return; }
-  // Try a test read/write
   try {
     await fbSet('uipath', 'ping', { ts: Date.now(), by: CU?.name || 'test' });
     const r = await fbGet('uipath', 'ping');
-    if (r && r.ts) {
-      show('ns-ok','✅ Connected! Firebase is working.');
-      const dlBtn = g('btn-dl-html');
-      if (dlBtn) dlBtn.style.display = '';
-    } else show('ns-err','❌ Read/write test failed');
+    if (r && r.ts) show('ns-ok','✅ Connected! Firebase is working.');
+    else show('ns-err','❌ Read/write test failed');
   } catch(e) { show('ns-err','❌ '+e.message); }
 }
 
-/* ─ EMAIL INVITE ─ */
+/* ─ EMAIL ─ */
 function emailJSReady() {
   const n = DB.notif?.email;
   return !!(n?.publicKey && n?.serviceId && n?.templateId);
@@ -2639,8 +2434,8 @@ function emailJSReady() {
 
 async function sendInviteEmail({ name, username, password, role, email }) {
   if (!emailJSReady()) {
-    toast('\u26a0 EmailJS not configured \u2014 user created without invite', 'warn');
-    logAct('notify', `Invite NOT sent to ${email} \u2014 EmailJS not configured`);
+    toast('⚠ EmailJS not configured — user created without invite', 'warn');
+    logAct('notify', `Invite NOT sent to ${email} — EmailJS not configured`);
     return;
   }
   const n = DB.notif.email;
@@ -2649,32 +2444,18 @@ async function sendInviteEmail({ name, username, password, role, email }) {
     const appUrl = n.appUrl || window.location.href;
     const roleLabels = { viewer:'Viewer (read-only)', editor:'Editor (create & edit slots)', admin:'Administrator (full access)' };
     const params = {
-      to_name: name,
-      to_email: email,
-      reply_to: email,
-      email: email,
-      recipient: email,
-      username: username,
-      password: password,
-      role: roleLabels[role] || role,
-      app_url: appUrl,
-      invited_by: CU.name,
-      invited_by_initial: CU.name ? CU.name[0].toUpperCase() : 'A',
-      invited_by_email: CU.email || '',
-      app_name: 'UiPath Interview Slot Booking',
-      message: `You have been invited to join the UiPath Interview Slot Booking platform by ${CU.name}. Use the credentials below to sign in.`
+      to_name: name, to_email: email, reply_to: email, email: email, recipient: email,
+      username, password, role: roleLabels[role] || role, app_url: appUrl,
+      invited_by: CU.name, invited_by_initial: CU.name ? CU.name[0].toUpperCase() : 'A',
+      invited_by_email: CU.email || '', app_name: 'UiPath Interview Slot Booking',
+      message: `You have been invited to join the UiPath Interview Slot Booking platform by ${CU.name}.`
     };
     await emailjs.send(n.serviceId, n.templateId, params);
-    toast(`\u2713 Invitation sent to ${email}`, 'ok');
+    toast(`✓ Invitation sent to ${email}`, 'ok');
     logAct('notify', `Invitation email sent to ${email} for user: ${name}`);
   } catch(err) {
-    console.error('EmailJS error:', err);
     const errMsg = err?.text || err?.message || 'Unknown error';
-    if (errMsg.toLowerCase().includes('recipients') || errMsg.toLowerCase().includes('address')) {
-      toast('Email failed: In EmailJS template settings, set \"To Email\" field to {{to_email}}', 'warn');
-    } else {
-      toast(`User created but email failed: ${errMsg}`, 'warn');
-    }
+    toast(`User created but email failed: ${errMsg}`, 'warn');
     logAct('notify', `Invite email FAILED to ${email}: ${errMsg}`);
   }
 }
@@ -2691,22 +2472,14 @@ async function testEmailInvite() {
     emailjs.init(pk);
     const appUrl = gv('n-ejurl').trim() || window.location.href;
     await emailjs.send(sid, tid, {
-      to_name: CU.name,
-      to_email: CU.email || 'test@example.com',
-      username: CU.username,
-      password: '••••••••',
-      role: CU.role,
-      app_url: appUrl,
-      invited_by: 'Test System',
-      invited_by_initial: 'T',
-      invited_by_email: '',
+      to_name: CU.name, to_email: CU.email || 'test@example.com',
+      username: CU.username, password: '••••••••', role: CU.role, app_url: appUrl,
+      invited_by: 'Test System', invited_by_initial: 'T', invited_by_email: '',
       app_name: 'UiPath Interview Slot Booking',
       message: 'This is a test invitation email from UiPath Interview Slot Booking.'
     });
     show('ns-ok', `✅ Test sent! Check ${CU.email || 'your email'}`);
-  } catch(err) {
-    show('ns-err', `❌ ${err?.text || err?.message || 'Failed — check your keys'}`);
-  }
+  } catch(err) { show('ns-err', `❌ ${err?.text || err?.message || 'Failed — check your keys'}`); }
 }
 
 /* ─ NOTIF SECTION ─ */
@@ -2722,9 +2495,8 @@ function renderNotifSec(area) {
     <div class="ph"><div><h2>🔔 Notifications</h2><div class="ph-sub">Channels + 3-hourly daily reminders (8am–9pm) via Telegram</div></div>
     <button class="bp" onclick="openNotifModal()">⚙ Configure</button></div>
     <div style="background:var(--ambg);border:1px solid rgba(138,92,0,.25);border-radius:12px;padding:14px 18px;margin-bottom:16px;font-size:.82rem;color:var(--am);line-height:1.6">
-      ⏰ <strong>Daily Reminders:</strong> Telegram will receive today's interview slots every 3 hours from 8:00 AM to 9:00 PM automatically while you're logged in.
+      ⏰ <strong>Daily Reminders:</strong> Telegram receives today's slots every 3 hours from 8 AM to 9 PM while you're logged in.
     </div>
-    <!-- Firebase sync banner -->
     ${_fbDb ? '<div style="background:rgba(251,146,60,.08);border:1.5px solid rgba(251,146,60,.3);border-radius:13px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:13px"><span style="font-size:1.4rem">🔥</span><div><div style="font-family:var(--font-head);font-size:.88rem;font-weight:800;color:#b45309">Firebase Live</div><div style="font-size:.78rem;color:#92400e;margin-top:2px">All data syncs in real-time across every browser.</div></div></div>' : '<div style="background:var(--rdbg);border:1.5px solid rgba(192,40,40,.2);border-radius:13px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:13px"><span style="font-size:1.4rem">⚠️</span><div style="flex:1"><div style="font-family:var(--font-head);font-size:.88rem;font-weight:800;color:var(--rd)">Firebase Not Connected</div><div style="font-size:.78rem;color:var(--rd);margin-top:2px;opacity:.8">Data is local only. Configure Firebase in Notifications.</div></div></div>'}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:22px">
       ${chs.map(({ch,icon,title,desc,ok})=>`<div class="notif-status-card ${ok?'configured':''}">
@@ -2774,7 +2546,7 @@ function renderUsers(area) {
 function renderUsrRows(f='') {
   const tb = g('usr-tb'); if (!tb) return;
   const users = DB.users.filter(u => !f || u.name.toLowerCase().includes(f) || u.username.toLowerCase().includes(f));
-  if (!users.length) { tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:24px">No users found</td></tr>'; return; }
+  if (!users.length) { tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:24px">No users found</td></tr>'; return; }
   tb.innerHTML = users.map(u => {
     const ec = DB.events.filter(e=>e.createdBy===u.id).length;
     return `<tr>
@@ -2796,12 +2568,11 @@ function renderUsrRows(f='') {
   }).join('');
 }
 
-/* ─ EXPORT / IMPORT USERS ─ */
 function resendInvite(uid) {
   const u = DB.users.find(x=>x.id===uid);
   if (!u || !u.email) { toast('No email on file for this user','warn'); return; }
   if (!emailJSReady()) { toast('EmailJS not configured','warn'); return; }
-  if (!confirm(`Resend invitation to ${u.email}?\n\nNote: Password will show as [Contact admin] since it cannot be retrieved. Use this to re-send login instructions.`)) return;
+  if (!confirm(`Resend invitation to ${u.email}?`)) return;
   sendInviteEmail({ name:u.name, username:u.username, password:'[Contact admin to get your password]', role:u.role, email:u.email });
 }
 
@@ -2865,14 +2636,12 @@ function openUsrModal(uid=null) {
   sv('u-name', u?.name||''); sv('u-un', u?.username||''); sv('u-pw', '');
   sv('u-email', u?.email||'');
   sv('u-role', u?.role||'viewer');
-  // Email field: required only for new users
   const erEl = g('u-er'); if (erEl) erEl.textContent = u ? '' : '*';
   const ehEl = g('u-eh'); if (ehEl) ehEl.textContent = u ? 'Update email address for this user.' : 'Invitation with login credentials will be sent to this email.';
   s('u-pr', u ? '' : ' *'); s('u-ph', u ? 'Leave blank to keep current password.' : '');
   selUC = u?.color||UC[0]; buildCR('u-cr', UC, 'usr', selUC);
   updateRoleHint();
   g('um-del').style.display = (u && u.id!=='u0') ? '' : 'none';
-  // Show invite status banner only for new users
   const hasEmail = !!(DB.notif?.email?.publicKey && DB.notif?.email?.serviceId && DB.notif?.email?.templateId);
   const invRow = g('u-invite-row'), noEmailRow = g('u-noemail-row');
   if (!u) {
@@ -2923,10 +2692,9 @@ function delUsrM() {
   updateCounts(); toast('User deleted'); editUsrId=null;
 }
 
-/* ─ ALL EVENTS ─ */
+/* ─ EVENTS LIST ─ */
 function renderEvts(area) {
   const isAdmin = CU.role==='admin';
-  // Non-admin only sees their own slots
   const myEvts = isAdmin ? DB.events : DB.events.filter(e => e.createdBy === CU.id);
   area.innerHTML = `<div class="panel">
     <div class="ph"><div><h2>${isAdmin?'All Interview Slots':'My Interview Slots'}</h2><div class="ph-sub">${myEvts.length} slot${myEvts.length!==1?'s':''}</div></div>
@@ -3004,64 +2772,7 @@ function renderActivity(area) {
   </div>`;
 }
 
-/* ─ STATS ─ */
-function renderStats(area) {
-  if (CU.role !== 'admin') { area.innerHTML='<div style="padding:48px;text-align:center;color:var(--ink3)">🔒 Admin access required</div>'; return; }
-  const now = new Date(), td = todayISO();
-  const total = DB.events.length;
-  const tm = DB.events.filter(e=>{const d=new Date(e.sd||e.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}).length;
-  const up = DB.events.filter(e=>new Date((e.sd||e.date)+'T'+e.st)>now).length;
-  const wm = {remote:0,onsite:0,hybrid:0}; DB.events.forEach(e=>{if(e.wm)wm[e.wm]++;});
-  const pri = {urgent:0,high:0,medium:0,low:0}; DB.events.forEach(e=>{if(e.priority)pri[e.priority]++;});
-  const sts = {confirmed:0,draft:0,cancelled:0,completed:0}; DB.events.forEach(e=>{if(e.status)sts[e.status]++;});
-  const byU = DB.users.map(u=>({...u,c:DB.events.filter(e=>e.createdBy===u.id).length})).sort((a,b)=>b.c-a.c);
-  const barFn = (val,max,color) => `<div style="flex:1;height:6px;background:var(--sf3);border-radius:99px;overflow:hidden"><div style="height:100%;background:${color};width:${max?Math.round(val/max*100):0}%;border-radius:99px;transition:width .6s"></div></div>`;
-  area.innerHTML = `<div class="panel">
-    <div class="ph"><div><h2>📊 Analytics</h2><div class="ph-sub">Interview slot statistics</div></div>
-    <button class="bg" onclick="exportCSV()">📥 Export CSV</button></div>
-    <div class="sg">
-      <div class="sc"><div class="sc-l">Total Slots</div><div class="sc-v">${fmtNum(total)}</div><div class="sc-s">All time</div></div>
-      <div class="sc"><div class="sc-l">This Month</div><div class="sc-v">${fmtNum(tm)}</div><div class="sc-s">${now.toLocaleDateString('en-US',{month:'long'})}</div></div>
-      <div class="sc"><div class="sc-l">Upcoming</div><div class="sc-v">${fmtNum(up)}</div><div class="sc-s">Scheduled ahead</div></div>
-      <div class="sc"><div class="sc-l">Team</div><div class="sc-v">${fmtNum(DB.users.length)}</div><div class="sc-s">Members</div></div>
-    </div>
-    <div class="cg2">
-      <div class="tcard"><div class="tch">Work Mode Distribution</div><div class="tcb">
-        ${Object.entries(wm).map(([k,v])=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:13px">
-          <span class="wmb wmb-${k==='remote'?'r':k==='hybrid'?'h':'o'}" style="width:58px;text-align:center">${k}</span>
-          ${barFn(v,total,'var(--ink)')}
-          <span style="font-family:var(--font-mono);font-size:.78rem;font-weight:500;width:20px;text-align:right">${v}</span>
-        </div>`).join('')}
-      </div></div>
-      <div class="tcard"><div class="tch">Priority Breakdown</div><div class="tcb">
-        ${Object.entries(pri).map(([k,v])=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:13px">
-          <span class="prb prb-${k}" style="width:58px;text-align:center">${k}</span>
-          ${barFn(v,total,{urgent:'#ef4444',high:'#f97316',medium:'#eab308',low:'#22c55e'}[k])}
-          <span style="font-family:var(--font-mono);font-size:.78rem;font-weight:500;width:20px;text-align:right">${v}</span>
-        </div>`).join('')}
-      </div></div>
-    </div>
-    <div class="cg2" style="margin-bottom:14px">
-      <div class="tcard"><div class="tch">Slot Status</div><div class="tcb">
-        ${Object.entries(sts).map(([k,v])=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:13px">
-          <span class="stb stb-${k}" style="width:74px;justify-content:center">${k}</span>
-          ${barFn(v,total,'var(--acc)')}
-          <span style="font-family:var(--font-mono);font-size:.78rem;font-weight:500;width:20px;text-align:right">${v}</span>
-        </div>`).join('')}
-      </div></div>
-      <div class="tcard"><div class="tch">Slots by Team Member</div><div class="tcb">
-        ${byU.slice(0,6).map(u=>`<div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
-          <div style="width:28px;height:28px;border-radius:50%;background:${u.color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;flex-shrink:0">${u.name[0]}</div>
-          <span style="flex:1;font-size:.82rem">${u.name}</span>
-          <span class="rbadge rb-${u.role}">${u.role}</span>
-          <span style="font-family:var(--font-mono);font-size:.8rem;font-weight:500;min-width:18px;text-align:right">${u.c}</span>
-        </div>`).join('')||'<div class="empty-state" style="padding:14px"><div class="es-sub">No data yet</div></div>'}
-      </div></div>
-    </div>
-  </div>`;
-}
-
-/* ─ EXPORT CSV (admin only) ─ */
+/* ─ EXPORT CSV ─ */
 function exportCSV() {
   if (CU.role !== 'admin') { toast('Export is restricted to admins','warn'); return; }
   const evts = DB.events;
@@ -3188,8 +2899,7 @@ document.addEventListener('touchend', e=>{
   else if (dx>60&&!g('sidebar').classList.contains('open')) toggleSb();
 }, {passive:true});
 
-/* ─ AUTO-INIT LOGIN SCREEN ─ */
-// Run when page loads to check Firebase config and show appropriate panel
+/* ─ AUTO-INIT ─ */
 document.addEventListener('DOMContentLoaded', () => { initLoginScreen(); });
 </script>
 </body>
