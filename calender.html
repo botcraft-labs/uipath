@@ -519,12 +519,12 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
       </div>
       <div class="ll-tag">Interview Slot Booking &amp;<br>Team Coordination Platform</div>
       <div class="ll-feats">
-        <div class="ll-feat"><div class="ll-fi">\ud83c\udfaf</div>Role-based access control</div>
-        <div class="ll-feat"><div class="ll-fi">\ud83d\udd14</div>Telegram · Slack · WhatsApp</div>
-        <div class="ll-feat"><div class="ll-fi">\ud83d\udcc5</div>Multi-day slot scheduling</div>
-        <div class="ll-feat"><div class="ll-fi">\ud83d\udcca</div>Analytics &amp; activity log</div>
-        <div class="ll-feat"><div class="ll-fi">\u26a1</div>3-hour daily reminders</div>
-        <div class="ll-feat"><div class="ll-fi">\ud83c\udf19</div>Dark &amp; light themes</div>
+        <div class="ll-feat"><div class="ll-fi">🎯</div>Role-based access control</div>
+        <div class="ll-feat"><div class="ll-fi">🔔</div>Telegram · Slack · WhatsApp</div>
+        <div class="ll-feat"><div class="ll-fi">📅</div>Multi-day slot scheduling</div>
+        <div class="ll-feat"><div class="ll-fi">📊</div>Analytics &amp; activity log</div>
+        <div class="ll-feat"><div class="ll-fi">⚡</div>3-hour daily reminders</div>
+        <div class="ll-feat"><div class="ll-fi">🌙</div>Dark &amp; light themes</div>
       </div>
       <div class="ll-ver">UiPath Slots v1.1 · Production</div>
     </div>
@@ -533,7 +533,7 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
       <div class="lr-h">Sign in to your<br>workspace</div>
       <div class="lr-s" id="l-sub">Enter your credentials to continue</div>
       <div class="lf"><label>Username</label><input id="l-user" placeholder="Enter username" autocomplete="username"/></div>
-      <div class="lf"><label>Password</label><div class="pw"><input id="l-pass" type="password" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022" autocomplete="current-password"/><button class="eye-btn" onclick="tv('l-pass',this)">\ud83d\udc41</button></div></div>
+      <div class="lf"><label>Password</label><div class="pw"><input id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password"/><button class="eye-btn" onclick="tv('l-pass',this)">👁</button></div></div>
       <button class="btn-login" id="btn-login-main" onclick="doLogin()">Sign In →</button>
       <div id="lerr"></div>
       <div style="margin-top:14px;text-align:center;font-size:.72rem;color:var(--ink4)">
@@ -545,11 +545,11 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 
 <div id="app">
   <div class="topbar">
-    <button class="hmbg" onclick="toggleSb()">\u2630</button>
+    <button class="hmbg" onclick="toggleSb()">☰</button>
     <div class="tb-logo">
       <div class="tb-logomark">UI</div>
       <div class="tb-brand">UiPath<span class="ac"> Slots</span><span class="sub">Interview Booking</span></div>
-      <div id="fb-badge" style="display:none;font-size:.58rem;background:#fff3;border-radius:4px;padding:2px 6px;color:#fff;font-family:var(--font-mono);margin-left:4px;letter-spacing:.04em" title="Firebase real-time sync active">\ud83d\udd25 Live</div>
+      <div id="fb-badge" style="display:none;font-size:.58rem;background:#fff3;border-radius:4px;padding:2px 6px;color:#fff;font-family:var(--font-mono);margin-left:4px;letter-spacing:.04em" title="Firebase real-time sync active">🔥 Live</div>
     </div>
     <div class="tb-mid">
       <div class="vtabs" id="vtabs">
@@ -558,26 +558,26 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
         <button class="vtab" onclick="setView('agenda')">Agenda</button>
       </div>
       <div class="nav-btns">
-        <button class="tbn" onclick="navDir(-1)" title="Previous">\u2039</button>
-        <button class="tbn" onclick="navDir(1)" title="Next">\u203a</button>
+        <button class="tbn" onclick="navDir(-1)" title="Previous">‹</button>
+        <button class="tbn" onclick="navDir(1)" title="Next">›</button>
       </div>
       <div class="tb-period" id="tb-period"></div>
       <button class="btn-today" onclick="goToday()">Today</button>
     </div>
     <div class="tb-right">
       <button class="btn-new" id="btn-new" onclick="openEvtModal(todayISO())"><span style="font-size:1.1rem;line-height:1">+</span><span>Book Slot</span></button>
-      <button class="ib" onclick="openCmd()" title="Search (\u2318K)">\ud83d\udd0d</button>
-      <button class="ib" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">\ud83c\udf19</button>
+      <button class="ib" onclick="openCmd()" title="Search (⌘K)">🔍</button>
+      <button class="ib" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">🌙</button>
       <div class="upill" onclick="toggleDrop()" id="upill">
         <div class="uav" id="uav"></div>
         <span class="uname" id="uname"></span>
         <span class="rbadge" id="urb"></span>
         <div class="udrop" id="udrop">
           <div class="ud-head"><div class="udn" id="ud-n"></div><div class="udu" id="ud-u"></div></div>
-          <button class="udi" onclick="showSec('dash')">\ud83c\udfe0 Dashboard</button>
-          <button class="udi" onclick="openProfile()">\ud83d\udc64 My Profile</button>
-          <button class="udi" onclick="openChangePwd(null)">\ud83d\udd11 Change Password</button>
-          <button class="udi" id="notif-mi" onclick="openNotifModal()">\ud83d\udd14 Notifications</button>
+          <button class="udi" onclick="showSec('dash')">🏠 Dashboard</button>
+          <button class="udi" onclick="openProfile()">👤 My Profile</button>
+          <button class="udi" onclick="openChangePwd(null)">🔑 Change Password</button>
+          <button class="udi" id="notif-mi" onclick="openNotifModal()">🔔 Notifications</button>
           <button class="udi" onclick="openShortcuts()">⌨️ Keyboard Shortcuts</button>
           <div class="ud-div"></div>
           <button class="udi danger" onclick="doLogout()">→ Sign Out</button>
@@ -591,16 +591,16 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
     <nav class="sidebar" id="sidebar">
       <div class="sb-sec">
         <h5>Main</h5>
-        <button class="sbb" id="sb-dash" onclick="showSec('dash');closeSb()"><span class="sb-icon">\ud83c\udfe0</span>Dashboard</button>
-        <button class="sbb on" id="sb-calendar" onclick="showSec('calendar');closeSb()"><span class="sb-icon">\ud83d\udcc5</span>Calendar</button>
-        <button class="sbb" id="sb-events" onclick="showSec('events');closeSb()"><span class="sb-icon">\ud83d\uddc2</span>My Slots<span class="sb-cnt" id="sbc-e">0</span></button>
+        <button class="sbb" id="sb-dash" onclick="showSec('dash');closeSb()"><span class="sb-icon">🏠</span>Dashboard</button>
+        <button class="sbb on" id="sb-calendar" onclick="showSec('calendar');closeSb()"><span class="sb-icon">📅</span>Calendar</button>
+        <button class="sbb" id="sb-events" onclick="showSec('events');closeSb()"><span class="sb-icon">🗂</span>My Slots<span class="sb-cnt" id="sbc-e">0</span></button>
       </div>
       <div class="sb-div"></div>
       <div class="sb-sec" id="admin-sb" style="display:none">
         <h5>Admin</h5>
-        <button class="sbb" id="sb-users" onclick="showSec('users');closeSb()"><span class="sb-icon">\ud83d\udc65</span>Users<span class="sb-cnt" id="sbc-u">0</span></button>
-        <button class="sbb" id="sb-notif" onclick="showSec('notif');closeSb()"><span class="sb-icon">\ud83d\udd14</span>Notifications</button>
-        <button class="sbb" id="sb-activity" onclick="showSec('activity');closeSb()"><span class="sb-icon">\ud83d\udccb</span>Activity Log</button>
+        <button class="sbb" id="sb-users" onclick="showSec('users');closeSb()"><span class="sb-icon">👥</span>Users<span class="sb-cnt" id="sbc-u">0</span></button>
+        <button class="sbb" id="sb-notif" onclick="showSec('notif');closeSb()"><span class="sb-icon">🔔</span>Notifications</button>
+        <button class="sbb" id="sb-activity" onclick="showSec('activity');closeSb()"><span class="sb-icon">📋</span>Activity Log</button>
       </div>
       <div class="mc-wrap" id="mini-cal"></div>
     </nav>
@@ -619,12 +619,12 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 <div class="cmd-ov" id="cmd-ov" onclick="closeCmd(event)">
   <div class="cmd-box">
     <div class="cmd-iw">
-      <span style="font-size:1rem;color:var(--ink3)">\ud83d\udd0d</span>
-      <input class="cmd-in" id="cmd-in" placeholder="Search slots, users, actions\u2026" oninput="cmdSearch(this.value)" onkeydown="cmdKey(event)"/>
+      <span style="font-size:1rem;color:var(--ink3)">🔍</span>
+      <input class="cmd-in" id="cmd-in" placeholder="Search slots, users, actions…" oninput="cmdSearch(this.value)" onkeydown="cmdKey(event)"/>
       <span style="font-family:var(--font-mono);font-size:.62rem;background:var(--sf3);border:1px solid var(--bd);border-radius:4px;padding:2px 7px;color:var(--ink3)">ESC</span>
     </div>
     <div class="cmd-results" id="cmd-res"></div>
-    <div class="cmd-ft"><span><kbd>\u2191\u2193</kbd> navigate</span><span><kbd>\u21b5</kbd> select</span><span><kbd>ESC</kbd> close</span></div>
+    <div class="cmd-ft"><span><kbd>↑↓</kbd> navigate</span><span><kbd>↵</kbd> select</span><span><kbd>ESC</kbd> close</span></div>
   </div>
 </div>
 
@@ -635,23 +635,23 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
     <button class="mclose" onclick="closeOv('ov-ev')">✕</button>
   </div>
   <div class="mbody">
-    <div class="fr full"><div class="fg"><label>Event Name <span class="req">*</span></label><input id="e-name" placeholder="e.g. Technical Interview \u2013 Frontend Engineer" oninput="this.style.outline='';this.style.background=''"/></div></div>
+    <div class="fr full"><div class="fg"><label>Event Name <span class="req">*</span></label><input id="e-name" placeholder="e.g. Technical Interview – Frontend Engineer" oninput="this.style.outline='';this.style.background=''"/></div></div>
     <div class="dt-box">
-      <div class="dt-hdr">\ud83d\udcc5 Date &amp; Time Range</div>
+      <div class="dt-hdr">📅 Date &amp; Time Range</div>
       <div class="dt-mobile-grid">
         <div class="dt-cell">
-          <div class="dt-cell-lbl">\ud83d\udfe2 Start</div>
+          <div class="dt-cell-lbl">🟢 Start</div>
           <div class="dt-cell-row">
-            <div class="dt-input-wrap"><span class="dt-input-icon">\ud83d\udcc5</span><input id="e-sd" type="date" class="dt-input" oninput="syncEndDate();this.style.outline='';this.style.background=''" /></div>
-            <div class="dt-input-wrap"><span class="dt-input-icon">\u23f0</span><input id="e-st" type="time" class="dt-input" value="09:00" /></div>
+            <div class="dt-input-wrap"><span class="dt-input-icon">📅</span><input id="e-sd" type="date" class="dt-input" oninput="syncEndDate();this.style.outline='';this.style.background=''" /></div>
+            <div class="dt-input-wrap"><span class="dt-input-icon">⏰</span><input id="e-st" type="time" class="dt-input" value="09:00" /></div>
           </div>
         </div>
         <div class="dt-divider">→</div>
         <div class="dt-cell">
-          <div class="dt-cell-lbl">\ud83d\udd34 End</div>
+          <div class="dt-cell-lbl">🔴 End</div>
           <div class="dt-cell-row">
-            <div class="dt-input-wrap"><span class="dt-input-icon">\ud83d\udcc5</span><input id="e-ed" type="date" class="dt-input" /></div>
-            <div class="dt-input-wrap"><span class="dt-input-icon">\u23f0</span><input id="e-et" type="time" class="dt-input" value="10:00" /></div>
+            <div class="dt-input-wrap"><span class="dt-input-icon">📅</span><input id="e-ed" type="date" class="dt-input" /></div>
+            <div class="dt-input-wrap"><span class="dt-input-icon">⏰</span><input id="e-et" type="time" class="dt-input" value="10:00" /></div>
           </div>
         </div>
       </div>
@@ -670,7 +670,7 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
       <div class="fg"><label>Status</label><select id="e-sts"><option value="confirmed">Confirmed</option><option value="draft">Draft</option><option value="cancelled">Cancelled</option><option value="completed">Completed</option></select></div>
     </div>
     <div class="fg"><label>Event Color</label><div class="cr-row" id="e-cr"></div></div>
-    <div class="fg"><label>Notes</label><textarea id="e-notes" placeholder="Interview format, topics, instructions, links\u2026"></textarea></div>
+    <div class="fg"><label>Notes</label><textarea id="e-notes" placeholder="Interview format, topics, instructions, links…"></textarea></div>
     <div id="e-recur-wrap" style="display:none;margin-top:4px">
       <div class="dt-box" style="margin-bottom:12px">
         <div class="dt-hdr">&#x1F501; Recurrence</div>
@@ -701,7 +701,7 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
     <div style="background:var(--blbg);border:1px solid rgba(26,74,154,.2);border-radius:9px;padding:11px 14px;font-size:.76rem;color:var(--bl);line-height:1.6">&#x1F514; Configured notification channels will receive an alert when you save.</div>
   </div>
   <div class="mfoot">
-    <button class="bdanger" id="em-del" style="display:none" onclick="deleteEvtM()">\ud83d\uddd1 Delete</button>
+    <button class="bdanger" id="em-del" style="display:none" onclick="deleteEvtM()">🗑 Delete</button>
     <button class="bg" onclick="closeOv('ov-ev')">Cancel</button>
     <button class="bp" onclick="saveEvent()">💾 Save Slot</button>
   </div>
@@ -714,26 +714,26 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
     <div class="fr"><div class="fg"><label>Full Name <span class="req">*</span></label><input id="u-name" placeholder="Display name"/></div><div class="fg"><label>Username <span class="req">*</span></label><input id="u-un" placeholder="login id" autocomplete="off"/></div></div>
     <div class="fr full"><div class="fg"><label>Email Address <span class="req" id="u-er">*</span></label><input id="u-email" type="email" placeholder="user@company.com" autocomplete="off"/><div style="font-size:.69rem;color:var(--ink3);margin-top:4px" id="u-eh">Invitation with login credentials will be sent to this email.</div></div></div>
     <div class="fr">
-      <div class="fg"><label>Password <span class="req" id="u-pr">*</span></label><div class="pw2"><input id="u-pw" type="password" placeholder="Password" autocomplete="new-password"/><button class="peye" onclick="tv('u-pw',this)">\ud83d\udc41</button></div><div style="font-size:.69rem;color:var(--ink3);margin-top:4px" id="u-ph"></div></div>
+      <div class="fg"><label>Password <span class="req" id="u-pr">*</span></label><div class="pw2"><input id="u-pw" type="password" placeholder="Password" autocomplete="new-password"/><button class="peye" onclick="tv('u-pw',this)">👁</button></div><div style="font-size:.69rem;color:var(--ink3);margin-top:4px" id="u-ph"></div></div>
       <div class="fg"><label>Role <span class="req">*</span></label><select id="u-role"><option value="viewer">Viewer</option><option value="editor">Editor</option><option value="admin">Admin</option></select><div style="font-size:.68rem;color:var(--ink3);margin-top:4px" id="u-rh"></div></div>
     </div>
     <div class="fg"><label>Avatar Color</label><div class="cr-row" id="u-cr"></div></div>
-    <div id="u-invite-row" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--grbg);border:1px solid rgba(15,122,80,.2);border-radius:9px;font-size:.78rem;color:var(--gr)"><span style="font-size:1rem">\ud83d\udce7</span><span>An invitation email with login credentials will be sent automatically on save.</span></div>
+    <div id="u-invite-row" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--grbg);border:1px solid rgba(15,122,80,.2);border-radius:9px;font-size:.78rem;color:var(--gr)"><span style="font-size:1rem">📧</span><span>An invitation email with login credentials will be sent automatically on save.</span></div>
     <div id="u-noemail-row" style="display:none;align-items:center;gap:10px;padding:10px 14px;background:var(--ambg);border:1px solid rgba(138,92,0,.2);border-radius:9px;font-size:.78rem;color:var(--am)"><span style="font-size:1rem">⚠️</span><span>EmailJS not configured. Go to <strong>Notifications → Email</strong> to set up invitations.</span></div>
   </div>
-  <div class="mfoot"><button class="bdanger" id="um-del" style="display:none" onclick="delUsrM()">\ud83d\uddd1 Delete</button><button class="bg" onclick="closeOv('ov-usr')">Cancel</button><button class="bp" onclick="saveUser()">💾 Save &amp; Send Invite</button></div>
+  <div class="mfoot"><button class="bdanger" id="um-del" style="display:none" onclick="delUsrM()">🗑 Delete</button><button class="bg" onclick="closeOv('ov-usr')">Cancel</button><button class="bp" id="um-save-btn" onclick="saveUser()">💾 Save User</button></div>
 </div></div>
 
 <div class="ov" id="ov-pwd" onclick="closeOv('ov-pwd',event)">
 <div class="modal" style="max-width:420px">
   <div class="mhd"><div><h3>Change Password</h3><div class="mhs" id="pwd-lbl"></div></div><button class="mclose" onclick="closeOv('ov-pwd')">✕</button></div>
   <div class="mbody">
-    <div class="fg" id="pwd-cw"><label>Current Password</label><div class="pw2"><input id="pwd-c" type="password" placeholder="Current password"/><button class="peye" onclick="tv('pwd-c',this)">\ud83d\udc41</button></div></div>
-    <div class="fg"><label>New Password <span class="req">*</span></label><div class="pw2"><input id="pwd-n" type="password" placeholder="Min 6 characters" oninput="pwdStr()"/><button class="peye" onclick="tv('pwd-n',this)">\ud83d\udc41</button></div><div class="pwd-track"><div class="pwd-fill" id="pwd-bar"></div></div><div style="font-size:.68rem;color:var(--ink3);margin-top:3px" id="pwd-sl"></div></div>
-    <div class="fg"><label>Confirm Password <span class="req">*</span></label><div class="pw2"><input id="pwd-cf" type="password" placeholder="Repeat password"/><button class="peye" onclick="tv('pwd-cf',this)">\ud83d\udc41</button></div></div>
+    <div class="fg" id="pwd-cw"><label>Current Password</label><div class="pw2"><input id="pwd-c" type="password" placeholder="Current password"/><button class="peye" onclick="tv('pwd-c',this)">👁</button></div></div>
+    <div class="fg"><label>New Password <span class="req">*</span></label><div class="pw2"><input id="pwd-n" type="password" placeholder="Min 6 characters" oninput="pwdStr()"/><button class="peye" onclick="tv('pwd-n',this)">👁</button></div><div class="pwd-track"><div class="pwd-fill" id="pwd-bar"></div></div><div style="font-size:.68rem;color:var(--ink3);margin-top:3px" id="pwd-sl"></div></div>
+    <div class="fg"><label>Confirm Password <span class="req">*</span></label><div class="pw2"><input id="pwd-cf" type="password" placeholder="Repeat password"/><button class="peye" onclick="tv('pwd-cf',this)">👁</button></div></div>
     <div id="pwd-err" style="color:var(--rd);font-size:.79rem;min-height:16px;margin-top:4px;"></div>
   </div>
-  <div class="mfoot"><button class="bg" onclick="closeOv('ov-pwd')">Cancel</button><button class="bp" onclick="doChangePwd()">\ud83d\udd11 Update Password</button></div>
+  <div class="mfoot"><button class="bg" onclick="closeOv('ov-pwd')">Cancel</button><button class="bp" onclick="doChangePwd()">🔑 Update Password</button></div>
 </div></div>
 
 <div class="ov" id="ov-prof" onclick="closeOv('ov-prof',event)">
@@ -747,8 +747,8 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
     <div class="fr"><div class="fg"><label>Display Name</label><input id="prof-ni"/></div><div class="fg"><label>Avatar Color</label><div class="cr-row" id="prof-cr"></div></div></div>
     <div class="fg" style="margin-top:4px">
       <label>My Telegram Chat ID <span style="font-size:.68rem;color:var(--ink3);font-weight:400">(optional)</span></label>
-      <input id="prof-tg" placeholder="e.g. 123456789 \u2014 message @userinfobot to get your ID" autocomplete="off"/>
-      <div style="font-size:.69rem;color:var(--ink3);margin-top:4px;line-height:1.5">\ud83d\udcf1 You'll receive personal Telegram messages for slot changes. Message <strong>@userinfobot</strong> on Telegram to get your Chat ID.</div>
+      <input id="prof-tg" placeholder="e.g. 123456789 — message @userinfobot to get your ID" autocomplete="off"/>
+      <div style="font-size:.69rem;color:var(--ink3);margin-top:4px;line-height:1.5">📱 You'll receive personal Telegram messages for slot changes. Message <strong>@userinfobot</strong> on Telegram to get your Chat ID.</div>
     </div>
   </div>
   <div class="mfoot"><button class="bg" onclick="closeOv('ov-prof')">Cancel</button><button class="bp" onclick="saveProfile()">Save Profile</button></div>
@@ -756,39 +756,39 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
 
 <div class="ov" id="ov-notif" onclick="closeOv('ov-notif',event)">
 <div class="modal" style="max-width:600px">
-  <div class="mhd"><div><h3>\ud83d\udd14 Notification Settings</h3><div class="mhs">Configure channels + daily reminders</div></div><button class="mclose" onclick="closeOv('ov-notif')">✕</button></div>
+  <div class="mhd"><div><h3>🔔 Notification Settings</h3><div class="mhs">Configure channels + daily reminders</div></div><button class="mclose" onclick="closeOv('ov-notif')">✕</button></div>
   <div class="mbody">
-    <div class="notif-info" style="margin-bottom:16px">\u2139\ufe0f Notifications sent directly from your browser. Telegram: all activities. Slack &amp; WhatsApp: event saves. <strong>Daily reminders</strong> every 3 hours 8 AM\u20139 PM via Telegram.</div>
+    <div class="notif-info" style="margin-bottom:16px">ℹ️ Notifications sent directly from your browser. Telegram: all activities. Slack &amp; WhatsApp: event saves. <strong>Daily reminders</strong> every 3 hours 8 AM–9 PM via Telegram.</div>
     <div class="notif-tabs">
-      <div class="ntab on" onclick="selNTab('slack')" id="nt-slack">\ud83d\udcac Slack</div>
-      <div class="ntab" onclick="selNTab('telegram')" id="nt-telegram">\u2708\ufe0f Telegram</div>
-      <div class="ntab" onclick="selNTab('whatsapp')" id="nt-whatsapp">\ud83d\udcf1 WhatsApp</div>
-      <div class="ntab" onclick="selNTab('email')" id="nt-email">\ud83d\udce7 Email</div>
-      <div class="ntab" onclick="selNTab('firebase')" id="nt-firebase">\ud83d\udd25 Firebase</div>
-      <div class="ntab" onclick="selNTab('tgbot')" id="nt-tgbot">\ud83e\udd16 TG Bot</div>
+      <div class="ntab on" onclick="selNTab('slack')" id="nt-slack">💬 Slack</div>
+      <div class="ntab" onclick="selNTab('telegram')" id="nt-telegram">✈️ Telegram</div>
+      <div class="ntab" onclick="selNTab('whatsapp')" id="nt-whatsapp">📱 WhatsApp</div>
+      <div class="ntab" onclick="selNTab('email')" id="nt-email">📧 Email</div>
+      <div class="ntab" onclick="selNTab('firebase')" id="nt-firebase">🔥 Firebase</div>
+      <div class="ntab" onclick="selNTab('tgbot')" id="nt-tgbot">🤖 TG Bot</div>
     </div>
     <div class="ntab-body on" id="nb-slack">
       <div class="nh"><strong>Setup Slack Webhook:</strong><br>1. Go to <a href="https://api.slack.com/apps" target="_blank">api.slack.com/apps</a> → Create App → Incoming Webhooks<br>2. Toggle "Activate Incoming Webhooks" → Add to Workspace → Choose channel<br>3. Copy the Webhook URL and paste below</div>
       <div class="fg"><label>Webhook URL <span class="req">*</span></label><input id="n-su" placeholder="https://hooks.slack.com/services/T.../B.../..."/></div>
       <div class="fg"><label>Channel (optional)</label><input id="n-sc" placeholder="#interviews"/></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testNotif('slack')">\ud83e\uddea Send Test</button><div id="n-ss" class="ns-badge ns-idle" style="display:none"></div></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testNotif('slack')">🧪 Send Test</button><div id="n-ss" class="ns-badge ns-idle" style="display:none"></div></div>
     </div>
     <div class="ntab-body" id="nb-telegram">
       <div class="nh"><strong>Setup Telegram Bot:</strong><br>1. Message <a href="https://t.me/BotFather" target="_blank">@BotFather</a> → <code>/newbot</code> → copy <strong>Bot Token</strong><br>2. Add bot to channel/group as <strong>Admin</strong><br>3. Get Chat ID from <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a><br>4. Channel IDs start with <code>-100</code></div>
       <div class="fg"><label>Bot Token <span class="req">*</span></label><input id="n-tt" placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"/></div>
       <div class="fg"><label>Chat ID <span class="req">*</span></label><input id="n-tc" placeholder="-1001234567890 or @channel_username"/></div>
       <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:9px;padding:12px 14px;margin-bottom:10px">
-        <div style="font-family:var(--font-head);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2);margin-bottom:8px">\u23f0 Pre-Event Alerts</div>
+        <div style="font-family:var(--font-head);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2);margin-bottom:8px">⏰ Pre-Event Alerts</div>
         <label style="display:flex;align-items:center;gap:9px;cursor:pointer;margin-bottom:6px"><input type="checkbox" id="n-t-pre15" style="accent-color:var(--acc);width:15px;height:15px"/><span style="font-size:.82rem">Send Telegram alert <strong>15 minutes before</strong> each event starts</span></label>
         <label style="display:flex;align-items:center;gap:9px;cursor:pointer"><input type="checkbox" id="n-t-pre60" style="accent-color:var(--acc);width:15px;height:15px"/><span style="font-size:.82rem">Send Telegram alert <strong>1 hour before</strong> each event starts</span></label>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testNotif('telegram')">\ud83e\uddea Send Test</button><div id="n-ts" class="ns-badge ns-idle" style="display:none"></div></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testNotif('telegram')">🧪 Send Test</button><div id="n-ts" class="ns-badge ns-idle" style="display:none"></div></div>
     </div>
     <div class="ntab-body" id="nb-whatsapp">
       <div class="nh"><strong>Setup WhatsApp via CallMeBot:</strong><br>1. Add <strong>+34 644 55 64 26</strong> to contacts<br>2. Send: <code>I allow callmebot to send me messages</code><br>3. You'll receive API key within minutes<br>4. Guide: <a href="https://www.callmebot.com/blog/free-api-whatsapp-messages/" target="_blank">callmebot.com →</a></div>
       <div class="fg"><label>Phone (with country code) <span class="req">*</span></label><input id="n-wp" placeholder="+919876543210"/></div>
       <div class="fg"><label>API Key <span class="req">*</span></label><input id="n-wk" placeholder="Your CallMeBot API key"/></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testNotif('whatsapp')">\ud83e\uddea Send Test</button><div id="n-ws" class="ns-badge ns-idle" style="display:none"></div></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testNotif('whatsapp')">🧪 Send Test</button><div id="n-ws" class="ns-badge ns-idle" style="display:none"></div></div>
     </div>
     <div class="ntab-body" id="nb-email">
       <div class="nh">
@@ -796,7 +796,7 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
         1. Sign up free at <a href="https://www.emailjs.com" target="_blank">emailjs.com</a> → Dashboard<br>
         2. <strong>Email Services</strong> → Add Service → Copy <strong>Service ID</strong><br>
         3. <strong>Email Templates</strong> → Create Template → Copy <strong>Template ID</strong><br>
-        4. <span style="background:#fff3cd;border-radius:4px;padding:1px 6px;color:#856404">\u2757 In template settings, set <strong>To Email</strong> field to <code>{{to_email}}</code></span><br>
+        4. <span style="background:#fff3cd;border-radius:4px;padding:1px 6px;color:#856404">❗ In template settings, set <strong>To Email</strong> field to <code>{{to_email}}</code></span><br>
         5. <strong>Account → API Keys</strong> → Copy <strong>Public Key</strong><br>
         6. Template variables: <code>{{to_name}}</code> <code>{{to_email}}</code> <code>{{username}}</code> <code>{{password}}</code> <code>{{role}}</code> <code>{{app_url}}</code> <code>{{invited_by}}</code>
       </div>
@@ -806,11 +806,11 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
         <div class="fg"><label>Template ID <span class="req">*</span></label><input id="n-ejtid" placeholder="template_xxxxxxx"/></div>
       </div>
       <div class="fg"><label>App URL (shown in email)</label><input id="n-ejurl" placeholder="https://yoursite.com or leave blank"/></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testEmailInvite()">\ud83e\uddea Send Test Email</button><div id="n-ejs" class="ns-badge ns-idle" style="display:none"></div></div>
-      <div class="notif-info" style="margin-top:12px">\u2139\ufe0f Free EmailJS tier allows <strong>200 emails/month</strong>.</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px"><button class="bp" onclick="testEmailInvite()">🧪 Send Test Email</button><div id="n-ejs" class="ns-badge ns-idle" style="display:none"></div></div>
+      <div class="notif-info" style="margin-top:12px">ℹ️ Free EmailJS tier allows <strong>200 emails/month</strong>.</div>
     </div>
     <div class="ntab-body" id="nb-firebase">
-      <div id="fb-in-app-status" style="margin-bottom:12px;padding:10px 13px;border-radius:9px;font-size:.78rem;line-height:1.6;background:var(--grbg);border:1px solid rgba(15,122,80,.2);color:var(--gr);display:none">\u2705 <strong>Firebase is live and syncing.</strong></div>
+      <div id="fb-in-app-status" style="margin-bottom:12px;padding:10px 13px;border-radius:9px;font-size:.78rem;line-height:1.6;background:var(--grbg);border:1px solid rgba(15,122,80,.2);color:var(--gr);display:none">✅ <strong>Firebase is live and syncing.</strong></div>
       <div class="fr">
         <div class="fg"><label>API Key <span class="req">*</span></label><input id="n-fb-apikey" placeholder="AIzaSy..."/></div>
         <div class="fg"><label>Project ID <span class="req">*</span></label><input id="n-fb-pid" placeholder="my-project-12345"/></div>
@@ -820,31 +820,31 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
         <div class="fg"><label>App ID <span style="font-weight:400;color:var(--ink3)">(optional)</span></label><input id="n-fb-appid" placeholder="1:123456:web:abc..."/></div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap">
-        <button class="bp" onclick="testFirebase()">\ud83e\uddea Test Connection</button>
+        <button class="bp" onclick="testFirebase()">🧪 Test Connection</button>
         <button class="bg" onclick="downloadUpdatedHTML()" id="btn-dl-html">⬇ Download Updated HTML</button>
         <div id="n-fbs" class="ns-badge ns-idle" style="display:none"></div>
       </div>
       <div style="background:linear-gradient(135deg,rgba(251,146,60,.1),rgba(245,158,11,.06));border:1.5px solid rgba(251,146,60,.3);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:.78rem;line-height:1.7;color:#92400e">
-        <strong>\ud83d\udccb One-time setup:</strong><br>
+        <strong>📋 One-time setup:</strong><br>
         1. Paste your Firebase <code>apiKey</code> and <code>projectId</code> → <strong>Save Settings</strong><br>
         2. Click <strong>⬇ Download Updated HTML</strong> → commit to GitHub<br>
-        3. Done \u2014 all devices sync automatically
+        3. Done — all devices sync automatically
       </div>
     </div>
     <div class="ntab-body" id="nb-tgbot">
       <div class="nh">
-        <strong>\ud83e\udd16 Telegram Bot \u2014 Free Slot Checking &amp; Conversational Booking</strong><br><br>
-        Let your team message your bot: <em>"free slots tomorrow"</em> or use <code>/book</code> to interactively reserve a slot \u2014 all synced live with Firebase.<br><br>
-        <strong>\u26a1 Setup (~5 min, free):</strong><br>
+        <strong>🤖 Telegram Bot — Free Slot Checking &amp; Conversational Booking</strong><br><br>
+        Let your team message your bot: <em>"free slots tomorrow"</em> or use <code>/book</code> to interactively reserve a slot — all synced live with Firebase.<br><br>
+        <strong>⚡ Setup (~5 min, free):</strong><br>
         1. Go to <a href="https://workers.cloudflare.com" target="_blank">workers.cloudflare.com</a> → Sign up → <strong>Create Worker</strong><br>
         2. In the code editor, <strong>delete all default code</strong>, paste the downloaded script → <strong>Deploy</strong><br>
         3. In Worker <strong>Settings → Variables</strong>, add 4 secrets:<br>
-        &nbsp;&nbsp;\u2022 <code>BOT_TOKEN</code> \u2014 your bot token (from Telegram tab)<br>
-        &nbsp;&nbsp;\u2022 <code>FB_PROJECT_ID</code> \u2014 Firebase project ID<br>
-        &nbsp;&nbsp;\u2022 <code>FB_API_KEY</code> \u2014 Firebase Web API key<br>
-        &nbsp;&nbsp;\u2022 <code>ADMIN_CHAT_ID</code> \u2014 your personal Telegram chat ID<br>
+        &nbsp;&nbsp;• <code>BOT_TOKEN</code> — your bot token (from Telegram tab)<br>
+        &nbsp;&nbsp;• <code>FB_PROJECT_ID</code> — Firebase project ID<br>
+        &nbsp;&nbsp;• <code>FB_API_KEY</code> — Firebase Web API key<br>
+        &nbsp;&nbsp;• <code>ADMIN_CHAT_ID</code> — your personal Telegram chat ID<br>
         4. Copy your Worker URL → paste below → click <strong>🔗 Set Webhook</strong><br><br>
-        <strong>Bot commands:</strong> <code>/today</code> · <code>/week</code> · <code>/free tomorrow</code> · <code>/slots 25/06</code> · <code>/book</code> · <code>/cancel</code><br>
+        <strong>Bot commands:</strong> <code>/today</code> · <code>/week</code> · <code>/free tomorrow</code> · <code>/slots 25/06</code> · <code>/book</code> · <code>/cancel</code> · <code>/cancel &lt;id&gt;</code><br>📌 <strong>/cancel</strong> shows your upcoming slots with IDs · <strong>/cancel &lt;id&gt;</strong> cancels it &amp; notifies the team channel<br>
         Or just type naturally: <em>"free slots next monday"</em>
       </div>
       <div class="fg">
@@ -1222,7 +1222,7 @@ function _completeLogin(f) {
   sv('l-user', ''); sv('l-pass', '');
   if (btn) { btn.textContent = 'Sign In →'; btn.disabled = false; }
   applyTheme(DB.theme || 'light');
-  if (_fbDb) fbListen();
+  if (_fbDb) { fbListen(); setInterval(pollBotCommands, 30000); }
   initApp();
 }
 
@@ -2128,6 +2128,49 @@ async function sendConflictTelegram(evData, overlaps) {
   } catch(e) {}
 }
 
+/* ─ TELEGRAM CANCEL SLOT ─ */
+async function cancelSlotViaTelegram(slotId, telegramChatId) {
+  const ev = DB.events.find(e => e.id === slotId);
+  if (!ev) return { ok: false, error: 'Slot not found' };
+  const user = DB.users.find(u => u.telegramChatId && u.telegramChatId.trim() === String(telegramChatId).trim());
+  const isAdmin = user && user.role === 'admin';
+  const isOwner = user && ev.createdBy === user.id;
+  if (!isAdmin && !isOwner) return { ok: false, error: 'Not authorized — only slot owner or admin can cancel' };
+  const idx = DB.events.findIndex(e => e.id === slotId);
+  if (idx > -1) {
+    DB.events[idx].status = 'cancelled';
+    logAct('event', `Slot cancelled via Telegram: ${ev.name}`);
+    persist();
+    const n = DB.notif || {};
+    if (n.telegram?.token && n.telegram?.chat) {
+      const msg = `🚫 *Slot Cancelled via Telegram*\n\n📌 ${ev.name}\n📅 ${fmtDate(ev.sd||ev.date)}\n⏰ ${ev.st} – ${ev.et}\n👤 ${ev.cand||'—'}\n🏢 ${ev.comp||'—'}\n\nCancelled by: ${user?.name || 'Telegram user'}\n— UiPath Slots`;
+      try {
+        await fetch(`https://api.telegram.org/bot${n.telegram.token.trim()}/sendMessage`, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ chat_id: n.telegram.chat.trim(), text: msg, parse_mode: 'Markdown' })
+        });
+      } catch(e) {}
+    }
+    if (typeof SEC !== 'undefined' && SEC) { showSec(SEC); updateCounts(); buildMiniCal(); }
+    return { ok: true, slotName: ev.name };
+  }
+  return { ok: false, error: 'Failed to cancel' };
+}
+
+async function pollBotCommands() {
+  if (!_fbDb) return;
+  try {
+    const data = await fbGet('uipath', 'bot_commands');
+    if (!data || !data.action || data.processedAt) return;
+    if (data.action === 'cancel' && data.slotId && data.telegramChatId) {
+      const result = await cancelSlotViaTelegram(data.slotId, data.telegramChatId);
+      await fbSet('uipath', 'bot_response', { ...result, action:'cancel', slotId: data.slotId, processedAt: Date.now() });
+      await fbSet('uipath', 'bot_commands', { action: null, processedAt: Date.now() });
+    }
+  } catch(e) {}
+}
+
+
 function deleteEvtM() {
   if (!editEvtId) return;
   const ev = DB.events.find(e=>e.id===editEvtId);
@@ -2651,6 +2694,8 @@ function openUsrModal(uid=null) {
     if (invRow) invRow.style.display = 'none';
     if (noEmailRow) noEmailRow.style.display = 'none';
   }
+  const saveBtn = g('um-save-btn');
+  if (saveBtn) saveBtn.innerHTML = u ? '💾 Save Changes' : '💾 Save & Send Invite';
   openOv('ov-usr');
 }
 g('u-role').addEventListener('change', updateRoleHint);
@@ -2676,11 +2721,12 @@ function saveUser() {
   logAct('user', editUsrId?`Updated user: ${name}`:`Created user: ${name} (${email})`);
   const upd = DB.users.find(u=>u.id===CU.id);
   if (upd) { CU=upd; initApp(); if (SEC==='users') renderUsers(g('content')); }
+  // Only send invite for brand-new users - never when editing name/role/etc
   if (isNew && email && pw) {
     toast('Sending invitation email…', 'info');
     sendInviteEmail({ name, username:un, password:pw, role, email });
   } else {
-    toast(editUsrId?'✓ User updated':'✓ User created');
+    toast(editUsrId ? '✓ User updated' : '✓ User created');
   }
   editUsrId = null;
 }
