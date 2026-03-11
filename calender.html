@@ -843,9 +843,18 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
         &nbsp;&nbsp;• <code>FB_PROJECT_ID</code> — Firebase project ID<br>
         &nbsp;&nbsp;• <code>FB_API_KEY</code> — Firebase Web API key<br>
         &nbsp;&nbsp;• <code>ADMIN_CHAT_ID</code> — your personal Telegram chat ID<br>
+        &nbsp;&nbsp;• <code>SLACK_WEBHOOK</code> — (optional) Slack incoming webhook URL<br>
+        &nbsp;&nbsp;• <code>CHANNEL_CHAT_ID</code> — (optional) group/channel chat ID for notifications<br>
         4. Copy your Worker URL → paste below → click <strong>🔗 Set Webhook</strong><br><br>
-        <strong>Bot commands:</strong> <code>/today</code> · <code>/week</code> · <code>/free tomorrow</code> · <code>/slots 25/06</code> · <code>/book</code> · <code>/cancel</code> · <code>/cancel &lt;id&gt;</code><br>📌 <strong>/cancel</strong> shows your upcoming slots with IDs · <strong>/cancel &lt;id&gt;</strong> cancels it &amp; notifies the team channel<br>
-        Or just type naturally: <em>"free slots next monday"</em>
+        <strong>Bot commands (v3.0):</strong><br>
+        📅 <code>/today</code> · <code>/tomorrow</code> · <code>/upcoming</code> · <code>/week</code> · <code>/slots 25/06</code> · <code>/free tomorrow</code><br>
+        👤 <code>/myslots</code> · <code>/status</code> · <code>/remind</code> · <code>/book</code><br>
+        ✏️ <code>/cancel &lt;ID&gt;</code> · <code>/reschedule &lt;ID&gt;</code><br>
+        📊 <code>/stats</code> · <code>/help</code><br>
+        🔐 Admin: <code>/whobooked &lt;date&gt; &lt;time&gt;</code> · <code>/clear &lt;date&gt;</code> · <code>/announce &lt;msg&gt;</code><br>
+        🔒 Users verify via <code>/start</code> · Admins require password login<br>
+        ⏱ <strong>Rules:</strong> 9 AM–9 PM · 30-min buffer between slots · min 30-min duration<br><br>
+        💡 Or just type naturally: <em>"free slots tomorrow"</em>, <em>"book friday 2pm to 3pm for John from TCS"</em>
       </div>
       <div class="fg">
         <label>Worker URL <span style="font-weight:400;color:var(--ink3)">(after deploying)</span></label>
@@ -2391,34 +2400,1734 @@ function selNTab(ch) {
   });
 }
 
+
+// ─ Embedded Worker JS v3.0 ─
+const _WORKER_JS = `// ═══════════════════════════════════════════════════════════════
+// UiPath Interview Slots — Telegram Bot Worker  v3.0
+// Deploy FREE at: https://workers.cloudflare.com
+// ═══════════════════════════════════════════════════════════════
+//
+// SETUP STEPS:
+// 1. Go to https://dash.cloudflare.com → Workers & Pages → Create Worker
+// 2. Paste this file → Deploy
+// 3. Go to Worker Settings → Variables → add these secrets:
+//      BOT_TOKEN       = your Telegram bot token (from @BotFather)
+//      FB_PROJECT_ID   = your Firebase project ID
+//      FB_API_KEY      = your Firebase Web API key
+//      ADMIN_CHAT_ID   = your personal Telegram chat ID (for admin DMs)
+//      CHANNEL_CHAT_ID = your group/channel chat ID (for slot notifications)
+// 4. Set Telegram webhook:
+//    https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=<WORKER_URL>
+// 5. Done! Test by messaging your bot: /start
+//
+// ── COMMANDS ────────────────────────────────────────────────────
+//   /start              — Verify your app username and get started
+//   /help               — Full command reference
+//   /today              — Today's booked slots
+//   /tomorrow           — Tomorrow's schedule
+//   /week               — 7-day overview with free/busy counts
+//   /upcoming           — Next 3 days at a glance
+//   /free <date>        — Free time windows on a date (30-min buffer enforced)
+//   /slots <date>       — All booked slots on a date
+//   /book               — Interactive booking with inline buttons
+//   /myslots            — Your own booked slots
+//   /cancel <ID>        — Cancel one of your booked slots by ID
+//   /reschedule <ID>    — Move a slot to a new date/time
+//   /status             — Show your account info & session
+//   /remind             — Toggle slot reminders (DM before your slot)
+//
+// ── ADMIN ONLY ──────────────────────────────────────────────────
+//   /whobooked <date> <time>  — See who owns a slot
+//   /clear <date>             — Cancel ALL slots on a date
+//   /announce <message>       — Broadcast to all verified users
+//   /stats                    — Booking statistics overview
+//
+// ── NATURAL LANGUAGE ────────────────────────────────────────────
+//   "free slots tomorrow"
+//   "book a slot friday 2pm to 3pm for John from TCS"
+//   "slots on 25/06"
+//   "available next monday"
+//   "reschedule <ID> to friday 3pm"
+//
+// ── SLOT RULES ──────────────────────────────────────────────────
+//   • Business hours: 9:00 AM – 9:00 PM
+//   • 30-minute buffer enforced after every booked slot
+//   • Minimum slot duration: 30 minutes
+// ═══════════════════════════════════════════════════════════════
+
+// ── Constants ─────────────────────────────────────────────────
+const BUSINESS_START_HR = 9;   // 9:00 AM
+const BUSINESS_END_HR   = 21;  // 9:00 PM
+const BUFFER_MINS       = 30;  // 30-min gap after each slot
+const MIN_SLOT_MINS     = 30;  // minimum booking duration
+
+// ── Firestore REST helpers ─────────────────────────────────────
+const FB_BASE = (pid) =>
+  \`https://firestore.googleapis.com/v1/projects/\${pid}/databases/(default)/documents\`;
+
+async function fsGet(pid, col, docId) {
+  const res = await fetch(\`\${FB_BASE(pid)}/\${col}/\${docId}\`);
+  if (!res.ok) return null;
+  const json = await res.json();
+  return fsDecodeDoc(json.fields || {});
+}
+
+async function fsSet(pid, apiKey, col, docId, data) {
+  const res = await fetch(\`\${FB_BASE(pid)}/\${col}/\${docId}?key=\${apiKey}\`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: fsEncodeDoc(data) })
+  });
+  return res.ok;
+}
+
+function fsDecodeValue(v) {
+  if (v.stringValue  !== undefined) return v.stringValue;
+  if (v.integerValue !== undefined) return parseInt(v.integerValue);
+  if (v.doubleValue  !== undefined) return v.doubleValue;
+  if (v.booleanValue !== undefined) return v.booleanValue;
+  if (v.nullValue    !== undefined) return null;
+  if (v.arrayValue)  return (v.arrayValue.values || []).map(fsDecodeValue);
+  if (v.mapValue)    return fsDecodeDoc(v.mapValue.fields || {});
+  return null;
+}
+function fsDecodeDoc(fields) {
+  const out = {};
+  for (const [k, v] of Object.entries(fields)) out[k] = fsDecodeValue(v);
+  return out;
+}
+function fsEncodeValue(v) {
+  if (v === null || v === undefined) return { nullValue: null };
+  if (typeof v === 'string')  return { stringValue: v };
+  if (typeof v === 'boolean') return { booleanValue: v };
+  if (typeof v === 'number')  return Number.isInteger(v) ? { integerValue: v.toString() } : { doubleValue: v };
+  if (Array.isArray(v))       return { arrayValue: { values: v.map(fsEncodeValue) } };
+  if (typeof v === 'object')  return { mapValue: { fields: fsEncodeDoc(v) } };
+  return { stringValue: String(v) };
+}
+function fsEncodeDoc(data) {
+  const fields = {};
+  for (const [k, v] of Object.entries(data)) fields[k] = fsEncodeValue(v);
+  return fields;
+}
+
+// ── Telegram helpers ───────────────────────────────────────────
+async function tgSend(token, chatId, text, extra = {}) {
+  return fetch(\`https://api.telegram.org/bot\${token}/sendMessage\`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', ...extra })
+  });
+}
+
+async function tgEdit(token, chatId, messageId, text, extra = {}) {
+  return fetch(\`https://api.telegram.org/bot\${token}/editMessageText\`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, message_id: messageId, text, parse_mode: 'HTML', ...extra })
+  });
+}
+
+async function tgAnswer(token, callbackQueryId, text = '') {
+  return fetch(\`https://api.telegram.org/bot\${token}/answerCallbackQuery\`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ callback_query_id: callbackQueryId, text })
+  });
+}
+
+// ── Inline keyboard builders ───────────────────────────────────
+function yesNoKeyboard(yesData, noData) {
+  return {
+    inline_keyboard: [[
+      { text: '✅ Yes, Confirm', callback_data: yesData },
+      { text: '❌ No, Cancel',   callback_data: noData  }
+    ]]
+  };
+}
+
+function dateQuickKeyboard() {
+  const today = new Date();
+  const row1 = [], row2 = [];
+  for (let i = 0; i < 4; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() + i);
+    const label = i === 0 ? '📌 Today' : i === 1 ? '⏭ Tomorrow'
+      : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    const ds = isoD(d);
+    (i < 2 ? row1 : row2).push({ text: label, callback_data: \`date:\${ds}\` });
+  }
+  const row3 = [];
+  let checked = 0, offset = 4;
+  while (checked < 3 && offset < 14) {
+    const d = new Date(today); d.setDate(d.getDate() + offset);
+    const dow = d.getDay();
+    if (dow !== 0 && dow !== 6) {
+      row3.push({ text: d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' }), callback_data: \`date:\${isoD(d)}\` });
+      checked++;
+    }
+    offset++;
+  }
+  return {
+    inline_keyboard: [
+      row1, row2,
+      ...(row3.length ? [row3] : []),
+      [{ text: '✏️ Type a date instead', callback_data: 'date:manual' }]
+    ]
+  };
+}
+
+function timeQuickKeyboard(prefix, freeWindows = []) {
+  const slots = [];
+  for (let h = BUSINESS_START_HR; h < BUSINESS_END_HR; h++) {
+    slots.push(\`\${String(h).padStart(2,'0')}:00\`);
+    if (h < BUSINESS_END_HR - 1) slots.push(\`\${String(h).padStart(2,'0')}:30\`);
+  }
+  const isFree = (t) => {
+    if (!freeWindows.length) return true;
+    return freeWindows.some(w => toMin(t) >= toMin(w.start) && toMin(t) < toMin(w.end));
+  };
+  const rows = [];
+  for (let i = 0; i < slots.length; i += 4) {
+    rows.push(slots.slice(i, i + 4).map(t => ({
+      text: isFree(t) ? \`🟢 \${fmtTime(t)}\` : \`🔴 \${fmtTime(t)}\`,
+      callback_data: \`\${prefix}:\${t}\`
+    })));
+  }
+  rows.push([{ text: '✏️ Type a time instead', callback_data: \`\${prefix}:manual\` }]);
+  return { inline_keyboard: rows };
+}
+
+function durationKeyboard() {
+  return {
+    inline_keyboard: [
+      [
+        { text: '⏱ 30 min',  callback_data: 'duration:30'  },
+        { text: '⏱ 45 min',  callback_data: 'duration:45'  },
+        { text: '⏱ 1 hour',  callback_data: 'duration:60'  },
+      ],
+      [
+        { text: '⏱ 1.5 hrs', callback_data: 'duration:90'  },
+        { text: '⏱ 2 hours', callback_data: 'duration:120' },
+        { text: '✏️ Custom end time', callback_data: 'duration:custom' },
+      ]
+    ]
+  };
+}
+
+function cancelListKeyboard(slots, appUserId) {
+  const mine = slots.filter(e =>
+    e.createdBy === appUserId ||
+    e.createdBy === 'telegram_bot' ||
+    e.bookedByAppUser === appUserId
+  ).slice(0, 8);
+  if (!mine.length) return null;
+  const rows = mine.map(e => [{
+    text: \`🗓 \${fmtDateShort(e.sd || e.date)}  ⏰ \${fmtTime(e.st)}–\${fmtTime(e.et)}  👤 \${e.cand || '—'}\`,
+    callback_data: \`cancelslot:\${e.id}\`
+  }]);
+  rows.push([{ text: '🚫 Never mind', callback_data: 'cancelslot:abort' }]);
+  return { inline_keyboard: rows };
+}
+
+function rescheduleListKeyboard(slots, appUserId) {
+  const mine = slots.filter(e =>
+    (e.createdBy === appUserId || e.bookedByAppUser === appUserId) &&
+    (e.status || 'confirmed') !== 'cancelled'
+  ).slice(0, 8);
+  if (!mine.length) return null;
+  const rows = mine.map(e => [{
+    text: \`📅 \${fmtDateShort(e.sd || e.date)}  ⏰ \${fmtTime(e.st)}–\${fmtTime(e.et)}  👤 \${e.cand || '—'}\`,
+    callback_data: \`reschedpick:\${e.id}\`
+  }]);
+  rows.push([{ text: '🚫 Never mind', callback_data: 'reschedpick:abort' }]);
+  return { inline_keyboard: rows };
+}
+
+// ── Date/time helpers ──────────────────────────────────────────
+function isoD(d) { return d.toISOString().split('T')[0]; }
+
+function fmtDate(ds) {
+  if (!ds) return '—';
+  return new Date(ds + 'T12:00:00').toLocaleDateString('en-US',
+    { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function fmtDateShort(ds) {
+  if (!ds) return '—';
+  return new Date(ds + 'T12:00:00').toLocaleDateString('en-US',
+    { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function fmtTime(t) {
+  if (!t) return '—';
+  const [h, m] = t.split(':').map(Number);
+  return \`\${h % 12 || 12}:\${String(m).padStart(2, '0')} \${h >= 12 ? 'PM' : 'AM'}\`;
+}
+
+function fmtDuration(st, et) {
+  const diff = toMin(et) - toMin(st);
+  if (diff < 60) return \`\${diff} min\`;
+  const hrs = Math.floor(diff / 60), mins = diff % 60;
+  return mins ? \`\${hrs}h \${mins}m\` : \`\${hrs} hr\${hrs > 1 ? 's' : ''}\`;
+}
+
+function parseDate(str) {
+  if (!str) return null;
+  str = str.trim().toLowerCase().replace(/^(on|for|this|at)\\s+/i, '');
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  if (str === 'today')     return today;
+  if (str === 'tomorrow')  { const d = new Date(today); d.setDate(d.getDate() + 1); return d; }
+  if (str === 'yesterday') { const d = new Date(today); d.setDate(d.getDate() - 1); return d; }
+  const days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+  for (let i = 0; i < days.length; i++) {
+    if (str.includes(days[i])) {
+      const d = new Date(today);
+      const diff = (i - d.getDay() + 7) % 7 || 7;
+      d.setDate(d.getDate() + diff);
+      return d;
+    }
+  }
+  const m1 = str.match(/^(\\d{4})-(\\d{2})-(\\d{2})$/);
+  if (m1) return new Date(str + 'T00:00:00');
+  const m2 = str.match(/^(\\d{1,2})[\\/\\-](\\d{1,2})(?:[\\/\\-](\\d{4}))?$/);
+  if (m2) return new Date(m2[3] ? parseInt(m2[3]) : today.getFullYear(), parseInt(m2[2]) - 1, parseInt(m2[1]));
+  const parsed = new Date(str);
+  if (!isNaN(parsed)) return parsed;
+  return null;
+}
+
+function parseTime(str) {
+  const m = str.trim().match(/(\\d{1,2})(?::(\\d{2}))?\\s*(am|pm)?/i);
+  if (!m) return null;
+  let h = parseInt(m[1]), min = parseInt(m[2] || '0');
+  const ap = (m[3] || '').toLowerCase();
+  if (ap === 'pm' && h < 12) h += 12;
+  if (ap === 'am' && h === 12) h = 0;
+  if (h > 23 || min > 59) return null;
+  return \`\${String(h).padStart(2, '0')}:\${String(min).padStart(2, '0')}\`;
+}
+
+function toMin(t)  { const [h, m] = (t || '00:00').split(':').map(Number); return h * 60 + m; }
+function fromMin(m){ return \`\${String(Math.floor(m / 60)).padStart(2, '0')}:\${String(m % 60).padStart(2, '0')}\`; }
+
+function addMinutes(t, mins) {
+  return fromMin(toMin(t) + mins);
+}
+
+function isWithinBusinessHours(st, et) {
+  const startLimit = BUSINESS_START_HR * 60;
+  const endLimit   = BUSINESS_END_HR   * 60;
+  return toMin(st) >= startLimit && toMin(et) <= endLimit && toMin(st) < toMin(et);
+}
+
+function getSlotsForDate(events, ds) {
+  return (events || []).filter(e => {
+    const sd = e.sd || e.date || '', ed = e.ed || e.date || sd;
+    return ds >= sd && ds <= ed && (e.status || 'confirmed') !== 'cancelled';
+  }).sort((a, b) => (a.st || '').localeCompare(b.st || ''));
+}
+
+// ── Core: free windows with 30-min buffer ─────────────────────
+function getFreeWindows(slots) {
+  const start = BUSINESS_START_HR * 60;
+  const end   = BUSINESS_END_HR   * 60;
+  const blocked = slots
+    .filter(e => (e.status || 'confirmed') !== 'cancelled')
+    .map(e => ({ s: toMin(e.st), e: toMin(e.et) + BUFFER_MINS }))
+    .sort((a, b) => a.s - b.s);
+  const free = [];
+  let cur = start;
+  for (const b of blocked) {
+    if (b.s > cur + MIN_SLOT_MINS) {
+      free.push({ start: fromMin(cur), end: fromMin(b.s) });
+    }
+    cur = Math.max(cur, b.e);
+  }
+  if (cur + MIN_SLOT_MINS <= end) {
+    free.push({ start: fromMin(cur), end: fromMin(end) });
+  }
+  return free;
+}
+
+function hasOverlap(events, date, st, et) {
+  return (events || []).some(e => {
+    const sd = e.sd || e.date || '', ed = e.ed || e.date || sd;
+    if (date < sd || date > ed) return false;
+    if ((e.status || 'confirmed') === 'cancelled') return false;
+    const existEnd = toMin(e.et) + BUFFER_MINS;
+    return toMin(st) < existEnd && toMin(et) > toMin(e.st);
+  });
+}
+
+// ── Natural language booking parser ───────────────────────────
+function parseNLBooking(text) {
+  const result = {};
+  const timeRange = text.match(/(\\d{1,2}(?::\\d{2})?\\s*(?:am|pm)?)\\s*(?:to|-|–)\\s*(\\d{1,2}(?::\\d{2})?\\s*(?:am|pm)?)/i);
+  if (timeRange) {
+    result.startTime = parseTime(timeRange[1]);
+    result.endTime   = parseTime(timeRange[2]);
+  }
+  const dateWords = ['today','tomorrow','monday','tuesday','wednesday','thursday','friday','saturday','sunday',
+    /\\d{1,2}\\/\\d{1,2}/, /\\d{4}-\\d{2}-\\d{2}/];
+  for (const pat of dateWords) {
+    const re = typeof pat === 'string' ? new RegExp('\\\\b' + pat + '\\\\b', 'i') : pat;
+    const m = text.match(re);
+    if (m) { const d = parseDate(m[0]); if (d) { result.date = isoD(d); break; } }
+  }
+  const forMatch  = text.match(/\\bfor\\s+([A-Z][a-zA-Z\\s]{1,30?}?)(?:\\s+from\\s|\\s+at\\s|$)/i);
+  if (forMatch) result.candidate = forMatch[1].trim();
+  const fromMatch = text.match(/\\bfrom\\s+([A-Z][a-zA-Z\\s&.]{1,30?}?)(?:\\s+on\\s|\\s+at\\s|$)/i);
+  if (fromMatch) result.company = fromMatch[1].trim();
+  return result;
+}
+
+// ── Session store ──────────────────────────────────────────────
+const sessions = new Map();
+function getSession(chatId) {
+  if (!sessions.has(chatId))
+    sessions.set(chatId, { step: 'idle', data: {}, verified: false, appUser: null, reminders: true });
+  return sessions.get(chatId);
+}
+function setStep(chatId, step, data) {
+  const sess = getSession(chatId);
+  sessions.set(chatId, { ...sess, step, data: data || {} });
+}
+function clearSession(chatId) {
+  const sess = getSession(chatId);
+  sessions.set(chatId, { step: 'idle', data: {}, verified: sess.verified, appUser: sess.appUser, reminders: sess.reminders });
+}
+function fullResetSession(chatId) {
+  sessions.set(chatId, { step: 'idle', data: {}, verified: false, appUser: null, reminders: true });
+}
+
+// ── Username verification ──────────────────────────────────────
+async function findAppUser(env, username) {
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  if (!db) return null;
+  const users = Array.isArray(db.users) ? db.users : [];
+  return users.find(u =>
+    (u.username && u.username.toLowerCase() === username.toLowerCase()) ||
+    (u.name     && u.name.toLowerCase()     === username.toLowerCase()) ||
+    (u.id       && u.id.toLowerCase()       === username.toLowerCase())
+  ) || null;
+}
+
+// ── Notify channel when a slot is booked ──────────────────────
+async function notifyChannel(env, token, d, bookerName, source = 'Telegram Bot') {
+  const msg =
+    \`🆕 <b>New Slot Booked</b> <i>via \${source}</i>\\n\\n\` +
+    \`📅 <b>Date:</b> \${fmtDate(d.date || d.sd)}\\n\` +
+    \`⏰ <b>Time:</b> \${fmtTime(d.startTime || d.st)} – \${fmtTime(d.endTime || d.et)}\\n\` +
+    \`⏱ <b>Duration:</b> \${fmtDuration(d.startTime || d.st, d.endTime || d.et)}\\n\` +
+    \`👤 <b>Candidate:</b> \${d.candidate || d.cand || '—'}\\n\` +
+    \`🏢 <b>Company:</b> \${d.company || d.comp || '—'}\\n\` +
+    \`👥 <b>Booked by:</b> \${bookerName}\`;
+  if (env.CHANNEL_CHAT_ID)
+    await tgSend(token, env.CHANNEL_CHAT_ID, msg);
+  if (env.ADMIN_CHAT_ID && env.ADMIN_CHAT_ID !== env.CHANNEL_CHAT_ID)
+    await tgSend(token, env.ADMIN_CHAT_ID, msg);
+}
+
+// ── /slots — show booked slots for a date ─────────────────────
+async function cmdSlots(env, token, chatId, dateStr, freeOnly, appUser = null) {
+  const date = parseDate(dateStr) || new Date();
+  const ds = isoD(date);
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  const slots = getSlotsForDate(db?.events || [], ds);
+  const dateLabel = fmtDate(ds);
+  const isToday = ds === isoD(new Date());
+  const isTomorrow = ds === isoD(new Date(Date.now() + 86400000));
+  const dayTag = isToday ? ' <b>(Today)</b>' : isTomorrow ? ' <b>(Tomorrow)</b>' : '';
+
+  if (freeOnly) {
+    const free = getFreeWindows(slots);
+    if (!free.length) {
+      return tgSend(token, chatId,
+        \`📅 <b>\${dateLabel}</b>\${dayTag}\\n\\n\` +
+        (slots.length
+          ? \`❌ <b>No free windows</b> — all \${slots.length} slot(s) are fully booked.\\n\\n<i>Note: 30-min buffer is required between slots.</i>\\n\\nType /book to override (admin only).\`
+          : \`✅ <b>Entire day is free!</b>\\n\\n🕘 Business hours: 9:00 AM – 9:00 PM\\nType /book to reserve a slot.\`)
+      );
+    }
+    const lines = free.map(f => {
+      const dur = toMin(f.end) - toMin(f.start);
+      const slots30 = Math.floor(dur / 30);
+      return \`  🟢 \${fmtTime(f.start)} – \${fmtTime(f.end)}  <i>(\${Math.floor(dur/60)}h\${dur%60 ? \` \${dur%60}m\` : ''} · \${slots30} slot\${slots30!==1?'s':''})</i>\`;
+    }).join('\\n');
+    return tgSend(token, chatId,
+      \`📅 <b>\${dateLabel}</b>\${dayTag}\\n\\n\` +
+      \`✅ <b>\${free.length} free window\${free.length !== 1 ? 's' : ''}</b> <i>(30-min buffer enforced)</i>:\\n\${lines}\\n\\n\` +
+      (slots.length ? \`<i>\${slots.length} slot\${slots.length !== 1 ? 's' : ''} already booked</i>\\n\\n\` : '') +
+      \`Type /book to reserve a slot.\`
+    );
+  }
+
+  if (!slots.length) {
+    return tgSend(token, chatId,
+      \`📅 <b>\${dateLabel}</b>\${dayTag}\\n\\n✅ No slots booked.\\n\\n\` +
+      \`🕘 Business hours: 9:00 AM – 9:00 PM\\n\` +
+      \`Type <code>/free \${dateStr || 'today'}</code> to see free windows.\\nType /book to book a slot.\`
+    );
+  }
+
+  const icons = { confirmed: '🟢', draft: '🟡', cancelled: '🔴', completed: '⚫' };
+  const isAdminUser = appUser?.role === 'admin';
+  const lines = slots.map((e, i) => {
+    const statusIcon = icons[e.status || 'confirmed'] || '🔵';
+    const dur = fmtDuration(e.st, e.et);
+    const timeStr = \`<b>\${fmtTime(e.st)} – \${fmtTime(e.et)}</b> <i>(\${dur})</i>\`;
+    if (isAdminUser) {
+      return \`\${i + 1}. \${statusIcon} \${timeStr}\\n\` +
+        \`   👤 <b>\${e.cand || '—'}</b> · 🏢 \${e.comp || '—'}\\n\` +
+        \`   📍 \${e.loc || 'TBD'} · \${e.wm || 'onsite'} · <code>\${e.id}</code>\`;
+    }
+    return \`\${i + 1}. \${statusIcon} \${timeStr}\\n   🔒 Reserved · 📍 \${e.loc || '—'} · \${e.wm || 'onsite'}\`;
+  }).join('\\n\\n');
+
+  const free = getFreeWindows(slots);
+  const freeLine = free.length
+    ? \`\\n\\n🟢 <b>Free windows:</b>\\n\${free.map(f => \`  \${fmtTime(f.start)}–\${fmtTime(f.end)}\`).join('  ')}\`
+    : '\\n\\n❌ <b>No free windows</b> today';
+
+  return tgSend(token, chatId,
+    \`📅 <b>\${dateLabel}</b>\${dayTag} — \${slots.length} slot\${slots.length !== 1 ? 's' : ''}\\n\\n\${lines}\${freeLine}\\n\\n\` +
+    \`<i>30-min buffer after each slot · Business hours 9 AM–9 PM</i>\\nType /book to book a slot.\`
+  );
+}
+
+// ── /upcoming — next 3 days quick view ────────────────────────
+async function cmdUpcoming(env, token, chatId, appUser) {
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  const events = db?.events || [];
+  const today  = new Date(); today.setHours(0, 0, 0, 0);
+  const lines  = [];
+
+  for (let i = 0; i < 3; i++) {
+    const d   = new Date(today); d.setDate(d.getDate() + i);
+    const ds  = isoD(d);
+    const daySlots = getSlotsForDate(events, ds);
+    const free = getFreeWindows(daySlots);
+    const label = i === 0 ? '📌 Today' : i === 1 ? '⏭ Tomorrow'
+      : \`📅 \${d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}\`;
+
+    lines.push(\`<b>\${label}</b> — \${fmtDate(ds).split(',')[0]}\`);
+    if (!daySlots.length) {
+      lines.push(\`   ✅ Fully free (9 AM–9 PM)\`);
+    } else {
+      daySlots.forEach(e =>
+        lines.push(\`   🔴 \${fmtTime(e.st)}–\${fmtTime(e.et)} · \${appUser?.role === 'admin' ? (e.cand || '—') : 'Reserved'}\`)
+      );
+      if (free.length) {
+        lines.push(\`   🟢 Free: \${free.map(f => \`\${fmtTime(f.start)}–\${fmtTime(f.end)}\`).join(', ')}\`);
+      } else {
+        lines.push(\`   ❌ Fully booked\`);
+      }
+    }
+    lines.push('');
+  }
+
+  return tgSend(token, chatId,
+    \`🗓 <b>Upcoming 3 Days</b>\\n<i>30-min buffer enforced · 9 AM–9 PM</i>\\n\\n\${lines.join('\\n')}\\n\` +
+    \`Use /free &lt;date&gt; for details · /book to reserve.\`
+  );
+}
+
+// ── /week overview ─────────────────────────────────────────────
+async function cmdWeek(env, token, chatId) {
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  const events = db?.events || [];
+  const today  = new Date(); today.setHours(0, 0, 0, 0);
+  const lines  = [];
+
+  for (let i = 0; i < 7; i++) {
+    const d   = new Date(today); d.setDate(d.getDate() + i);
+    const ds  = isoD(d);
+    const daySlots = getSlotsForDate(events, ds);
+    const free = getFreeWindows(daySlots);
+    const label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    const tag   = i === 0 ? ' 📌' : i === 1 ? ' ⏭' : '';
+    const bar   = daySlots.length === 0 ? '🟢🟢🟢🟢🟢' :
+                  free.length === 0     ? '🔴🔴🔴🔴🔴' :
+                  daySlots.length <= 2  ? '🟡🟡🟢🟢🟢' : '🔴🔴🟡🟢🟢';
+    lines.push(\`\${bar} <b>\${label}</b>\${tag} — \${daySlots.length} booked · \${free.length} free window\${free.length!==1?'s':''}\`);
+  }
+
+  return tgSend(token, chatId,
+    \`📆 <b>7-Day Overview</b>\\n<i>🟢 Free  🟡 Busy  🔴 Full</i>\\n\\n\${lines.join('\\n')}\\n\\n\` +
+    \`Use <code>/free &lt;date&gt;</code> for details or /book to reserve.\`
+  );
+}
+
+// ── /myslots — show user's own booked slots ────────────────────
+async function cmdMySlots(env, token, chatId, appUser) {
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  const events = db?.events || [];
+  const now    = new Date();
+  const userId = appUser.id || appUser.username;
+
+  const mine = events.filter(e =>
+    (e.createdBy === userId || e.bookedByAppUser === userId) &&
+    (e.status || 'confirmed') !== 'cancelled' &&
+    new Date((e.ed || e.sd || e.date) + 'T' + (e.et || '23:59')) >= now
+  ).sort((a, b) => (a.sd || a.date).localeCompare(b.sd || b.date) || a.st.localeCompare(b.st));
+
+  if (!mine.length) {
+    return tgSend(token, chatId,
+      \`📋 <b>My Upcoming Slots</b>\\n\\n✅ You have no upcoming booked slots.\\n\\nType /book to reserve one.\`
+    );
+  }
+
+  const lines = mine.slice(0, 10).map((e, i) =>
+    \`\${i + 1}. 📅 <b>\${fmtDateShort(e.sd || e.date)}</b> · ⏰ <b>\${fmtTime(e.st)} – \${fmtTime(e.et)}</b> <i>(\${fmtDuration(e.st, e.et)})</i>\\n\` +
+    \`   👤 \${e.cand || '—'} · 🏢 \${e.comp || '—'}\\n\` +
+    \`   <code>ID: \${e.id}</code>\`
+  ).join('\\n\\n');
+
+  const sess = getSession(chatId);
+  const reminderStatus = sess.reminders !== false ? '🔔 On' : '🔕 Off';
+
+  return tgSend(token, chatId,
+    \`📋 <b>My Upcoming Slots (\${mine.length})</b>\\n\\n\${lines}\\n\\n\` +
+    \`Reminders: \${reminderStatus}\\n\` +
+    \`Cancel: <code>/cancel &lt;ID&gt;</code>  ·  Reschedule: <code>/reschedule &lt;ID&gt;</code>\\n\` +
+    \`Toggle reminders: /remind\`
+  );
+}
+
+// ── /status — show session/account info ───────────────────────
+async function cmdStatus(env, token, chatId, appUser) {
+  const sess = getSession(chatId);
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  const events = db?.events || [];
+  const userId = appUser.id || appUser.username;
+  const now = new Date();
+
+  const myTotal = events.filter(e =>
+    (e.createdBy === userId || e.bookedByAppUser === userId) &&
+    (e.status || 'confirmed') !== 'cancelled'
+  ).length;
+  const myUpcoming = events.filter(e =>
+    (e.createdBy === userId || e.bookedByAppUser === userId) &&
+    (e.status || 'confirmed') !== 'cancelled' &&
+    new Date((e.ed || e.sd || e.date) + 'T' + (e.et || '23:59')) >= now
+  ).length;
+
+  return tgSend(token, chatId,
+    \`👤 <b>Account Status</b>\\n\\n\` +
+    \`🆔 ID: <code>\${appUser.id || appUser.username}</code>\\n\` +
+    \`📛 Name: <b>\${appUser.name || '—'}</b>\\n\` +
+    \`🎭 Role: <b>\${appUser.role || 'user'}</b>\\n\` +
+    \`📧 Email: \${appUser.email || '—'}\\n\\n\` +
+    \`📊 <b>Your Stats:</b>\\n\` +
+    \`   📅 Upcoming slots: <b>\${myUpcoming}</b>\\n\` +
+    \`   📋 Total booked: <b>\${myTotal}</b>\\n\` +
+    \`   🔔 Reminders: <b>\${sess.reminders !== false ? 'On' : 'Off'}</b>\\n\\n\` +
+    \`⚙️ Business hours: 9:00 AM – 9:00 PM\\n\` +
+    \`⏱ Buffer between slots: 30 minutes\\n\\n\` +
+    \`Type /remind to toggle reminders.\`
+  );
+}
+
+// ── /remind — toggle reminders ────────────────────────────────
+function cmdRemind(token, chatId) {
+  const sess = getSession(chatId);
+  const wasOn = sess.reminders !== false;
+  sessions.set(chatId, { ...sess, reminders: !wasOn });
+  return tgSend(token, chatId,
+    !wasOn
+      ? \`🔔 <b>Reminders enabled!</b>\\n\\nYou'll receive a DM before your upcoming slots.\`
+      : \`🔕 <b>Reminders disabled.</b>\\n\\nYou won't receive slot reminder messages.\\n\\nType /remind to turn them back on.\`
+  );
+}
+
+// ── /stats — admin: booking statistics ────────────────────────
+async function cmdStats(env, token, chatId, appUser) {
+  if (appUser.role !== 'admin') {
+    return tgSend(token, chatId, \`🔒 This command is for admins only.\`);
+  }
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  const events = db?.events || [];
+  const users  = db?.users  || [];
+  const now    = new Date();
+  const today  = isoD(now);
+
+  const active    = events.filter(e => (e.status || 'confirmed') !== 'cancelled');
+  const upcoming  = active.filter(e => (e.sd || e.date || '') >= today);
+  const todaySlots= getSlotsForDate(events, today);
+  const cancelled = events.filter(e => e.status === 'cancelled').length;
+
+  const bookerMap = {};
+  for (const e of active) {
+    const uid = e.createdBy || 'unknown';
+    bookerMap[uid] = (bookerMap[uid] || 0) + 1;
+  }
+  const topBookers = Object.entries(bookerMap)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([uid, count]) => {
+      const u = users.find(u => (u.id || u.username) === uid);
+      return \`   \${u?.name || uid}: \${count} slot\${count!==1?'s':''}\`;
+    }).join('\\n');
+
+  return tgSend(token, chatId,
+    \`📊 <b>Booking Statistics</b>\\n\\n\` +
+    \`📅 Today's slots: <b>\${todaySlots.length}</b>\\n\` +
+    \`📆 Total upcoming: <b>\${upcoming.length}</b>\\n\` +
+    \`📋 All active: <b>\${active.length}</b>\\n\` +
+    \`❌ Cancelled: <b>\${cancelled}</b>\\n\` +
+    \`👥 Registered users: <b>\${users.length}</b>\\n\\n\` +
+    \`🏆 <b>Top Bookers:</b>\\n\${topBookers || '   No data yet'}\\n\\n\` +
+    \`<i>Data as of \${new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })} IST</i>\`
+  );
+}
+
+// ── /cancel <ID> — cancel a specific slot ─────────────────────
+async function cmdCancelSlot(env, token, chatId, slotId, appUser) {
+  if (!slotId) {
+    const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+    const events = db?.events || [];
+    const userId = appUser.id || appUser.username;
+    const now = new Date();
+    const mine = events.filter(e =>
+      (e.createdBy === userId || e.bookedByAppUser === userId) &&
+      (e.status || 'confirmed') !== 'cancelled' &&
+      new Date((e.ed || e.sd || e.date) + 'T' + (e.et || '23:59')) >= now
+    ).sort((a, b) => (a.sd || a.date).localeCompare(b.sd || b.date));
+
+    if (!mine.length) {
+      return tgSend(token, chatId, \`📋 You have no upcoming slots to cancel.\`);
+    }
+    const kb = cancelListKeyboard(mine, userId);
+    return tgSend(token, chatId,
+      \`🗑 <b>Cancel a Slot</b>\\n\\nChoose which slot to cancel:\`,
+      { reply_markup: kb }
+    );
+  }
+
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  if (!db) return tgSend(token, chatId, \`❌ Could not reach database.\`);
+
+  const events = Array.isArray(db.events) ? [...db.events] : [];
+  const idx = events.findIndex(e => e.id === slotId);
+  if (idx === -1) return tgSend(token, chatId, \`❌ Slot <code>\${slotId}</code> not found.\`);
+
+  const ev = events[idx];
+  const userId = appUser.id || appUser.username;
+  const isOwner = ev.createdBy === userId || ev.bookedByAppUser === userId;
+  const isAdminUser = appUser.role === 'admin';
+
+  if (!isOwner && !isAdminUser) {
+    return tgSend(token, chatId, \`🔒 You can only cancel your own slots.\`);
+  }
+
+  setStep(chatId, 'confirm_cancel', { slotId });
+  return tgSend(token, chatId,
+    \`🗑 <b>Cancel Slot?</b>\\n\\n\` +
+    \`📅 \${fmtDate(ev.sd || ev.date)}\\n\` +
+    \`⏰ \${fmtTime(ev.st)} – \${fmtTime(ev.et)} <i>(\${fmtDuration(ev.st, ev.et)})</i>\\n\` +
+    \`👤 \${ev.cand || '—'} · 🏢 \${ev.comp || '—'}\\n\\n\` +
+    \`Are you sure?\`,
+    { reply_markup: yesNoKeyboard(\`confirmcancel:\${slotId}\`, 'confirmcancel:abort') }
+  );
+}
+
+async function doCancel(env, token, chatId, slotId, appUser) {
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  if (!db) return tgSend(token, chatId, \`❌ Could not reach database.\`);
+
+  const events = Array.isArray(db.events) ? [...db.events] : [];
+  const idx = events.findIndex(e => e.id === slotId);
+  if (idx === -1) return tgSend(token, chatId, \`❌ Slot not found.\`);
+
+  const ev = events[idx];
+  const userId = appUser.id || appUser.username;
+  events[idx] = { ...ev, status: 'cancelled', cancelledAt: Date.now(), cancelledBy: userId };
+  db.events = events;
+
+  const activity = Array.isArray(db.activity) ? [...db.activity] : [];
+  activity.unshift({
+    id: 'a' + Date.now(), type: 'delete',
+    msg: \`Cancelled via Telegram Bot: \${ev.name} on \${fmtDate(ev.sd || ev.date)} \${ev.st}–\${ev.et}\`,
+    user: appUser.name || appUser.username, userId, ts: Date.now()
+  });
+  db.activity = activity.slice(0, 500);
+  db.updatedAt = Date.now();
+
+  const ok = await fsSet(env.FB_PROJECT_ID, env.FB_API_KEY, 'uipath', 'db', db);
+  if (!ok) return tgSend(token, chatId, \`❌ Failed to cancel. Try again.\`);
+
+  const cancelMsg =
+    \`🔴 <b>Slot Cancelled</b>\\n\\n\` +
+    \`📅 \${fmtDate(ev.sd || ev.date)}\\n\` +
+    \`⏰ \${fmtTime(ev.st)} – \${fmtTime(ev.et)}\\n\` +
+    \`👥 Cancelled by: \${appUser.name || appUser.username}\`;
+  if (env.CHANNEL_CHAT_ID) await tgSend(token, env.CHANNEL_CHAT_ID, cancelMsg);
+  if (env.ADMIN_CHAT_ID && env.ADMIN_CHAT_ID !== env.CHANNEL_CHAT_ID)
+    await tgSend(token, env.ADMIN_CHAT_ID, cancelMsg);
+
+  return tgSend(token, chatId,
+    \`✅ <b>Slot Cancelled</b>\\n\\n\` +
+    \`📅 \${fmtDate(ev.sd || ev.date)}\\n⏰ \${fmtTime(ev.st)} – \${fmtTime(ev.et)}\\n\\n\` +
+    \`The slot has been removed from the calendar.\\n\\nType /book to book a new slot.\`
+  );
+}
+
+// ── /reschedule <ID> — move a slot ────────────────────────────
+async function cmdReschedule(env, token, chatId, slotId, appUser) {
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  const events = db?.events || [];
+  const userId = appUser.id || appUser.username;
+  const now    = new Date();
+
+  if (!slotId) {
+    const mine = events.filter(e =>
+      (e.createdBy === userId || e.bookedByAppUser === userId) &&
+      (e.status || 'confirmed') !== 'cancelled' &&
+      new Date((e.ed || e.sd || e.date) + 'T' + (e.et || '23:59')) >= now
+    ).sort((a, b) => (a.sd || a.date).localeCompare(b.sd || b.date));
+
+    if (!mine.length) {
+      return tgSend(token, chatId, \`📋 You have no upcoming slots to reschedule.\`);
+    }
+    const kb = rescheduleListKeyboard(mine, userId);
+    return tgSend(token, chatId,
+      \`🔄 <b>Reschedule a Slot</b>\\n\\nWhich slot would you like to move?\`,
+      { reply_markup: kb }
+    );
+  }
+
+  const ev = events.find(e => e.id === slotId);
+  if (!ev) return tgSend(token, chatId, \`❌ Slot <code>\${slotId}</code> not found.\`);
+
+  const isOwner = ev.createdBy === userId || ev.bookedByAppUser === userId;
+  if (!isOwner && appUser.role !== 'admin') {
+    return tgSend(token, chatId, \`🔒 You can only reschedule your own slots.\`);
+  }
+
+  setStep(chatId, 'resched_date', { slotId, origSlot: ev });
+  return tgSend(token, chatId,
+    \`🔄 <b>Reschedule Slot</b>\\n\\n\` +
+    \`<b>Current:</b>\\n📅 \${fmtDate(ev.sd || ev.date)}\\n⏰ \${fmtTime(ev.st)} – \${fmtTime(ev.et)}\\n👤 \${ev.cand || '—'}\\n\\n\` +
+    \`<b>Step 1</b> — Choose a <b>new date:</b>\`,
+    { reply_markup: dateQuickKeyboard() }
+  );
+}
+
+// ── /whobooked — admin: see who owns a slot ───────────────────
+async function cmdWhoBooked(env, token, chatId, args, appUser) {
+  if (appUser.role !== 'admin') {
+    return tgSend(token, chatId, \`🔒 This command is for admins only.\`);
+  }
+  const parts = args.trim().split(/\\s+/);
+  const dateStr = parts[0], timeStr = parts[1];
+  if (!dateStr) {
+    return tgSend(token, chatId,
+      \`💬 Usage: <code>/whobooked &lt;date&gt; &lt;time&gt;</code>\\n\\nExamples:\\n\` +
+      \`<code>/whobooked today 10:00</code>\\n<code>/whobooked 25/06 14:30</code>\`
+    );
+  }
+  const date = parseDate(dateStr);
+  if (!date) return tgSend(token, chatId, \`❌ Could not parse date: <code>\${dateStr}</code>\`);
+  const ds = isoD(date);
+  const searchTime = timeStr ? parseTime(timeStr) : null;
+
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  const events = db?.events || [];
+  const users  = db?.users  || [];
+
+  const daySlots = getSlotsForDate(events, ds);
+  const matches = searchTime
+    ? daySlots.filter(e => toMin(e.st) <= toMin(searchTime) && toMin(e.et) > toMin(searchTime))
+    : daySlots;
+
+  if (!matches.length) {
+    return tgSend(token, chatId,
+      \`📅 <b>\${fmtDate(ds)}</b>\${searchTime ? \` at \${fmtTime(searchTime)}\` : ''}\\n\\n✅ No slots found.\`
+    );
+  }
+
+  const lines = matches.map(e => {
+    const owner = users.find(u => u.id === e.createdBy);
+    const ownerName = owner ? \`\${owner.name} (@\${owner.username})\` : e.createdBy === 'telegram_bot' ? 'Telegram Bot' : 'Unknown';
+    return \`📌 <b>\${fmtTime(e.st)} – \${fmtTime(e.et)}</b> <i>(\${fmtDuration(e.st, e.et)})</i>\\n\` +
+           \`   📋 \${e.name}\\n\` +
+           \`   👤 Candidate: \${e.cand || '—'}\\n\` +
+           \`   🏢 Company: \${e.comp || '—'}\\n\` +
+           \`   👥 Booked by: <b>\${ownerName}</b>\\n\` +
+           \`   📊 Status: \${e.status || 'confirmed'}\\n\` +
+           \`   🆔 ID: <code>\${e.id}</code>\`;
+  }).join('\\n\\n');
+
+  return tgSend(token, chatId,
+    \`🔍 <b>Who Booked — \${fmtDate(ds)}</b>\\n\\n\${lines}\`
+  );
+}
+
+// ── /clear <date> — admin: cancel all slots on a day ──────────
+async function cmdClear(env, token, chatId, dateStr, appUser, confirmed = false) {
+  if (appUser.role !== 'admin') {
+    return tgSend(token, chatId, \`🔒 This command is for admins only.\`);
+  }
+  const date = parseDate(dateStr);
+  if (!date) {
+    return tgSend(token, chatId,
+      \`💬 Usage: <code>/clear &lt;date&gt;</code>\\n\\nExample: <code>/clear tomorrow</code>\`
+    );
+  }
+  const ds = isoD(date);
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  if (!db) return tgSend(token, chatId, \`❌ Could not reach database.\`);
+
+  const events = Array.isArray(db.events) ? [...db.events] : [];
+  const toCancel = events.filter(e => {
+    const sd = e.sd || e.date || '', ed = e.ed || e.date || sd;
+    return ds >= sd && ds <= ed && (e.status || 'confirmed') !== 'cancelled';
+  });
+
+  if (!toCancel.length) {
+    return tgSend(token, chatId, \`✅ No active slots on <b>\${fmtDate(ds)}</b> to clear.\`);
+  }
+
+  if (!confirmed) {
+    setStep(chatId, 'confirm_clear', { ds });
+    return tgSend(token, chatId,
+      \`⚠️ <b>Confirm Clear Day</b>\\n\\n\` +
+      \`This will cancel <b>\${toCancel.length} slot\${toCancel.length !== 1 ? 's' : ''}</b> on <b>\${fmtDate(ds)}</b>.\\n\\nAre you sure?\`,
+      { reply_markup: yesNoKeyboard(\`clearday:\${ds}\`, 'clearday:abort') }
+    );
+  }
+
+  const userId = appUser.id || appUser.username;
+  toCancel.forEach(e => {
+    const idx = events.findIndex(ev => ev.id === e.id);
+    if (idx !== -1) events[idx] = { ...e, status: 'cancelled', cancelledAt: Date.now(), cancelledBy: userId };
+  });
+  db.events = events;
+  const activity = Array.isArray(db.activity) ? [...db.activity] : [];
+  activity.unshift({
+    id: 'a' + Date.now(), type: 'delete',
+    msg: \`Admin cleared \${toCancel.length} slots on \${fmtDate(ds)} via Telegram\`,
+    user: appUser.name || appUser.username, userId, ts: Date.now()
+  });
+  db.activity = activity.slice(0, 500);
+  db.updatedAt = Date.now();
+  await fsSet(env.FB_PROJECT_ID, env.FB_API_KEY, 'uipath', 'db', db);
+
+  const msg = \`🔴 <b>Day Cleared</b>\\n\\n📅 \${fmtDate(ds)}\\n🗑 \${toCancel.length} slot\${toCancel.length !== 1 ? 's' : ''} cancelled by admin.\`;
+  if (env.CHANNEL_CHAT_ID) await tgSend(token, env.CHANNEL_CHAT_ID, msg);
+  if (env.ADMIN_CHAT_ID && env.ADMIN_CHAT_ID !== env.CHANNEL_CHAT_ID) await tgSend(token, env.ADMIN_CHAT_ID, msg);
+  return tgSend(token, chatId,
+    \`✅ <b>Done!</b> \${toCancel.length} slot\${toCancel.length !== 1 ? 's' : ''} on <b>\${fmtDate(ds)}</b> have been cancelled.\`
+  );
+}
+
+// ── /announce — admin: broadcast to all verified users ────────
+async function cmdAnnounce(env, token, chatId, message, appUser) {
+  if (appUser.role !== 'admin') {
+    return tgSend(token, chatId, \`🔒 This command is for admins only.\`);
+  }
+  if (!message.trim()) {
+    return tgSend(token, chatId,
+      \`💬 Usage: <code>/announce &lt;your message&gt;</code>\\n\\nExample:\\n<code>/announce Interviews suspended tomorrow due to holiday.</code>\`
+    );
+  }
+  const broadcastMsg =
+    \`📢 <b>Announcement from Admin</b>\\n\\n\${message}\\n\\n<i>— UiPath Interview Slots</i>\`;
+
+  let sent = 0;
+  for (const [sid, sess] of sessions.entries()) {
+    if (sess.verified && sid !== chatId) {
+      try { await tgSend(token, sid, broadcastMsg); sent++; } catch(e) {}
+    }
+  }
+  if (env.CHANNEL_CHAT_ID) await tgSend(token, env.CHANNEL_CHAT_ID, broadcastMsg);
+
+  return tgSend(token, chatId,
+    \`✅ <b>Announcement sent!</b>\\n\\nDelivered to <b>\${sent}</b> active user\${sent !== 1 ? 's' : ''} + channel.\`
+  );
+}
+
+// ── Create booking in Firestore ────────────────────────────────
+async function doCreateBooking(env, data, userInfo, appUser) {
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  if (!db) return { error: 'db_unavailable' };
+
+  if (!isWithinBusinessHours(data.startTime, data.endTime)) {
+    return { error: 'outside_hours' };
+  }
+  if (toMin(data.endTime) - toMin(data.startTime) < MIN_SLOT_MINS) {
+    return { error: 'too_short' };
+  }
+
+  const events = Array.isArray(db.events) ? [...db.events] : [];
+  if (hasOverlap(events, data.date, data.startTime, data.endTime)) return { error: 'overlap' };
+
+  const userId = appUser?.id || appUser?.username || 'telegram_bot';
+  const evt = {
+    id: 'tg' + Date.now(),
+    name: \`Interview – \${data.candidate}\`,
+    sd: data.date, ed: data.date, date: data.date,
+    st: data.startTime, et: data.endTime,
+    cand: data.candidate, comp: data.company || '—',
+    loc: 'TBD', wm: 'onsite',
+    category: 'interview', priority: 'medium', status: 'confirmed',
+    notes: \`Booked via Telegram bot by \${appUser?.name || '@' + (userInfo.username || userInfo.first_name)}\`,
+    color: '#1040a0',
+    createdBy: userId,
+    bookedByAppUser: userId,
+    createdByTgId: userInfo.id,
+    createdAt: Date.now()
+  };
+  events.push(evt);
+  db.events = events;
+
+  const activity = Array.isArray(db.activity) ? [...db.activity] : [];
+  activity.unshift({
+    id: 'a' + Date.now(), type: 'event',
+    msg: \`Booked via Telegram: \${evt.name} on \${fmtDate(data.date)} \${data.startTime}–\${data.endTime}\`,
+    user: appUser?.name || '@' + (userInfo.username || userInfo.first_name),
+    userId, ts: Date.now()
+  });
+  db.activity = activity.slice(0, 500);
+  db.updatedAt = Date.now();
+
+  const ok = await fsSet(env.FB_PROJECT_ID, env.FB_API_KEY, 'uipath', 'db', db);
+  return ok ? { success: true, event: evt } : { error: 'write_failed' };
+}
+
+// ── Do reschedule in Firestore ─────────────────────────────────
+async function doReschedule(env, slotId, newDate, newSt, newEt, appUser) {
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  if (!db) return { error: 'db_unavailable' };
+  if (!isWithinBusinessHours(newSt, newEt)) return { error: 'outside_hours' };
+  if (toMin(newEt) - toMin(newSt) < MIN_SLOT_MINS) return { error: 'too_short' };
+
+  const events = Array.isArray(db.events) ? [...db.events] : [];
+  const idx = events.findIndex(e => e.id === slotId);
+  if (idx === -1) return { error: 'not_found' };
+
+  const others = events.filter((_, i) => i !== idx);
+  if (hasOverlap(others, newDate, newSt, newEt)) return { error: 'overlap' };
+
+  const old = events[idx];
+  events[idx] = { ...old, sd: newDate, ed: newDate, date: newDate, st: newSt, et: newEt, updatedAt: Date.now() };
+  db.events = events;
+
+  const activity = Array.isArray(db.activity) ? [...db.activity] : [];
+  activity.unshift({
+    id: 'a' + Date.now(), type: 'edit',
+    msg: \`Rescheduled via Telegram: \${old.name} → \${fmtDate(newDate)} \${newSt}–\${newEt}\`,
+    user: appUser?.name || appUser?.username, userId: appUser?.id || appUser?.username, ts: Date.now()
+  });
+  db.activity = activity.slice(0, 500);
+  db.updatedAt = Date.now();
+
+  const ok = await fsSet(env.FB_PROJECT_ID, env.FB_API_KEY, 'uipath', 'db', db);
+  return ok ? { success: true, event: events[idx], old } : { error: 'write_failed' };
+}
+
+// ── Start booking flow ────────────────────────────────────────
+async function startBooking(token, chatId, prefill = {}) {
+  setStep(chatId, 'book_date', prefill);
+
+  if (prefill.date && prefill.startTime && prefill.endTime && prefill.candidate) {
+    setStep(chatId, 'book_confirm', prefill);
+    return tgSend(token, chatId,
+      \`📋 <b>Confirm Booking</b>\\n\\n\` +
+      \`📅 <b>Date:</b> \${fmtDate(prefill.date)}\\n\` +
+      \`⏰ <b>Time:</b> \${fmtTime(prefill.startTime)} – \${fmtTime(prefill.endTime)}\\n\` +
+      \`⏱ <b>Duration:</b> \${fmtDuration(prefill.startTime, prefill.endTime)}\\n\` +
+      \`👤 <b>Candidate:</b> \${prefill.candidate}\\n\` +
+      \`🏢 <b>Company:</b> \${prefill.company || 'Not specified'}\\n\\n\` +
+      \`Is this correct?\`,
+      { reply_markup: yesNoKeyboard('bookconfirm:yes', 'bookconfirm:no') }
+    );
+  }
+
+  if (prefill.date) {
+    setStep(chatId, 'book_time', prefill);
+    return tgSend(token, chatId,
+      \`📅 <b>Book Slot — \${fmtDate(prefill.date)}</b>\\n\\n🟢 = free window · 🔴 = blocked (incl. 30-min buffer)\\n\\n<b>Step 1</b> — Choose <b>start time:</b>\`,
+      { reply_markup: timeQuickKeyboard('starttime', []) }
+    );
+  }
+
+  return tgSend(token, chatId,
+    \`📅 <b>Book Interview Slot</b>\\n\\n🕘 Business hours: 9:00 AM – 9:00 PM\\n⏱ 30-min buffer enforced between slots\\n\\n<b>Step 1</b> — Choose a <b>date:</b>\\n\\n<i>Or type any date below (e.g. 25/06)</i>\`,
+    { reply_markup: dateQuickKeyboard() }
+  );
+}
+
+// ── Welcome message helper ────────────────────────────────────
+function sendWelcome(token, chatId, appUser) {
+  const isAdminUser = appUser.role === 'admin';
+  return tgSend(token, chatId,
+    (isAdminUser ? \`🛡️ <b>Admin Access Granted!</b>\` : \`✅ <b>Welcome, \${appUser.name || appUser.id}!</b>\`) +
+    \`\\n\\nYou're verified as <b>\${appUser.role}</b>.\\n\\n\` +
+    \`<b>📋 Commands:</b>\\n\` +
+    \`/today — Today's schedule\\n\` +
+    \`/tomorrow — Tomorrow's slots\\n\` +
+    \`/upcoming — Next 3 days at a glance\\n\` +
+    \`/week — 7-day overview\\n\` +
+    \`/free &lt;date&gt; — Free time windows\\n\` +
+    \`/slots &lt;date&gt; — All booked slots\\n\` +
+    \`/book — Book a new slot\\n\` +
+    \`/myslots — Your upcoming slots\\n\` +
+    \`/cancel &lt;ID&gt; — Cancel a slot\\n\` +
+    \`/reschedule &lt;ID&gt; — Move a slot\\n\` +
+    \`/status — Your account info\\n\` +
+    \`/remind — Toggle reminders\\n\` +
+    \`/help — Full guide\\n\` +
+    (isAdminUser
+      ? \`\\n<b>🛡 Admin Commands:</b>\\n\` +
+        \`/whobooked &lt;date&gt; &lt;time&gt;\\n\` +
+        \`/clear &lt;date&gt;\\n\` +
+        \`/announce &lt;message&gt;\\n\` +
+        \`/stats — Booking statistics\\n\`
+      : '') +
+    \`\\n<b>📅 Date examples:</b>\\n\` +
+    \`<code>today</code>  <code>tomorrow</code>  <code>next monday</code>  <code>25/06</code>\\n\\n\` +
+    \`<b>⏰ Slot rules:</b>\\n\` +
+    \`• Business hours: 9:00 AM – 9:00 PM\\n\` +
+    \`• 30-min buffer between slots\\n\\n\` +
+    \`<b>💬 Natural language:</b>\\n\` +
+    \`<i>"book friday 2pm to 3pm for John from TCS"</i>\`
+  );
+}
+
+// ── Confirm booking helper ─────────────────────────────────────
+async function handleBookConfirm(env, token, chatId, user, appUser) {
+  const session = getSession(chatId);
+  const d = session.data;
+  const result = await doCreateBooking(env, d, user, appUser);
+  clearSession(chatId);
+
+  if (result.error === 'outside_hours') {
+    return tgSend(token, chatId,
+      \`⚠️ <b>Outside Business Hours!</b>\\n\\nSlots can only be booked between <b>9:00 AM – 9:00 PM</b>.\\n\\nType /book to try again.\`
+    );
+  }
+  if (result.error === 'too_short') {
+    return tgSend(token, chatId,
+      \`⚠️ <b>Slot Too Short!</b>\\n\\nMinimum slot duration is <b>30 minutes</b>.\\n\\nType /book to try again.\`
+    );
+  }
+  if (result.error === 'overlap') {
+    return tgSend(token, chatId,
+      \`⚠️ <b>Slot Conflict!</b>\\n\\nThat time is already booked, or it falls within the 30-minute buffer of an existing slot.\\n\\n\` +
+      \`Type <code>/free \${d.date}</code> to see available windows.\\nType /book to try again.\`
+    );
+  }
+  if (result.error) {
+    return tgSend(token, chatId, \`❌ Failed to save (\${result.error}). Try again or use the web app.\`);
+  }
+
+  const bookerName = appUser?.name || appUser?.username || ('@' + (user.username || user.first_name));
+  await notifyChannel(env, token, d, bookerName);
+
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  const todaySlots = getSlotsForDate(db?.events || [], d.date);
+  const free = getFreeWindows(todaySlots);
+  const nextFree = free.length
+    ? \`\\n\\n🟢 Next free window today: <b>\${fmtTime(free[0].start)} – \${fmtTime(free[0].end)}</b>\`
+    : \`\\n\\n❌ No more free windows today.\`;
+
+  return tgSend(token, chatId,
+    \`✅ <b>Slot Booked Successfully!</b>\\n\\n\` +
+    \`📅 \${fmtDate(d.date)}\\n\` +
+    \`⏰ \${fmtTime(d.startTime)} – \${fmtTime(d.endTime)} <i>(\${fmtDuration(d.startTime, d.endTime)})</i>\\n\` +
+    \`👤 \${d.candidate}\\n🏢 \${d.company}\${nextFree}\\n\\n\` +
+    \`The slot is now visible in the UiPath Slots calendar.\\n\\n\` +
+    \`Cancel: <code>/cancel</code>  ·  Reschedule: <code>/reschedule</code>\`
+  );
+}
+
+// ── Main message handler ───────────────────────────────────────
+async function handleMessage(env, msg) {
+  const chatId  = String(msg.chat.id);
+  const text    = (msg.text || '').trim();
+  const user    = msg.from || {};
+  const token   = env.BOT_TOKEN;
+  const session = getSession(chatId);
+
+  if (text === '/start') {
+    fullResetSession(chatId);
+    setStep(chatId, 'verify_username', {});
+    return tgSend(token, chatId,
+      \`👋 <b>Welcome to UiPath Interview Slots Bot!</b>\\n\\n\` +
+      \`🕘 Business hours: 9:00 AM – 9:00 PM\\n\` +
+      \`⏱ 30-min buffer enforced between slots\\n\\n\` +
+      \`To get started, please enter your <b>app username</b>:\\n\\n\` +
+      \`<i>This is the username you use to log in to the UiPath Slots web app.</i>\`
+    );
+  }
+
+  if (text === '/cancel') {
+    clearSession(chatId);
+    if (!session.verified) {
+      setStep(chatId, 'verify_username', {});
+      return tgSend(token, chatId, \`❌ Action cancelled.\\n\\nPlease enter your <b>app username</b> to continue:\`);
+    }
+    return tgSend(token, chatId, \`❌ Action cancelled.\\n\\nType /help for available commands.\`);
+  }
+
+  if (session.step === 'verify_username') {
+    const appUser = await findAppUser(env, text);
+    if (!appUser) {
+      return tgSend(token, chatId,
+        \`❌ <b>Account not found.</b>\\n\\n\` +
+        \`Username "<code>\${text}</code>" does not exist in the system.\\n\\n\` +
+        \`Please contact your admin to get access, then try again.\`
+      );
+    }
+    if (appUser.role === 'admin') {
+      sessions.set(chatId, { step: 'verify_password', data: {}, verified: false, appUser, reminders: true });
+      return tgSend(token, chatId,
+        \`🔐 <b>Admin account detected.</b>\\n\\nWelcome, <b>\${appUser.name || appUser.id}</b>!\\n\\n\` +
+        \`Please enter your <b>password</b> to continue:\`
+      );
+    }
+    sessions.set(chatId, { step: 'idle', data: {}, verified: true, appUser, reminders: true });
+    return sendWelcome(token, chatId, appUser);
+  }
+
+  if (session.step === 'verify_password') {
+    const appUser = session.appUser;
+    const storedPassword = appUser.password || appUser.pass || '';
+    if (!storedPassword || text !== storedPassword) {
+      const attempts = (session.data.attempts || 0) + 1;
+      if (attempts >= 3) {
+        fullResetSession(chatId);
+        return tgSend(token, chatId,
+          \`🚫 <b>Too many failed attempts.</b>\\n\\nAccess denied. Please type /start to try again.\`
+        );
+      }
+      sessions.set(chatId, { ...session, data: { attempts } });
+      return tgSend(token, chatId,
+        \`❌ <b>Incorrect password.</b> (\${attempts}/3 attempts)\\n\\nPlease try again or type /start to restart.\`
+      );
+    }
+    sessions.set(chatId, { step: 'idle', data: {}, verified: true, appUser, reminders: true });
+    return sendWelcome(token, chatId, appUser);
+  }
+
+  if (!session.verified) {
+    return tgSend(token, chatId,
+      \`🔒 <b>Verification required.</b>\\n\\nPlease send /start and enter your app username.\`
+    );
+  }
+
+  const appUser = session.appUser;
+
+  if (text === '/help') {
+    const isAdminUser = appUser.role === 'admin';
+    return tgSend(token, chatId,
+      \`📋 <b>UiPath Interview Slots Bot v3.0</b>\\n\\n\` +
+      \`<b>Commands:</b>\\n\` +
+      \`/today — Today's schedule\\n\` +
+      \`/tomorrow — Tomorrow's slots\\n\` +
+      \`/upcoming — Next 3 days at a glance\\n\` +
+      \`/week — 7-day overview\\n\` +
+      \`/free &lt;date&gt; — Free time windows\\n\` +
+      \`/slots &lt;date&gt; — All booked slots\\n\` +
+      \`/book — Book a new slot\\n\` +
+      \`/myslots — Your upcoming slots\\n\` +
+      \`/cancel &lt;ID&gt; — Cancel a slot\\n\` +
+      \`/reschedule &lt;ID&gt; — Move a slot\\n\` +
+      \`/status — Your account info\\n\` +
+      \`/remind — Toggle reminders\\n\` +
+      (isAdminUser
+        ? \`\\n<b>🛡 Admin:</b>\\n\` +
+          \`/whobooked &lt;date&gt; &lt;time&gt;\\n\` +
+          \`/clear &lt;date&gt;\\n\` +
+          \`/announce &lt;message&gt;\\n\` +
+          \`/stats\\n\`
+        : '') +
+      \`\\n<b>📅 Date formats:</b>\\n\` +
+      \`<code>today</code>  <code>tomorrow</code>  <code>next monday</code>\\n\` +
+      \`<code>25/06</code>  <code>2025-06-25</code>\\n\\n\` +
+      \`<b>⏰ Slot rules:</b>\\n\` +
+      \`• Business hours: 9:00 AM – 9:00 PM\\n\` +
+      \`• 30-min buffer between every slot\\n\` +
+      \`• Minimum slot: 30 minutes\\n\\n\` +
+      \`<b>💬 Natural language:</b>\\n\` +
+      \`<i>"book friday 2pm to 3pm for John from TCS"</i>\\n\` +
+      \`<i>"free slots tomorrow"</i>\\n\` +
+      \`<i>"reschedule tg123 to monday 3pm"</i>\`
+    );
+  }
+
+  if (text === '/today')    return cmdSlots(env, token, chatId, 'today',    false, appUser);
+  if (text === '/tomorrow') return cmdSlots(env, token, chatId, 'tomorrow', false, appUser);
+  if (text === '/week')     return cmdWeek(env, token, chatId);
+  if (text === '/upcoming') return cmdUpcoming(env, token, chatId, appUser);
+  if (text === '/myslots')  return cmdMySlots(env, token, chatId, appUser);
+  if (text === '/status')   return cmdStatus(env, token, chatId, appUser);
+  if (text === '/remind')   return cmdRemind(token, chatId);
+  if (text === '/stats')    return cmdStats(env, token, chatId, appUser);
+
+  if (/^\\/cancel(\\s+\\S+)?$/i.test(text)) {
+    const slotId = text.replace(/^\\/cancel\\s*/i, '').trim() || null;
+    return cmdCancelSlot(env, token, chatId, slotId, appUser);
+  }
+
+  if (/^\\/reschedule(\\s+\\S+)?$/i.test(text)) {
+    const slotId = text.replace(/^\\/reschedule\\s*/i, '').trim() || null;
+    return cmdReschedule(env, token, chatId, slotId, appUser);
+  }
+
+  if (/^\\/free(\\s|$)/i.test(text)) {
+    return cmdSlots(env, token, chatId, text.replace(/^\\/free\\s*/i, ''), true, appUser);
+  }
+
+  if (/^\\/slots?(\\s|$)/i.test(text)) {
+    return cmdSlots(env, token, chatId, text.replace(/^\\/slots?\\s*/i, ''), false, appUser);
+  }
+
+  if (/^\\/whobooked(\\s|$)/i.test(text)) {
+    return cmdWhoBooked(env, token, chatId, text.replace(/^\\/whobooked\\s*/i, ''), appUser);
+  }
+
+  if (/^\\/clear(\\s|$)/i.test(text)) {
+    return cmdClear(env, token, chatId, text.replace(/^\\/clear\\s*/i, '').trim(), appUser);
+  }
+
+  if (/^\\/announce(\\s|$)/i.test(text)) {
+    return cmdAnnounce(env, token, chatId, text.replace(/^\\/announce\\s*/i, ''), appUser);
+  }
+
+  if (text === '/book' || text.toLowerCase() === 'book') {
+    return startBooking(token, chatId);
+  }
+
+  if (session.step === 'book_date') {
+    const date = parseDate(text);
+    if (!date) return tgSend(token, chatId,
+      \`❓ Couldn't parse that date. Try: <code>tomorrow</code>, <code>25/06</code>, or tap a button above.\`);
+    const ds = isoD(date);
+    const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+    const taken = getSlotsForDate(db?.events || [], ds);
+    const free  = getFreeWindows(taken);
+    const hint  = free.length
+      ? \`\\n\\n🟢 <b>Free windows:</b>\\n\${free.map(f => \`  \${fmtTime(f.start)} – \${fmtTime(f.end)}\`).join('\\n')}\`
+      : '\\n\\n⚠️ No obvious free windows — you can still book.';
+    setStep(chatId, 'book_time', { date: ds });
+    return tgSend(token, chatId,
+      \`✅ Date: <b>\${fmtDate(ds)}</b>\${hint}\\n\\n<b>Step 2</b> — Choose <b>start time:</b>\`,
+      { reply_markup: timeQuickKeyboard('starttime', free) }
+    );
+  }
+
+  if (session.step === 'book_time') {
+    const st = parseTime(text);
+    if (!st) return tgSend(token, chatId,
+      \`❓ Invalid time. Try: <code>10:00</code>, <code>10am</code>, <code>2:30pm</code>\`);
+    if (toMin(st) < BUSINESS_START_HR * 60 || toMin(st) >= BUSINESS_END_HR * 60) {
+      return tgSend(token, chatId, \`⚠️ Start time must be between <b>9:00 AM – 9:00 PM</b>.\`);
+    }
+    setStep(chatId, 'book_duration', { ...session.data, startTime: st });
+    return tgSend(token, chatId,
+      \`✅ Start: <b>\${fmtTime(st)}</b>\\n\\n<b>Step 3</b> — Choose <b>slot duration:</b>\`,
+      { reply_markup: durationKeyboard() }
+    );
+  }
+
+  if (session.step === 'book_endtime') {
+    const et = parseTime(text);
+    if (!et) return tgSend(token, chatId, \`❓ Invalid time. Try: <code>11:00</code>\`);
+    if (toMin(et) > BUSINESS_END_HR * 60) {
+      return tgSend(token, chatId, \`⚠️ End time cannot exceed <b>9:00 PM</b>.\`);
+    }
+    if (toMin(et) - toMin(session.data.startTime) < MIN_SLOT_MINS) {
+      return tgSend(token, chatId, \`⚠️ Minimum slot duration is <b>30 minutes</b>.\`);
+    }
+    if (toMin(et) <= toMin(session.data.startTime)) {
+      return tgSend(token, chatId,
+        \`❓ End time must be after start time (\${fmtTime(session.data.startTime)}).\`);
+    }
+    setStep(chatId, 'book_candidate', { ...session.data, endTime: et });
+    return tgSend(token, chatId,
+      \`✅ End: <b>\${fmtTime(et)}</b> <i>(\${fmtDuration(session.data.startTime, et)})</i>\\n\\n<b>Step 4</b> — Enter the <b>candidate's full name:</b>\`
+    );
+  }
+
+  if (session.step === 'book_candidate') {
+    if (text.length < 2) return tgSend(token, chatId, \`❓ Please enter a valid name.\`);
+    setStep(chatId, 'book_company', { ...session.data, candidate: text });
+    return tgSend(token, chatId,
+      \`✅ Candidate: <b>\${text}</b>\\n\\n<b>Step 5</b> — Enter the <b>company name:</b>\\n(or type <code>skip</code>)\`
+    );
+  }
+
+  if (session.step === 'book_company') {
+    const company = text.toLowerCase() === 'skip' ? '—' : text;
+    const d = { ...session.data, company };
+    setStep(chatId, 'book_confirm', d);
+    return tgSend(token, chatId,
+      \`📋 <b>Confirm Booking</b>\\n\\n\` +
+      \`📅 <b>Date:</b> \${fmtDate(d.date)}\\n\` +
+      \`⏰ <b>Time:</b> \${fmtTime(d.startTime)} – \${fmtTime(d.endTime)}\\n\` +
+      \`⏱ <b>Duration:</b> \${fmtDuration(d.startTime, d.endTime)}\\n\` +
+      \`👤 <b>Candidate:</b> \${d.candidate}\\n\` +
+      \`🏢 <b>Company:</b> \${d.company}\\n\\n\` +
+      \`Is this correct?\`,
+      { reply_markup: yesNoKeyboard('bookconfirm:yes', 'bookconfirm:no') }
+    );
+  }
+
+  if (session.step === 'book_confirm') {
+    if (/^(yes|y|confirm|ok|yep|yeah|sure)$/i.test(text)) {
+      return handleBookConfirm(env, token, chatId, user, appUser);
+    } else {
+      clearSession(chatId);
+      return tgSend(token, chatId, \`❌ Booking cancelled. Type /book to start again.\`);
+    }
+  }
+
+  if (session.step === 'resched_date') {
+    const date = parseDate(text);
+    if (!date) return tgSend(token, chatId, \`❓ Couldn't parse date. Try: <code>tomorrow</code>, <code>25/06</code>\`);
+    const ds = isoD(date);
+    const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+    const taken = getSlotsForDate(db?.events || [], ds);
+    const free  = getFreeWindows(taken);
+    const hint  = free.length
+      ? \`\\n\\n🟢 <b>Free windows:</b>\\n\${free.map(f => \`  \${fmtTime(f.start)} – \${fmtTime(f.end)}\`).join('\\n')}\`
+      : '\\n\\n⚠️ No obvious free windows.';
+    setStep(chatId, 'resched_time', { ...session.data, newDate: ds });
+    return tgSend(token, chatId,
+      \`✅ New date: <b>\${fmtDate(ds)}</b>\${hint}\\n\\n<b>Step 2</b> — Choose <b>new start time:</b>\`,
+      { reply_markup: timeQuickKeyboard('reschedstart', free) }
+    );
+  }
+
+  if (session.step === 'resched_time') {
+    const st = parseTime(text);
+    if (!st) return tgSend(token, chatId, \`❓ Invalid time. Try: <code>14:00</code>, <code>2pm</code>\`);
+    const origDur = toMin(session.data.origSlot?.et || '01:00') - toMin(session.data.origSlot?.st || '00:00');
+    const et = fromMin(Math.min(toMin(st) + Math.max(origDur, MIN_SLOT_MINS), BUSINESS_END_HR * 60));
+    setStep(chatId, 'resched_confirm', { ...session.data, newSt: st, newEt: et });
+    return tgSend(token, chatId,
+      \`📋 <b>Confirm Reschedule</b>\\n\\n\` +
+      \`<b>Old:</b> \${fmtDate(session.data.origSlot?.sd)} · \${fmtTime(session.data.origSlot?.st)}–\${fmtTime(session.data.origSlot?.et)}\\n\` +
+      \`<b>New:</b> \${fmtDate(session.data.newDate)} · \${fmtTime(st)}–\${fmtTime(et)} <i>(\${fmtDuration(st, et)})</i>\\n\\n\` +
+      \`Is this correct?\`,
+      { reply_markup: yesNoKeyboard('reschedconfirm:yes', 'reschedconfirm:no') }
+    );
+  }
+
+  if (session.step === 'confirm_cancel') {
+    if (/^(yes|y|confirm|ok)$/i.test(text)) {
+      return doCancel(env, token, chatId, session.data.slotId, appUser);
+    }
+    clearSession(chatId);
+    return tgSend(token, chatId, \`✅ Cancellation aborted. Slot unchanged.\`);
+  }
+
+  if (/\\bbook\\b|\\breserve\\b|\\bschedule\\b/i.test(text)) {
+    const nl = parseNLBooking(text);
+    if (nl.date || nl.startTime || nl.candidate) {
+      return startBooking(token, chatId, nl);
+    }
+  }
+
+  if (/free\\s*slots?|available|free\\s*time|open\\s*slot/i.test(text)) {
+    const cleaned = text.replace(/free\\s*slots?|available\\s*slots?|free\\s*time|open\\s*slot/gi, '').trim();
+    const date = parseDate(cleaned) || parseDate(text);
+    if (date) return cmdSlots(env, token, chatId, isoD(date), true, appUser);
+  }
+  if (/\\bslots?\\b|\\bschedule\\b/i.test(text)) {
+    const date = parseDate(text.replace(/slots?|schedule/gi, '').trim()) || parseDate(text);
+    if (date) return cmdSlots(env, token, chatId, isoD(date), false, appUser);
+  }
+
+  if (/\\breschedule\\b|\\bmove\\b/i.test(text)) {
+    const idMatch = text.match(/\\b(tg\\d+|ev\\d+)\\b/i);
+    if (idMatch) {
+      return cmdReschedule(env, token, chatId, idMatch[1], appUser);
+    }
+  }
+
+  return tgSend(token, chatId,
+    \`💡 <b>Quick help:</b>\\n\\n\` +
+    \`• <code>/today</code> — Today's slots\\n\` +
+    \`• <code>/upcoming</code> — Next 3 days\\n\` +
+    \`• <code>/free tomorrow</code> — Free windows\\n\` +
+    \`• <code>/book</code> — Book a slot\\n\` +
+    \`• <code>/myslots</code> — Your slots\\n\` +
+    \`• <code>/cancel</code> — Cancel a slot\\n\` +
+    \`• <code>/reschedule</code> — Move a slot\\n\` +
+    \`• <code>/help</code> — Full guide\\n\\n\` +
+    \`Or just type: <i>"book friday 2pm to 3pm for John from TCS"</i>\`
+  );
+}
+
+// ── Callback query handler (inline button presses) ─────────────
+async function handleCallback(env, cbq) {
+  const chatId  = String(cbq.message.chat.id);
+  const msgId   = cbq.message.message_id;
+  const data    = cbq.data;
+  const user    = cbq.from || {};
+  const token   = env.BOT_TOKEN;
+  const session = getSession(chatId);
+  const appUser = session.appUser;
+
+  await tgAnswer(token, cbq.id);
+
+  if (!session.verified) {
+    return tgEdit(token, chatId, msgId, \`🔒 Please /start and verify your username first.\`);
+  }
+
+  if (data.startsWith('date:')) {
+    const ds = data.replace('date:', '');
+    if (ds === 'manual') {
+      setStep(chatId, 'book_date', session.data);
+      return tgEdit(token, chatId, msgId,
+        \`📅 Please type the date:\\n\\nExamples: <code>25/06</code>, <code>next friday</code>, <code>2025-06-25</code>\`);
+    }
+    const db    = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+    const taken = getSlotsForDate(db?.events || [], ds);
+    const free  = getFreeWindows(taken);
+    const hint  = free.length
+      ? \`\\n\\n🟢 <b>Free windows:</b>\\n\${free.map(f => \`  \${fmtTime(f.start)} – \${fmtTime(f.end)}\`).join('\\n')}\`
+      : '\\n\\n⚠️ No obvious free windows — you can still book.';
+    const isReschedule = session.step && session.step.startsWith('resched');
+    if (isReschedule) {
+      setStep(chatId, 'resched_time', { ...session.data, newDate: ds });
+      return tgEdit(token, chatId, msgId,
+        \`✅ New date: <b>\${fmtDate(ds)}</b>\${hint}\\n\\n<b>Step 2</b> — Choose <b>new start time:</b>\`,
+        { reply_markup: timeQuickKeyboard('reschedstart', free) }
+      );
+    }
+    setStep(chatId, 'book_time', { ...session.data, date: ds });
+    return tgEdit(token, chatId, msgId,
+      \`✅ Date: <b>\${fmtDate(ds)}</b>\${hint}\\n\\n🟢 = free  🔴 = blocked (incl. 30-min buffer)\\n\\n<b>Step 2</b> — Choose <b>start time:</b>\`,
+      { reply_markup: timeQuickKeyboard('starttime', free) }
+    );
+  }
+
+  if (data.startsWith('starttime:')) {
+    const st = data.replace('starttime:', '');
+    if (st === 'manual') {
+      setStep(chatId, 'book_time', session.data);
+      return tgEdit(token, chatId, msgId,
+        \`⏰ Type the start time:\\n\\nExamples: <code>10:00</code>, <code>2pm</code>, <code>14:30</code>\\n<i>(9:00 AM – 9:00 PM only)</i>\`);
+    }
+    setStep(chatId, 'book_duration', { ...session.data, startTime: st });
+    return tgEdit(token, chatId, msgId,
+      \`✅ Start: <b>\${fmtTime(st)}</b>\\n\\n<b>Step 3</b> — Choose <b>slot duration:</b>\`,
+      { reply_markup: durationKeyboard() }
+    );
+  }
+
+  if (data.startsWith('duration:')) {
+    const dur = data.replace('duration:', '');
+    if (dur === 'custom') {
+      setStep(chatId, 'book_endtime', session.data);
+      return tgEdit(token, chatId, msgId,
+        \`⏰ Type the <b>end time:</b>\\n\\nExamples: <code>11:00</code>, <code>3pm</code>\\n<i>(Must be before 9:00 PM)</i>\`);
+    }
+    const mins = parseInt(dur);
+    const et   = fromMin(Math.min(toMin(session.data.startTime) + mins, BUSINESS_END_HR * 60));
+    if (toMin(et) > BUSINESS_END_HR * 60 || toMin(et) <= toMin(session.data.startTime)) {
+      return tgEdit(token, chatId, msgId,
+        \`⚠️ That duration would exceed 9:00 PM.\\n\\nPlease choose a shorter duration:\`,
+        { reply_markup: durationKeyboard() }
+      );
+    }
+    setStep(chatId, 'book_candidate', { ...session.data, endTime: et });
+    return tgEdit(token, chatId, msgId,
+      \`✅ End: <b>\${fmtTime(et)}</b> <i>(\${fmtDuration(session.data.startTime, et)})</i>\\n\\n<b>Step 4</b> — Type the <b>candidate's full name:</b>\`
+    );
+  }
+
+  if (data.startsWith('endtime:')) {
+    const et = data.replace('endtime:', '');
+    if (et === 'manual') {
+      setStep(chatId, 'book_endtime', session.data);
+      return tgEdit(token, chatId, msgId, \`⏰ Type the end time:\\n\\nExamples: <code>11:00</code>, <code>3pm</code>\`);
+    }
+    if (toMin(et) <= toMin(session.data.startTime)) {
+      return tgEdit(token, chatId, msgId,
+        \`❓ End time must be after start time (\${fmtTime(session.data.startTime)}).\\n\\nChoose a later time:\`,
+        { reply_markup: timeQuickKeyboard('endtime') }
+      );
+    }
+    setStep(chatId, 'book_candidate', { ...session.data, endTime: et });
+    return tgEdit(token, chatId, msgId,
+      \`✅ End: <b>\${fmtTime(et)}</b> <i>(\${fmtDuration(session.data.startTime, et)})</i>\\n\\n<b>Step 4</b> — Type the <b>candidate's full name:</b>\`
+    );
+  }
+
+  if (data.startsWith('reschedstart:')) {
+    const st = data.replace('reschedstart:', '');
+    if (st === 'manual') {
+      setStep(chatId, 'resched_time', session.data);
+      return tgEdit(token, chatId, msgId, \`⏰ Type new start time:\\n\\nExamples: <code>14:00</code>, <code>2pm</code>\`);
+    }
+    const origDur = toMin(session.data.origSlot?.et || '01:00') - toMin(session.data.origSlot?.st || '00:00');
+    const et = fromMin(Math.min(toMin(st) + Math.max(origDur, MIN_SLOT_MINS), BUSINESS_END_HR * 60));
+    setStep(chatId, 'resched_confirm', { ...session.data, newSt: st, newEt: et });
+    return tgEdit(token, chatId, msgId,
+      \`📋 <b>Confirm Reschedule</b>\\n\\n\` +
+      \`<b>Old:</b> \${fmtDate(session.data.origSlot?.sd)} · \${fmtTime(session.data.origSlot?.st)}–\${fmtTime(session.data.origSlot?.et)}\\n\` +
+      \`<b>New:</b> \${fmtDate(session.data.newDate)} · \${fmtTime(st)}–\${fmtTime(et)} <i>(\${fmtDuration(st, et)})</i>\\n\\n\` +
+      \`Is this correct?\`,
+      { reply_markup: yesNoKeyboard('reschedconfirm:yes', 'reschedconfirm:no') }
+    );
+  }
+
+  if (data === 'reschedconfirm:yes') {
+    await tgEdit(token, chatId, msgId, \`⏳ Rescheduling slot…\`);
+    const d = session.data;
+    const result = await doReschedule(env, d.slotId, d.newDate, d.newSt, d.newEt, appUser);
+    clearSession(chatId);
+    if (result.error === 'overlap') {
+      return tgSend(token, chatId,
+        \`⚠️ <b>Slot Conflict!</b>\\n\\nThat time is already taken (or within 30-min buffer).\\n\\nType <code>/free \${d.newDate}</code> to see available windows.\`
+      );
+    }
+    if (result.error === 'outside_hours') {
+      return tgSend(token, chatId, \`⚠️ New time is outside business hours (9 AM – 9 PM).\`);
+    }
+    if (result.error) {
+      return tgSend(token, chatId, \`❌ Failed to reschedule (\${result.error}). Try again.\`);
+    }
+    const msg =
+      \`🔄 <b>Slot Rescheduled</b>\\n\\n\` +
+      \`<b>From:</b> \${fmtDate(result.old.sd)} · \${fmtTime(result.old.st)}–\${fmtTime(result.old.et)}\\n\` +
+      \`<b>To:</b> \${fmtDate(d.newDate)} · \${fmtTime(d.newSt)}–\${fmtTime(d.newEt)}\`;
+    if (env.CHANNEL_CHAT_ID) await tgSend(token, env.CHANNEL_CHAT_ID, msg);
+    if (env.ADMIN_CHAT_ID && env.ADMIN_CHAT_ID !== env.CHANNEL_CHAT_ID) await tgSend(token, env.ADMIN_CHAT_ID, msg);
+    return tgSend(token, chatId, \`✅ <b>Slot Rescheduled!</b>\\n\\n\${msg.replace('🔄 <b>Slot Rescheduled</b>\\n\\n', '')}\\n\\nCalendar has been updated.\`);
+  }
+  if (data === 'reschedconfirm:no') {
+    clearSession(chatId);
+    return tgEdit(token, chatId, msgId, \`❌ Reschedule cancelled. Original slot unchanged.\`);
+  }
+
+  if (data.startsWith('reschedpick:')) {
+    const slotId = data.replace('reschedpick:', '');
+    if (slotId === 'abort') {
+      clearSession(chatId);
+      return tgEdit(token, chatId, msgId, \`✅ No changes made.\`);
+    }
+    const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+    const ev = (db?.events || []).find(e => e.id === slotId);
+    if (!ev) return tgEdit(token, chatId, msgId, \`❌ Slot not found.\`);
+    setStep(chatId, 'resched_date', { slotId, origSlot: ev });
+    return tgEdit(token, chatId, msgId,
+      \`🔄 <b>Reschedule Slot</b>\\n\\n\` +
+      \`<b>Current:</b>\\n📅 \${fmtDate(ev.sd || ev.date)}\\n⏰ \${fmtTime(ev.st)} – \${fmtTime(ev.et)}\\n👤 \${ev.cand || '—'}\\n\\n\` +
+      \`<b>Step 1</b> — Choose a <b>new date:</b>\`,
+      { reply_markup: dateQuickKeyboard() }
+    );
+  }
+
+  if (data.startsWith('confirmcancel:')) {
+    const slotId = data.replace('confirmcancel:', '');
+    if (slotId === 'abort') {
+      clearSession(chatId);
+      return tgEdit(token, chatId, msgId, \`✅ Cancellation aborted. Slot unchanged.\`);
+    }
+    await tgEdit(token, chatId, msgId, \`⏳ Cancelling slot…\`);
+    return doCancel(env, token, chatId, slotId, appUser);
+  }
+
+  if (data.startsWith('cancelslot:')) {
+    const slotId = data.replace('cancelslot:', '');
+    if (slotId === 'abort') {
+      clearSession(chatId);
+      return tgEdit(token, chatId, msgId, \`✅ No slots were cancelled.\`);
+    }
+    const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+    const ev = (db?.events || []).find(e => e.id === slotId);
+    if (!ev) return tgEdit(token, chatId, msgId, \`❌ Slot not found.\`);
+    setStep(chatId, 'confirm_cancel', { slotId });
+    return tgEdit(token, chatId, msgId,
+      \`🗑 <b>Cancel Slot?</b>\\n\\n\` +
+      \`📅 \${fmtDate(ev.sd || ev.date)}\\n\` +
+      \`⏰ \${fmtTime(ev.st)} – \${fmtTime(ev.et)} <i>(\${fmtDuration(ev.st, ev.et)})</i>\\n\` +
+      \`👤 \${ev.cand || '—'} · 🏢 \${ev.comp || '—'}\\n\\nAre you sure?\`,
+      { reply_markup: yesNoKeyboard(\`confirmcancel:\${slotId}\`, 'confirmcancel:abort') }
+    );
+  }
+
+  if (data === 'bookconfirm:yes') {
+    await tgEdit(token, chatId, msgId, \`⏳ Saving slot…\`);
+    return handleBookConfirm(env, token, chatId, user, appUser);
+  }
+  if (data === 'bookconfirm:no') {
+    clearSession(chatId);
+    return tgEdit(token, chatId, msgId, \`❌ Booking cancelled. Type /book to start again.\`);
+  }
+
+  if (data.startsWith('clearday:')) {
+    const ds = data.replace('clearday:', '');
+    if (ds === 'abort') {
+      clearSession(chatId);
+      return tgEdit(token, chatId, msgId, \`✅ Clear cancelled. No slots were modified.\`);
+    }
+    await tgEdit(token, chatId, msgId, \`⏳ Clearing all slots on \${fmtDate(ds)}…\`);
+    return cmdClear(env, token, chatId, ds, appUser, true);
+  }
+}
+
+// ── Cloudflare Worker entry ────────────────────────────────────
+export default {
+  async fetch(request, env) {
+    if (request.method === 'GET') {
+      return new Response(
+        '✅ UiPath Slots Bot v3.0 — Running!\\n\\nFeatures: 9AM-9PM hours · 30-min buffer · reschedule · /upcoming · /status · /stats · duration picker · reminder toggle',
+        { status: 200 }
+      );
+    }
+    if (request.method !== 'POST') {
+      return new Response('Method not allowed', { status: 405 });
+    }
+    try {
+      const body = await request.json();
+      if (body.callback_query) {
+        await handleCallback(env, body.callback_query);
+      } else {
+        const msg = body.message || body.edited_message;
+        if (msg) await handleMessage(env, msg);
+      }
+      return new Response('OK', { status: 200 });
+    } catch (err) {
+      console.error('Worker error:', err);
+      return new Response('Error: ' + err.message, { status: 500 });
+    }
+  }
+};
+``;
+
 function downloadBotWorker() {
   const cfg = loadFbCfg() || {};
   const token = DB.notif?.telegram?.token || 'YOUR_BOT_TOKEN';
   const pid   = cfg.projectId || 'YOUR_PROJECT_ID';
   const key   = cfg.apiKey    || 'YOUR_API_KEY';
   const admin = DB.notif?.telegram?.chat || 'YOUR_ADMIN_CHAT_ID';
-  const instructions = [
-    '// UiPath Interview Slots — Telegram Bot (Cloudflare Worker)',
+  const slack = DB.notif?.slack?.webhook || '';
+  const header = [
+    '// UiPath Interview Slots — Telegram Bot (Cloudflare Worker) v3.0',
     '// Deploy FREE at https://workers.cloudflare.com',
     '//',
-    '// Add 4 Environment Variables in Worker Settings → Variables → Secrets:',
-    `//   BOT_TOKEN     = ${token}`,
-    `//   FB_PROJECT_ID = ${pid}`,
-    `//   FB_API_KEY    = ${key}`,
-    `//   ADMIN_CHAT_ID = ${admin}`,
-    '',
-    '// Commands: /today /week /free <date> /slots <date> /book /cancel',
+    '// Environment Variables → Worker Settings → Variables → Secrets:',
+    `//   BOT_TOKEN       = ${token}`,
+    `//   FB_PROJECT_ID   = ${pid}`,
+    `//   FB_API_KEY      = ${key}`,
+    `//   ADMIN_CHAT_ID   = ${admin}`,
+    `//   SLACK_WEBHOOK   = ${slack || '(optional) your Slack incoming webhook URL'}`,
+    `//   CHANNEL_CHAT_ID = (optional) your group/channel chat ID for notifications`,
+    '//',
+    '// Cron Triggers (wrangler.toml):',
+    '//   crons = ["0 8 * * *", "*/30 * * * *"]',
     '',
   ].join('\n');
-  fetch('telegram_bot_worker.js')
-    .then(r => r.ok ? r.text() : Promise.reject())
-    .then(code => triggerWorkerDownload(instructions + code))
-    .catch(() => {
-      const stub = instructions +
-        'export default {\n  async fetch(request, env) {\n    // Paste your full bot logic here\n    return new Response("Bot is running!");\n  }\n};';
-      triggerWorkerDownload(stub);
-      toast('⚠ Worker file not found — stub downloaded with instructions', 'warn');
-    });
+  triggerWorkerDownload(header + _WORKER_JS);
+  toast('✓ Worker v3.0 downloaded — paste into Cloudflare Workers editor');
 }
 
 function triggerWorkerDownload(content) {
