@@ -851,7 +851,7 @@ td { padding: 10px 14px; font-size: .84rem; vertical-align: middle; }
         👤 <code>/myslots</code> · <code>/status</code> · <code>/remind</code> · <code>/book</code><br>
         ✏️ <code>/cancel &lt;ID&gt;</code> · <code>/reschedule &lt;ID&gt;</code><br>
         📊 <code>/stats</code> · <code>/help</code><br>
-        🔐 Admin: <code>/whobooked &lt;date&gt; &lt;time&gt;</code> · <code>/clear &lt;date&gt;</code> · <code>/announce &lt;msg&gt;</code><br>
+        🔐 Admin: <code>/whobooked</code> · <code>/clear &lt;date&gt;</code> · <code>/block &lt;date&gt; [reason]</code> · <code>/unblock &lt;date&gt;</code> · <code>/blocked</code> · <code>/announce &lt;msg&gt;</code><br>
         🔒 Users verify via <code>/start</code> · Admins require password login<br>
         ⏱ <strong>Rules:</strong> 9 AM–9 PM · 30-min buffer between slots · min 30-min duration<br><br>
         💡 Or just type naturally: <em>"free slots tomorrow"</em>, <em>"book friday 2pm to 3pm for John from TCS"</em>
@@ -2841,6 +2841,16 @@ async function cmdSlots(env, token, chatId, dateStr, freeOnly, appUser = null) {
   const dayTag = isToday ? ' <b>(Today)</b>' : isTomorrow ? ' <b>(Tomorrow)</b>' : '';
 
   if (freeOnly) {
+    // Check if day is blocked
+    const block = isDayBlocked(db, ds);
+    if (block) {
+      return tgSend(token, chatId,
+        \`📅 <b>\${dateLabel}</b>\${dayTag}\\n\\n\` +
+        \`🚫 <b>Day Blocked by Admin</b>\\n\` +
+        \`📝 Reason: <i>\${block.reason || 'Unavailable'}</i>\\n\\n\` +
+        \`No bookings accepted on this day.\\nType /blocked to see all blocked days.\`
+      );
+    }
     const free = getFreeWindows(slots);
     if (!free.length) {
       return tgSend(token, chatId,
@@ -2864,6 +2874,15 @@ async function cmdSlots(env, token, chatId, dateStr, freeOnly, appUser = null) {
   }
 
   if (!slots.length) {
+    const block = isDayBlocked(db, ds);
+    if (block) {
+      return tgSend(token, chatId,
+        \`📅 <b>\${dateLabel}</b>\${dayTag}\\n\\n\` +
+        \`🚫 <b>Day Blocked</b> — No bookings accepted\\n\` +
+        \`📝 Reason: <i>\${block.reason || 'Unavailable'}</i>\\n\\n\` +
+        \`Type /blocked to see all blocked days.\`
+      );
+    }
     return tgSend(token, chatId,
       \`📅 <b>\${dateLabel}</b>\${dayTag}\\n\\n✅ No slots booked.\\n\\n\` +
       \`🕘 Business hours: 9:00 AM – 9:00 PM\\n\` +
@@ -3322,6 +3341,250 @@ async function cmdClear(env, token, chatId, dateStr, appUser, confirmed = false)
   );
 }
 
+// ── /block <date> [reason] — admin: block a full day ──────────
+// Stores a "day block" in db.blockedDays[] so no new bookings are
+// allowed and the web app / bot shows the day as fully unavailable.
+async function cmdBlockDay(env, token, chatId, args, appUser) {
+  if (appUser.role !== 'admin') {
+    return tgSend(token, chatId, \`🔒 This command is for admins only.\`);
+  }
+
+  // /block — show list keyboard of next 14 days to pick
+  if (!args.trim()) {
+    setStep(chatId, 'block_date', {});
+    return tgSend(token, chatId,
+      \`🚫 <b>Block a Day</b>\\n\\nChoose a date to block:\\n<i>All new bookings on that day will be prevented.</i>\`,
+      { reply_markup: dateQuickKeyboard() }
+    );
+  }
+
+  // /block <date> [reason]
+  const parts  = args.trim().split(/\\s+/);
+  const date   = parseDate(parts[0]);
+  const reason = parts.slice(1).join(' ') || 'Admin unavailable';
+
+  if (!date) {
+    return tgSend(token, chatId,
+      \`❌ Could not parse date: <code>\${parts[0]}</code>\\n\\n\` +
+      \`Usage: <code>/block &lt;date&gt; [reason]</code>\\n\` +
+      \`Example: <code>/block tomorrow Holiday</code>\`
+    );
+  }
+  const ds = isoD(date);
+
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  if (!db) return tgSend(token, chatId, \`❌ Could not reach database.\`);
+
+  const blockedDays = Array.isArray(db.blockedDays) ? [...db.blockedDays] : [];
+  if (blockedDays.find(b => b.date === ds)) {
+    return tgSend(token, chatId,
+      \`⚠️ <b>\${fmtDate(ds)}</b> is already blocked.\\n\\nUse /unblock \${parts[0]} to remove it, or /blocked to see all blocked days.\`
+    );
+  }
+
+  // Count how many active slots exist that day
+  const events = Array.isArray(db.events) ? db.events : [];
+  const existing = events.filter(e => {
+    const sd = e.sd || e.date || '', ed = e.ed || e.date || sd;
+    return ds >= sd && ds <= ed && (e.status || 'confirmed') !== 'cancelled';
+  });
+
+  // Show confirm with info about existing slots
+  setStep(chatId, 'confirm_block', { ds, reason });
+  const existingNote = existing.length
+    ? \`\\n\\n⚠️ <b>\${existing.length} existing slot\${existing.length !== 1 ? 's' : ''}</b> on this day will NOT be auto-cancelled.\\nUse /clear \${parts[0]} separately to cancel them.\`
+    : \`\\n\\n✅ No existing slots on this day.\`;
+
+  return tgSend(token, chatId,
+    \`🚫 <b>Block Day?</b>\\n\\n\` +
+    \`📅 <b>\${fmtDate(ds)}</b>\\n\` +
+    \`📝 Reason: <i>\${reason}</i>\${existingNote}\\n\\n\` +
+    \`New bookings will be <b>prevented</b> on this day.\\nAre you sure?\`,
+    { reply_markup: yesNoKeyboard(\`blockday:\${ds}:\${encodeURIComponent(reason)}\`, 'blockday:abort') }
+  );
+}
+
+async function doBlockDay(env, token, chatId, ds, reason, appUser) {
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  if (!db) return tgSend(token, chatId, \`❌ Could not reach database.\`);
+
+  const blockedDays = Array.isArray(db.blockedDays) ? [...db.blockedDays] : [];
+  if (blockedDays.find(b => b.date === ds)) {
+    return tgSend(token, chatId, \`⚠️ <b>\${fmtDate(ds)}</b> is already blocked.\`);
+  }
+
+  const userId = appUser.id || appUser.username;
+  blockedDays.push({
+    date: ds,
+    reason: reason || 'Admin unavailable',
+    blockedBy: userId,
+    blockedByName: appUser.name || appUser.username,
+    blockedAt: Date.now()
+  });
+  blockedDays.sort((a, b) => a.date.localeCompare(b.date));
+  db.blockedDays = blockedDays;
+
+  const activity = Array.isArray(db.activity) ? [...db.activity] : [];
+  activity.unshift({
+    id: 'a' + Date.now(), type: 'block',
+    msg: \`Day blocked via Telegram: \${fmtDate(ds)} — \${reason}\`,
+    user: appUser.name || appUser.username, userId, ts: Date.now()
+  });
+  db.activity = activity.slice(0, 500);
+  db.updatedAt = Date.now();
+
+  const ok = await fsSet(env.FB_PROJECT_ID, env.FB_API_KEY, 'uipath', 'db', db);
+  if (!ok) return tgSend(token, chatId, \`❌ Failed to block day. Try again.\`);
+
+  clearSession(chatId);
+
+  const msg =
+    \`🚫 <b>Day Blocked by Admin</b>\\n\\n\` +
+    \`📅 \${fmtDate(ds)}\\n\` +
+    \`📝 Reason: <i>\${reason}</i>\\n\` +
+    \`👤 Blocked by: \${appUser.name || appUser.username}\\n\\n\` +
+    \`<i>No new bookings accepted on this day.</i>\`;
+  if (env.CHANNEL_CHAT_ID) await tgSend(token, env.CHANNEL_CHAT_ID, msg);
+  if (env.ADMIN_CHAT_ID && env.ADMIN_CHAT_ID !== env.CHANNEL_CHAT_ID)
+    await tgSend(token, env.ADMIN_CHAT_ID, msg);
+
+  return tgSend(token, chatId,
+    \`✅ <b>\${fmtDate(ds)}</b> has been blocked.\\n\\n\` +
+    \`📝 Reason: <i>\${reason}</i>\\n\\n\` +
+    \`Use /blocked to see all blocked days.\\n\` +
+    \`Use /unblock to remove the block later.\`
+  );
+}
+
+// ── /unblock <date> — admin: unblock a day ────────────────────
+async function cmdUnblockDay(env, token, chatId, args, appUser) {
+  if (appUser.role !== 'admin') {
+    return tgSend(token, chatId, \`🔒 This command is for admins only.\`);
+  }
+
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  if (!db) return tgSend(token, chatId, \`❌ Could not reach database.\`);
+  const blockedDays = Array.isArray(db.blockedDays) ? db.blockedDays : [];
+
+  // /unblock — show list of blocked days
+  if (!args.trim()) {
+    const future = blockedDays.filter(b => b.date >= isoD(new Date()));
+    if (!future.length) {
+      return tgSend(token, chatId, \`✅ No blocked days to unblock.\`);
+    }
+    const rows = future.slice(0, 8).map(b => [{
+      text: \`📅 \${fmtDateShort(b.date)}  —  \${b.reason || 'No reason'}\`,
+      callback_data: \`unblockday:\${b.date}\`
+    }]);
+    rows.push([{ text: '🚫 Cancel', callback_data: 'unblockday:abort' }]);
+    return tgSend(token, chatId,
+      \`🔓 <b>Unblock a Day</b>\\n\\nChoose a blocked day to unblock:\`,
+      { reply_markup: { inline_keyboard: rows } }
+    );
+  }
+
+  // /unblock <date>
+  const date = parseDate(args.trim());
+  if (!date) {
+    return tgSend(token, chatId,
+      \`❌ Could not parse date: <code>\${args.trim()}</code>\\n\\nUsage: <code>/unblock &lt;date&gt;</code>\`
+    );
+  }
+  const ds = isoD(date);
+  return doUnblockDay(env, token, chatId, ds, appUser, db);
+}
+
+async function doUnblockDay(env, token, chatId, ds, appUser, dbIn = null) {
+  const db = dbIn || await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  if (!db) return tgSend(token, chatId, \`❌ Could not reach database.\`);
+
+  const blockedDays = Array.isArray(db.blockedDays) ? [...db.blockedDays] : [];
+  const idx = blockedDays.findIndex(b => b.date === ds);
+  if (idx === -1) {
+    return tgSend(token, chatId, \`⚠️ <b>\${fmtDate(ds)}</b> is not currently blocked.\`);
+  }
+
+  const block = blockedDays[idx];
+  blockedDays.splice(idx, 1);
+  db.blockedDays = blockedDays;
+
+  const userId = appUser.id || appUser.username;
+  const activity = Array.isArray(db.activity) ? [...db.activity] : [];
+  activity.unshift({
+    id: 'a' + Date.now(), type: 'unblock',
+    msg: \`Day unblocked via Telegram: \${fmtDate(ds)}\`,
+    user: appUser.name || appUser.username, userId, ts: Date.now()
+  });
+  db.activity = activity.slice(0, 500);
+  db.updatedAt = Date.now();
+
+  const ok = await fsSet(env.FB_PROJECT_ID, env.FB_API_KEY, 'uipath', 'db', db);
+  if (!ok) return tgSend(token, chatId, \`❌ Failed to unblock. Try again.\`);
+
+  clearSession(chatId);
+
+  const msg =
+    \`🔓 <b>Day Unblocked</b>\\n\\n\` +
+    \`📅 \${fmtDate(ds)}\\n\` +
+    \`👤 Unblocked by: \${appUser.name || appUser.username}\\n\\n\` +
+    \`<i>Bookings are now accepted on this day.</i>\`;
+  if (env.CHANNEL_CHAT_ID) await tgSend(token, env.CHANNEL_CHAT_ID, msg);
+  if (env.ADMIN_CHAT_ID && env.ADMIN_CHAT_ID !== env.CHANNEL_CHAT_ID)
+    await tgSend(token, env.ADMIN_CHAT_ID, msg);
+
+  return tgSend(token, chatId,
+    \`✅ <b>\${fmtDate(ds)}</b> is now unblocked.\\n\\nBookings can be made on this day again.\`
+  );
+}
+
+// ── /blocked — list all blocked days ──────────────────────────
+async function cmdBlockedDays(env, token, chatId, appUser) {
+  if (appUser.role !== 'admin') {
+    return tgSend(token, chatId, \`🔒 This command is for admins only.\`);
+  }
+  const db = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+  const blockedDays = Array.isArray(db?.blockedDays) ? db.blockedDays : [];
+
+  if (!blockedDays.length) {
+    return tgSend(token, chatId,
+      \`📋 <b>Blocked Days</b>\\n\\n✅ No days are currently blocked.\\n\\n\` +
+      \`Use <code>/block &lt;date&gt; [reason]</code> to block a day.\`
+    );
+  }
+
+  const today = isoD(new Date());
+  const past    = blockedDays.filter(b => b.date <  today);
+  const future  = blockedDays.filter(b => b.date >= today);
+
+  let msg = \`🚫 <b>Blocked Days (\${blockedDays.length})</b>\\n\`;
+
+  if (future.length) {
+    msg += \`\\n<b>Upcoming / Current:</b>\\n\`;
+    msg += future.map(b =>
+      \`📅 <b>\${fmtDate(b.date)}</b>\\n\` +
+      \`   📝 \${b.reason || 'No reason'}\\n\` +
+      \`   👤 \${b.blockedByName || '—'}  <code>/unblock \${b.date}</code>\`
+    ).join('\\n\\n');
+  }
+
+  if (past.length) {
+    msg += \`\\n\\n<b>Past (\${past.length}):</b>\\n\`;
+    msg += past.slice(-3).map(b =>
+      \`📅 \${fmtDateShort(b.date)} — \${b.reason || '—'}\`
+    ).join('\\n');
+  }
+
+  msg += \`\\n\\n<code>/block &lt;date&gt;</code> to block · <code>/unblock &lt;date&gt;</code> to unblock\`;
+
+  return tgSend(token, chatId, msg);
+}
+
+// ── Block check helper — used in booking flow ─────────────────
+function isDayBlocked(db, ds) {
+  const blockedDays = Array.isArray(db?.blockedDays) ? db.blockedDays : [];
+  return blockedDays.find(b => b.date === ds) || null;
+}
+
 // ── /announce — admin: broadcast to all verified users ────────
 async function cmdAnnounce(env, token, chatId, message, appUser) {
   if (appUser.role !== 'admin') {
@@ -3359,6 +3622,10 @@ async function doCreateBooking(env, data, userInfo, appUser) {
   if (toMin(data.endTime) - toMin(data.startTime) < MIN_SLOT_MINS) {
     return { error: 'too_short' };
   }
+
+  // Check if the day is blocked by admin
+  const dayBlock = isDayBlocked(db, data.date);
+  if (dayBlock) return { error: 'day_blocked', reason: dayBlock.reason };
 
   const events = Array.isArray(db.events) ? [...db.events] : [];
   if (hasOverlap(events, data.date, data.startTime, data.endTime)) return { error: 'overlap' };
@@ -3482,7 +3749,10 @@ function sendWelcome(token, chatId, appUser) {
     (isAdminUser
       ? \`\\n<b>🛡 Admin Commands:</b>\\n\` +
         \`/whobooked &lt;date&gt; &lt;time&gt;\\n\` +
-        \`/clear &lt;date&gt;\\n\` +
+        \`/clear &lt;date&gt; — Cancel all slots on a day\\n\` +
+        \`/block &lt;date&gt; [reason] — Block day (no bookings)\\n\` +
+        \`/unblock &lt;date&gt; — Unblock a day\\n\` +
+        \`/blocked — See all blocked days\\n\` +
         \`/announce &lt;message&gt;\\n\` +
         \`/stats — Booking statistics\\n\`
       : '') +
@@ -3503,6 +3773,14 @@ async function handleBookConfirm(env, token, chatId, user, appUser) {
   const result = await doCreateBooking(env, d, user, appUser);
   clearSession(chatId);
 
+  if (result.error === 'day_blocked') {
+    return tgSend(token, chatId,
+      \`🚫 <b>Day Blocked!</b>\\n\\n\` +
+      \`📅 <b>\${fmtDate(d.date)}</b> is not available for bookings.\\n\` +
+      \`📝 Reason: <i>\${result.reason || 'Admin unavailable'}</i>\\n\\n\` +
+      \`Please choose a different date. Type /book to try again.\`
+    );
+  }
   if (result.error === 'outside_hours') {
     return tgSend(token, chatId,
       \`⚠️ <b>Outside Business Hours!</b>\\n\\nSlots can only be booked between <b>9:00 AM – 9:00 PM</b>.\\n\\nType /book to try again.\`
@@ -3640,7 +3918,10 @@ async function handleMessage(env, msg) {
       (isAdminUser
         ? \`\\n<b>🛡 Admin:</b>\\n\` +
           \`/whobooked &lt;date&gt; &lt;time&gt;\\n\` +
-          \`/clear &lt;date&gt;\\n\` +
+          \`/clear &lt;date&gt; — Cancel all slots on a day\\n\` +
+          \`/block &lt;date&gt; [reason] — Block day\\n\` +
+          \`/unblock &lt;date&gt; — Unblock day\\n\` +
+          \`/blocked — List all blocked days\\n\` +
           \`/announce &lt;message&gt;\\n\` +
           \`/stats\\n\`
         : '') +
@@ -3691,6 +3972,18 @@ async function handleMessage(env, msg) {
 
   if (/^\\/clear(\\s|$)/i.test(text)) {
     return cmdClear(env, token, chatId, text.replace(/^\\/clear\\s*/i, '').trim(), appUser);
+  }
+
+  if (/^\\/block(\\s|$)/i.test(text) && !/^\\/blocked/.test(text)) {
+    return cmdBlockDay(env, token, chatId, text.replace(/^\\/block\\s*/i, '').trim(), appUser);
+  }
+
+  if (/^\\/unblock(\\s|$)/i.test(text)) {
+    return cmdUnblockDay(env, token, chatId, text.replace(/^\\/unblock\\s*/i, '').trim(), appUser);
+  }
+
+  if (/^\\/blocked$/i.test(text)) {
+    return cmdBlockedDays(env, token, chatId, appUser);
   }
 
   if (/^\\/announce(\\s|$)/i.test(text)) {
@@ -3825,6 +4118,50 @@ async function handleMessage(env, msg) {
     return tgSend(token, chatId, \`✅ Cancellation aborted. Slot unchanged.\`);
   }
 
+  // ── Block day flow (text input steps) ────────────────────────
+  if (session.step === 'block_date') {
+    const date = parseDate(text);
+    if (!date) return tgSend(token, chatId,
+      \`❓ Couldn't parse that date. Try: <code>tomorrow</code>, <code>25/06</code>\`);
+    const ds = isoD(date);
+    setStep(chatId, 'block_reason', { ds });
+    return tgSend(token, chatId,
+      \`📅 Block <b>\${fmtDate(ds)}</b>\\n\\n\` +
+      \`Type a <b>reason</b>:\\n<i>(e.g. "Holiday", "Team outing", "Admin unavailable")</i>\\n\\n\` +
+      \`Or type <code>skip</code> for default reason.\`
+    );
+  }
+
+  if (session.step === 'block_reason') {
+    const reason = text.toLowerCase() === 'skip' ? 'Admin unavailable' : text;
+    const { ds } = session.data;
+    const dbTemp = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+    const eventsTemp = Array.isArray(dbTemp?.events) ? dbTemp.events : [];
+    const existing = eventsTemp.filter(e => {
+      const sd = e.sd || e.date || '', ed = e.ed || e.date || sd;
+      return ds >= sd && ds <= ed && (e.status || 'confirmed') !== 'cancelled';
+    });
+    const existingNote = existing.length
+      ? \`\\n\\n⚠️ <b>\${existing.length} existing slot\${existing.length !== 1 ? 's' : ''}</b> will NOT be auto-cancelled.\\nUse /clear \${ds} separately.\`
+      : \`\\n\\n✅ No existing slots on this day.\`;
+    setStep(chatId, 'confirm_block', { ds, reason });
+    return tgSend(token, chatId,
+      \`🚫 <b>Block Day?</b>\\n\\n\` +
+      \`📅 <b>\${fmtDate(ds)}</b>\\n\` +
+      \`📝 Reason: <i>\${reason}</i>\${existingNote}\\n\\n\` +
+      \`Confirm?\`,
+      { reply_markup: yesNoKeyboard(\`blockday:\${ds}:\${encodeURIComponent(reason)}\`, 'blockday:abort') }
+    );
+  }
+
+  if (session.step === 'confirm_block') {
+    if (/^(yes|y|confirm|ok)$/i.test(text)) {
+      return doBlockDay(env, token, chatId, session.data.ds, session.data.reason, appUser);
+    }
+    clearSession(chatId);
+    return tgSend(token, chatId, \`✅ Block cancelled. No changes made.\`);
+  }
+
   if (/\\bbook\\b|\\breserve\\b|\\bschedule\\b/i.test(text)) {
     const nl = parseNLBooking(text);
     if (nl.date || nl.startTime || nl.candidate) {
@@ -3887,12 +4224,26 @@ async function handleCallback(env, cbq) {
         \`📅 Please type the date:\\n\\nExamples: <code>25/06</code>, <code>next friday</code>, <code>2025-06-25</code>\`);
     }
     const db    = await fsGet(env.FB_PROJECT_ID, 'uipath', 'db');
+
+    // Check if day is blocked — only for new bookings, not reschedules
+    const isReschedule = session.step && session.step.startsWith('resched');
+    if (!isReschedule) {
+      const block = isDayBlocked(db, ds);
+      if (block) {
+        return tgEdit(token, chatId, msgId,
+          \`🚫 <b>\${fmtDate(ds)} is blocked</b>\\n\\n\` +
+          \`📝 Reason: <i>\${block.reason || 'Admin unavailable'}</i>\\n\\n\` +
+          \`Please choose a different date:\`,
+          { reply_markup: dateQuickKeyboard() }
+        );
+      }
+    }
+
     const taken = getSlotsForDate(db?.events || [], ds);
     const free  = getFreeWindows(taken);
     const hint  = free.length
       ? \`\\n\\n🟢 <b>Free windows:</b>\\n\${free.map(f => \`  \${fmtTime(f.start)} – \${fmtTime(f.end)}\`).join('\\n')}\`
       : '\\n\\n⚠️ No obvious free windows — you can still book.';
-    const isReschedule = session.step && session.step.startsWith('resched');
     if (isReschedule) {
       setStep(chatId, 'resched_time', { ...session.data, newDate: ds });
       return tgEdit(token, chatId, msgId,
@@ -4072,6 +4423,45 @@ async function handleCallback(env, cbq) {
     await tgEdit(token, chatId, msgId, \`⏳ Clearing all slots on \${fmtDate(ds)}…\`);
     return cmdClear(env, token, chatId, ds, appUser, true);
   }
+
+  // ── Block day confirm ─────────────────────────────────────────
+  if (data.startsWith('blockday:')) {
+    const rest = data.replace('blockday:', '');
+    if (rest === 'abort') {
+      clearSession(chatId);
+      return tgEdit(token, chatId, msgId, \`✅ Block cancelled. No changes made.\`);
+    }
+    const [ds, ...reasonParts] = rest.split(':');
+    const reason = decodeURIComponent(reasonParts.join(':') || 'Admin unavailable');
+    await tgEdit(token, chatId, msgId, \`⏳ Blocking \${fmtDate(ds)}…\`);
+    return doBlockDay(env, token, chatId, ds, reason, appUser);
+  }
+
+  // ── Unblock day from list ─────────────────────────────────────
+  if (data.startsWith('unblockday:')) {
+    const ds = data.replace('unblockday:', '');
+    if (ds === 'abort') {
+      clearSession(chatId);
+      return tgEdit(token, chatId, msgId, \`✅ No changes made.\`);
+    }
+    await tgEdit(token, chatId, msgId, \`⏳ Unblocking \${fmtDate(ds)}…\`);
+    return doUnblockDay(env, token, chatId, ds, appUser);
+  }
+
+  // ── Block date from inline picker (step: block_date) ─────────
+  if (data.startsWith('date:') && session.step === 'block_date') {
+    const ds = data.replace('date:', '');
+    if (ds === 'manual') {
+      return tgEdit(token, chatId, msgId,
+        \`📅 Type the date to block:\\n\\nExamples: <code>25/06</code>, <code>next friday</code>\`);
+    }
+    setStep(chatId, 'block_reason', { ds });
+    return tgEdit(token, chatId, msgId,
+      \`📅 Block <b>\${fmtDate(ds)}</b>\\n\\n\` +
+      \`Type a <b>reason</b> for blocking this day:\\n<i>(e.g. "Holiday", "Team outing", "Admin unavailable")</i>\\n\\n\` +
+      \`Or type <code>skip</code> to use default reason.\`
+    );
+  }
 }
 
 // ── Cloudflare Worker entry ────────────────────────────────────
@@ -4127,7 +4517,7 @@ function downloadBotWorker() {
     '',
   ].join('\n');
   triggerWorkerDownload(header + _WORKER_JS);
-  toast('✓ Worker v3.0 downloaded — paste into Cloudflare Workers editor');
+  toast('✓ Worker v3.0 downloaded — deploy to Cloudflare Workers');
 }
 
 function triggerWorkerDownload(content) {
