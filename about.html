@@ -3,389 +3,732 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About Author - Bot Craft Labs</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<title>Chaitanya Doneparthi — Bot Craft Labs</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
   :root {
-    --primary-color: #0d6efd;
-    --text-color: #212529;
-    --shadow-color: 0 8px 20px rgba(0,0,0,0.1);
-    --timeline-line-color: #dee2e6;
+    --bg: #0a0a0b;
+    --bg2: #111114;
+    --bg3: #18181d;
+    --border: rgba(255,255,255,0.07);
+    --border-hi: rgba(255,255,255,0.14);
+    --text: #f0efe8;
+    --muted: #888880;
+    --accent: #c8f564;
+    --accent2: #5b9fff;
+    --accent3: #ff6b6b;
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --font-body: 'DM Sans', sans-serif;
   }
+
+  html { scroll-behavior: smooth; }
 
   body {
-    background: url('assets/about-background1.png') no-repeat center center fixed;
-    background-size: cover;
-    color: var(--text-color);
-    font-family: 'Poppins', sans-serif;
-    scroll-behavior: smooth;
-    cursor: none; /* Hide default cursor */
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.7;
+    cursor: none;
+    overflow-x: hidden;
   }
 
-  /* --- NEW: Beautiful Spotlight Cursor --- */
-  .cursor-spotlight {
-    position: fixed;
-    width: 40px;
-    height: 40px;
-    background: white;
+  /* ── Custom Cursor ── */
+  #cursor {
+    position: fixed; top: 0; left: 0; z-index: 9999;
+    width: 10px; height: 10px;
+    background: var(--accent);
     border-radius: 50%;
-    transform: translate(-50%, -50%);
     pointer-events: none;
-    z-index: 9999;
-    mix-blend-mode: difference;
-    transition: width 0.3s ease, height 0.3s ease;
+    transform: translate(-50%,-50%);
+    transition: transform 0.08s ease, width 0.25s ease, height 0.25s ease, background 0.25s;
   }
-  body.cursor-active .cursor-spotlight {
-    width: 80px;
-    height: 80px;
+  #cursor.hovering {
+    width: 36px; height: 36px;
+    background: transparent;
+    border: 1.5px solid var(--accent);
+    mix-blend-mode: normal;
   }
-  
-  .navbar { background-color: rgba(33, 37, 41, 0.8); backdrop-filter: blur(10px); }
-  
-  /* --- Enhanced Glassmorphism UI --- */
-  .glass-panel {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5));
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-    border-radius: 1.5rem;
+  #cursor-trail {
+    position: fixed; top: 0; left: 0; z-index: 9998;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(200,245,100,0.2);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%,-50%);
+    transition: all 0.18s ease;
   }
 
-  .section-padding { padding: 3rem 0; }
-  .section-title { font-weight: 700; position: relative; display: inline-block; margin-bottom: 3rem; }
-  .section-title::after { content: ""; display: block; width: 60px; height: 4px; background: var(--primary-color); margin: 8px auto 0; border-radius: 2px; }
-  
-  .profile-pic {
-    width: 250px; height: 250px; object-fit: cover; border-radius: 50%; border: 5px solid var(--primary-color);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
-  }
-  .profile-pic:hover {
-    transform: scale(1.05);
-    box-shadow: 0 15px 40px rgba(13, 110, 253, 0.3);
+  /* ── Noise overlay ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
   }
 
-  /* --- Enhanced Skill Cards --- */
-  .skill-card {
-    background: #fff; border-radius: 10px; box-shadow: var(--shadow-color);
-    padding: 1.5rem 1rem; text-align: center; height: 100%;
-    transition: transform 0.2s ease-out, box-shadow 0.3s, border-color 0.3s;
-    border: 1px solid transparent;
+  /* ── Nav ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 3rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(16px);
   }
-  .skill-card:hover { 
-    transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-    border-color: rgba(13, 110, 253, 0.5);
+  .nav-brand {
+    font-family: var(--font-display);
+    font-weight: 800; font-size: 1rem;
+    color: var(--text); text-decoration: none;
+    letter-spacing: -0.02em;
+    display: flex; align-items: center; gap: 0.5rem;
   }
-  .skill-card i { 
-    font-size: 2.8rem; 
-    color: var(--primary-color); 
+  .nav-brand span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-family: var(--font-mono); font-size: 0.78rem;
+    color: var(--muted); text-decoration: none;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* ── Layout ── */
+  main { position: relative; z-index: 1; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 2.5rem; }
+
+  /* ── Hero ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding-top: 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-grid-bg {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 100%);
+  }
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(200,245,100,0.06) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%, -60%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 6rem; align-items: center;
+  }
+  .hero-label {
+    font-family: var(--font-mono); font-size: 0.72rem;
+    color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 0.6rem;
+    margin-bottom: 1.5rem;
+  }
+  .hero-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--accent); }
+  h1 {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(2.6rem, 4.5vw, 3.8rem); line-height: 1.05;
+    letter-spacing: -0.03em; margin-bottom: 1.5rem;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+  .hero-sub {
+    font-size: 1.05rem; color: var(--muted); line-height: 1.8;
+    margin-bottom: 2.5rem; max-width: 440px;
+  }
+  .hero-cta-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary {
+    font-family: var(--font-mono); font-size: 0.78rem;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--bg); background: var(--accent);
+    border: none; padding: 0.8rem 1.8rem;
+    text-decoration: none; cursor: none;
+    transition: background 0.2s, transform 0.2s;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  }
+  .btn-primary:hover { background: #dafb7a; transform: translateY(-2px); }
+  .btn-ghost {
+    font-family: var(--font-mono); font-size: 0.78rem;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text); background: transparent;
+    border: 1px solid var(--border-hi); padding: 0.8rem 1.8rem;
+    text-decoration: none; cursor: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Hero avatar side */
+  .hero-avatar-wrap {
+    display: flex; justify-content: center; align-items: center;
+    position: relative;
+  }
+  .avatar-frame {
+    position: relative; display: inline-block;
+  }
+  .avatar-frame::before {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    border: 1px solid var(--border);
+    clip-path: polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px);
+  }
+  .avatar-frame::after {
+    content: '';
+    position: absolute;
+    inset: -24px;
+    border: 1px solid rgba(200,245,100,0.12);
+    clip-path: polygon(24px 0%, 100% 0%, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0% 100%, 0% 24px);
+  }
+  .avatar-img {
+    width: 280px; height: 280px; object-fit: cover;
+    clip-path: polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px);
+    display: block;
+    background: var(--bg3);
+  }
+  .avatar-initials {
+    width: 280px; height: 280px;
+    background: var(--bg3); display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 5rem; font-weight: 800;
+    color: var(--accent); letter-spacing: -0.04em;
+    clip-path: polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px);
+  }
+  .avatar-tag {
+    position: absolute; bottom: -16px; right: -16px;
+    background: var(--accent); color: var(--bg);
+    font-family: var(--font-mono); font-size: 0.68rem;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 0.4rem 0.8rem;
+  }
+  .stats-row {
+    display: flex; gap: 2rem; margin-top: 2.5rem;
+    padding-top: 2rem; border-top: 1px solid var(--border);
+  }
+  .stat-item { }
+  .stat-num {
+    font-family: var(--font-display); font-size: 2rem; font-weight: 800;
+    color: var(--text); line-height: 1;
+  }
+  .stat-num span { color: var(--accent); }
+  .stat-label { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 0.3rem; }
+
+  /* ── Section chrome ── */
+  section { padding: 7rem 0; }
+  .section-eyebrow {
+    font-family: var(--font-mono); font-size: 0.72rem;
+    color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 0.6rem;
     margin-bottom: 1rem;
-    transition: transform 0.3s ease;
   }
-  .skill-card:hover i { transform: scale(1.1) rotate(-5deg); }
-  .skill-card h6 { font-weight: 600; font-size: 0.9rem; }
+  .section-eyebrow::before { content: ''; display: block; width: 24px; height: 1px; background: var(--accent); }
+  h2 {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(2rem, 3.5vw, 2.8rem); letter-spacing: -0.03em;
+    margin-bottom: 3rem;
+  }
+  h2 em { font-style: normal; color: var(--accent); }
 
-  /* --- Enhanced Timeline --- */
-  .experience-timeline { position: relative; max-width: 900px; margin: 2rem auto; }
-  .experience-timeline::before { content: ''; position: absolute; width: 3px; background-color: var(--timeline-line-color); top: 0; bottom: 0; left: 50%; margin-left: -1.5px; }
-  .exp-card { position: relative; width: 45%; padding: 1.5rem; margin-bottom: 2rem; background: #fff; border-radius: 15px; box-shadow: var(--shadow-color); transition: transform 0.3s, box-shadow 0.3s; border: 1px solid #eee; }
-  .exp-card:nth-child(odd) { left: 0; }
-  .exp-card:nth-child(even) { left: 55%; }
-  .exp-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
-  .exp-card::after {
-    content: ''; position: absolute; top: 20px; width: 16px; height: 16px; background: #fff;
-    border-radius: 50%; border: 3px solid var(--primary-color); z-index: 1; 
-    transition: transform 0.3s, box-shadow 0.3s;
-    box-shadow: 0 0 0 4px var(--primary-color);
+  /* ── Skills ── */
+  #skills { background: var(--bg2); }
+  .skills-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 3rem; }
+  .skills-header h2 { margin-bottom: 0; }
+  .skills-count { font-family: var(--font-mono); font-size: 4rem; font-weight: 300; color: var(--border-hi); line-height: 1; }
+  .skills-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: var(--border);
   }
-  .exp-card:hover::after { 
-    transform: scale(1.2); 
-    box-shadow: 0 0 15px var(--primary-color);
+  .skill-tile {
+    background: var(--bg2); padding: 2rem 1.5rem;
+    display: flex; flex-direction: column; align-items: flex-start;
+    gap: 1rem; position: relative; overflow: hidden;
+    transition: background 0.3s;
+    cursor: none;
   }
-  .exp-card:nth-child(odd)::after { right: -45.5px; }
-  .exp-card:nth-child(even)::after { left: -45.5px; }
-  .exp-content h5 { font-weight: 700; }
-  
-  /* --- Beautiful Tile Design for Certs --- */
-  .cert-card {
-    background: #fff;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease-out, box-shadow 0.3s; 
-    cursor: pointer; 
-    border-radius: 15px; 
-    padding: 1.5rem;
-    height: 100%;
+  .skill-tile::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0;
+    height: 2px; width: 0;
+    background: var(--accent);
+    transition: width 0.35s ease;
   }
-  .cert-card:hover { 
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
+  .skill-tile:hover { background: var(--bg3); }
+  .skill-tile:hover::after { width: 100%; }
+  .skill-icon {
+    width: 44px; height: 44px; background: var(--bg3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+  }
+  .skill-tile:hover .skill-icon { background: rgba(200,245,100,0.08); }
+  .skill-name { font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; line-height: 1.3; }
+  .skill-tag { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
+  .skill-num {
+    position: absolute; top: 1.5rem; right: 1.5rem;
+    font-family: var(--font-mono); font-size: 0.65rem; color: var(--border-hi);
   }
 
-  footer { background: #212529; color: #f8f9fa; }
-  
-  .contact-info a { font-size: 1.5rem; margin: 0 1rem; color: var(--primary-color); transition: color 0.3s; }
-  .contact-info a:hover { color: #61dafb; }
-  #backToTop { position: fixed; bottom: 20px; right: 20px; display: none; z-index: 1000; }
+  /* ── Experience ── */
+  .exp-layout { display: grid; grid-template-columns: 220px 1fr; gap: 0; }
+  .exp-nav { border-right: 1px solid var(--border); padding-right: 2rem; }
+  .exp-nav-item {
+    display: block; padding: 1rem 0;
+    font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.04em;
+    color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--border);
+    transition: color 0.2s;
+    cursor: none;
+  }
+  .exp-nav-item.active, .exp-nav-item:hover { color: var(--accent); }
+  .exp-nav-item.active { border-left: 2px solid var(--accent); padding-left: 1rem; }
+  .exp-panel { padding-left: 3rem; }
+  .exp-entry { display: none; }
+  .exp-entry.active { display: block; }
+  .exp-company { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .exp-role { font-family: var(--font-display); font-weight: 800; font-size: 1.8rem; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  .exp-period { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 1.5rem; }
+  .exp-bullets { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+  .exp-bullets li {
+    display: flex; gap: 0.8rem; align-items: flex-start;
+    font-size: 0.92rem; color: rgba(240,239,232,0.75);
+  }
+  .exp-bullets li::before { content: '→'; color: var(--accent); font-family: var(--font-mono); flex-shrink: 0; margin-top: 0.1rem; }
 
-  @media (max-width: 992px) {
-    .experience-timeline::before { left: 20px; }
-    .exp-card { width: calc(100% - 40px); left: 40px !important; }
-    .exp-card::after { left: -28px !important; }
-    .cursor-spotlight { display: none; } /* Hide custom cursor on mobile */
-    body { cursor: auto; } /* Restore default cursor on mobile */
+  /* ── Certs ── */
+  #certifications { background: var(--bg2); }
+  .filter-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+  .filter-chip {
+    font-family: var(--font-mono); font-size: 0.7rem;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 0.45rem 1rem; cursor: none;
+    border: 1px solid var(--border-hi); color: var(--muted);
+    background: transparent; transition: all 0.2s;
+  }
+  .filter-chip:hover, .filter-chip.active {
+    border-color: var(--accent); color: var(--accent);
+    background: rgba(200,245,100,0.05);
+  }
+  .certs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); }
+  .cert-tile {
+    background: var(--bg2); padding: 2rem;
+    display: flex; flex-direction: column;
+    transition: background 0.2s; cursor: none; position: relative; overflow: hidden;
+  }
+  .cert-tile:hover { background: var(--bg3); }
+  .cert-logo { margin-bottom: 1.5rem; height: 28px; display: flex; align-items: center; }
+  .cert-logo-text { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: var(--bg3); padding: 0.3rem 0.6rem; display: inline-block; }
+  .cert-name { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; line-height: 1.35; margin-bottom: 1rem; flex: 1; }
+  .cert-meta { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .cert-date { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); }
+  .cert-id { font-family: var(--font-mono); font-size: 0.6rem; color: var(--border-hi); }
+  .cert-expires {
+    position: absolute; top: 1.2rem; right: 1.2rem;
+    font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.04em;
+    padding: 0.2rem 0.5rem;
+  }
+  .cert-expires.valid { background: rgba(200,245,100,0.1); color: var(--accent); }
+  .cert-expires.expired { background: rgba(255,107,107,0.1); color: var(--accent3); }
+  .cert-expires.lifetime { background: rgba(91,159,255,0.1); color: var(--accent2); }
+
+  /* ── Contact ── */
+  #contact { border-top: 1px solid var(--border); }
+  .contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; }
+  .contact-heading { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.5rem, 5vw, 4.5rem); letter-spacing: -0.04em; line-height: 1.1; }
+  .contact-heading span { color: var(--accent); }
+  .contact-links { display: flex; flex-direction: column; gap: 1.2rem; }
+  .contact-link {
+    display: flex; align-items: center; gap: 1rem;
+    text-decoration: none; color: var(--text);
+    padding: 1.2rem 1.5rem;
+    border: 1px solid var(--border); background: var(--bg2);
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .contact-link:hover { border-color: var(--accent); background: rgba(200,245,100,0.04); }
+  .contact-link-icon { font-size: 1.2rem; color: var(--accent); width: 1.5rem; text-align: center; }
+  .contact-link-label { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.04em; }
+  .contact-link-value { font-size: 0.88rem; color: var(--muted); margin-top: 0.15rem; }
+  .contact-link-arrow { margin-left: auto; color: var(--border-hi); transition: color 0.2s, transform 0.2s; }
+  .contact-link:hover .contact-link-arrow { color: var(--accent); transform: translateX(4px); }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted);
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* ── Back to top ── */
+  #btt {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
+    width: 44px; height: 44px; background: var(--bg3);
+    border: 1px solid var(--border-hi); display: none;
+    align-items: center; justify-content: center;
+    color: var(--text); text-decoration: none; font-size: 1.2rem;
+    cursor: none; transition: border-color 0.2s, color 0.2s;
+    clip-path: polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px);
+  }
+  #btt:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── Animations ── */
+  .fade-in { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .fade-in.visible { opacity: 1; transform: none; }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .container { padding: 0 1.5rem; }
+    .hero-inner { grid-template-columns: 1fr; gap: 3rem; text-align: center; }
+    .hero-sub { max-width: none; }
+    .hero-cta-row { justify-content: center; }
+    .stats-row { justify-content: center; }
+    .hero-label { justify-content: center; }
+    .hero-avatar-wrap { order: -1; }
+    .skills-grid { grid-template-columns: repeat(2, 1fr); }
+    .certs-grid { grid-template-columns: repeat(2, 1fr); }
+    .exp-layout { grid-template-columns: 1fr; }
+    .exp-nav { border-right: none; border-bottom: 1px solid var(--border); padding-right: 0; padding-bottom: 1rem; margin-bottom: 2rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .exp-nav-item { border-bottom: none; padding: 0.4rem 0.8rem; border: 1px solid var(--border); font-size: 0.68rem; }
+    .exp-nav-item.active { border-color: var(--accent); padding-left: 0.8rem; }
+    .exp-panel { padding-left: 0; }
+    .contact-inner { grid-template-columns: 1fr; gap: 3rem; }
+    body, .nav-links a, .btn-primary, .btn-ghost, .filter-chip, .contact-link, #btt { cursor: auto; }
+    #cursor, #cursor-trail { display: none; }
+    .skills-count { font-size: 2.5rem; }
+  }
+  @media (max-width: 600px) {
+    .skills-grid { grid-template-columns: repeat(2, 1fr); }
+    .certs-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 2.2rem; }
+    .nav-links { gap: 1rem; }
+    .nav-links li:last-child { display: none; }
   }
 </style>
 </head>
 <body>
 
-<div class="cursor-spotlight"></div>
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
 
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
-  <div class="container">
-    <a class="navbar-brand fw-bold" href="index.html">🤖 Bot Craft Labs</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navMenu">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="resume-builder.html">Resume Builder</a></li>
-        <li class="nav-item"><a class="nav-link" href="linkedin-qa.html">LinkedIn Q&A</a></li>
-      </ul>
-    </div>
-  </div>
+<nav>
+  <a class="nav-brand" href="index.html">🤖 Bot<span>&nbsp;Craft Labs</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="resume-builder.html">Resume</a></li>
+    <li><a href="linkedin-qa.html">LinkedIn Q&A</a></li>
+  </ul>
 </nav>
 
-<main class="py-5" style="margin-top: 56px;">
-  <div class="container">
-    <div class="glass-panel p-4 p-md-5">
+<main>
 
-      <section id="about" class="section-padding">
-        <div class="row align-items-center g-5">
-          <div class="col-lg-5 text-center" data-aos="fade-right">
-            <img src="assets/profile.jpg" alt="Chaitanya Doneparthi" class="profile-pic">
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-glow"></div>
+    <div class="container">
+      <div class="hero-inner">
+        <div>
+          <div class="hero-label">Senior Associate — Automation</div>
+          <h1>Chaitanya<br><em>Doneparthi</em></h1>
+          <p class="hero-sub">5+ years building intelligent automation solutions with UiPath, Power Automate & AI-driven bots — bridging business logic and technical precision.</p>
+          <div class="hero-cta-row">
+            <a href="#contact" class="btn-primary">Get in Touch</a>
+            <a href="#experience" class="btn-ghost">View Work</a>
           </div>
-          <div class="col-lg-7" data-aos="fade-left">
-            <h2 class="section-title text-start" style="display: block; margin-left: 0;">About Me</h2>
-            <p class="lead mb-4">I am <strong>Chaitanya Doneparthi</strong>, a Senior Associate – Automation with over 5 years of experience in Robotic Process Automation (RPA), specializing in UiPath, Microsoft Power Automate, and Blueprint RPA Migration.</p>
-            <p>My focus is on delivering intelligent automation solutions that optimize business processes with maximum efficiency and accuracy. I enjoy bridging the gap between business needs and technical solutions.</p>
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-num">5<span>+</span></div>
+              <div class="stat-label">Years Exp.</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num">7<span>+</span></div>
+              <div class="stat-label">Certs</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num">4</div>
+              <div class="stat-label">Employers</div>
+            </div>
           </div>
         </div>
-      </section>
-
-      <section id="skills" class="section-padding">
-        <div class="text-center">
-          <h2 class="section-title" data-aos="fade-up">Core Skills</h2>
-        </div>
-        <div class="row g-4 justify-content-center">
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
-              <div class="skill-card"><i class="bi bi-robot"></i><h6>UiPath</h6></div>
-          </div>
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="50">
-              <div class="skill-card"><i class="bi bi-microsoft"></i><h6>Power Automate</h6></div>
-          </div>
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="100">
-              <div class="skill-card"><i class="bi bi-file-text-fill"></i><h6>Intelligent Document Processing</h6></div>
-          </div>
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="150">
-              <div class="skill-card"><i class="bi bi-cpu-fill"></i><h6>AI & Agentic Automation</h6></div>
-          </div>
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="200">
-              <div class="skill-card"><i class="bi bi-bullseye"></i><h6>Process & Task Mining</h6></div>
-          </div>
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="250">
-              <div class="skill-card"><i class="bi bi-sign-merge-left-fill"></i><h6>RPA Migration (Blueprint)</h6></div>
-          </div>
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="300">
-              <div class="skill-card"><i class="bi bi-journal-code"></i><h6>C# & .NET Integration</h6></div>
-          </div>
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="350">
-              <div class="skill-card"><i class="bi bi-gear-wide-connected"></i><h6>Enterprise App Automation</h6></div>
+        <div class="hero-avatar-wrap">
+          <div class="avatar-frame">
+            <div class="avatar-initials">CD</div>
+            <div class="avatar-tag">Accelirate Inc.</div>
           </div>
         </div>
-      </section>
-
-      <section id="experience" class="section-padding">
-          <div class="text-center">
-            <h2 class="section-title" data-aos="fade-up">Professional Experience</h2>
-          </div>
-          <div class="experience-timeline">
-            <div class="exp-card" data-aos="fade-right">
-                <div class="exp-content"><h5>Senior Associate – Automation</h5><small>Accelirate Inc | Apr 2025 – Present</small></div>
-            </div>
-            <div class="exp-card" data-aos="fade-left">
-                <div class="exp-content"><h5>Senior Automation Engineer DU</h5><small>Accelirate Inc | Jun 2024 – Mar 2025</small></div>
-            </div>
-            <div class="exp-card" data-aos="fade-right">
-                <div class="exp-content"><h5>Digital Engineer</h5><small>Sonata Software | Jan 2022 – May 2024</small></div>
-            </div>
-            <div class="exp-card" data-aos="fade-left">
-                <div class="exp-content"><h5>Software Engineer</h5><small>Coforge | Oct 2019 – Jan 2022</small></div>
-            </div>
-          </div>
-      </section>
-
-      <section id="certifications" class="section-padding">
-          <div class="text-center">
-            <h2 class="section-title" data-aos="fade-up">Certifications</h2>
-          </div>
-          <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
-            <button class="btn btn-outline-primary filter-btn active" data-skill="All">All</button>
-            <button class="btn btn-outline-primary filter-btn" data-skill="UiPath">UiPath</button>
-            <button class="btn btn-outline-primary filter-btn" data-skill="Blueprint">Blueprint</button>
-            <button class="btn btn-outline-primary filter-btn" data-skill="Microsoft">Microsoft</button>
-          </div>
-          <div class="cert-list row g-4"></div>
-      </section>
-
-      <section id="contact" class="section-padding text-center">
-          <h2 class="section-title">Get in Touch</h2>
-          <div class="contact-info">
-          <a href="mailto:chaitanya.dgr@gmail.com" title="Email"><i class="bi bi-envelope-fill"></i></a>
-          <a href="https://www.linkedin.com/in/chaitanya-doneparthi-409539139" target="_blank" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
-          </div>
-      </section>
-    </div>
-  </div>
-</main>
-
-<div class="modal fade" id="certModal" tabindex="-1" aria-labelledby="certModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title" id="certModalLabel">Certification Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-      <div class="modal-body">
-        <p><strong>Name:</strong> <span id="modalName"></span></p>
-        <p><strong>Issued:</strong> <span id="modalIssued"></span></p>
-        <p><strong>Expires:</strong> <span id="modalExpires"></span></p>
-        <p><strong>ID:</strong> <span id="modalID"></span></p>
-        <p><strong>Skills:</strong> <span id="modalSkills"></span></p>
       </div>
     </div>
-  </div>
-</div>
+  </section>
 
-<footer class="text-center py-4">
-  <p class="mb-0">&copy; 2025 Bot Craft Labs | Built with Professional Expertise</p>
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="container fade-in">
+      <div class="skills-header">
+        <div>
+          <div class="section-eyebrow">Core Expertise</div>
+          <h2>What I <em>Build With</em></h2>
+        </div>
+        <div class="skills-count">08</div>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-tile">
+          <span class="skill-num">01</span>
+          <div class="skill-icon">🤖</div>
+          <div><div class="skill-name">UiPath</div><div class="skill-tag">RPA Platform</div></div>
+        </div>
+        <div class="skill-tile">
+          <span class="skill-num">02</span>
+          <div class="skill-icon">⚡</div>
+          <div><div class="skill-name">Power Automate</div><div class="skill-tag">Microsoft RPA</div></div>
+        </div>
+        <div class="skill-tile">
+          <span class="skill-num">03</span>
+          <div class="skill-icon">📄</div>
+          <div><div class="skill-name">Document Processing</div><div class="skill-tag">IDP / AI</div></div>
+        </div>
+        <div class="skill-tile">
+          <span class="skill-num">04</span>
+          <div class="skill-icon">🧠</div>
+          <div><div class="skill-name">AI & Agentic</div><div class="skill-tag">Automation AI</div></div>
+        </div>
+        <div class="skill-tile">
+          <span class="skill-num">05</span>
+          <div class="skill-icon">🎯</div>
+          <div><div class="skill-name">Process Mining</div><div class="skill-tag">Task Mining</div></div>
+        </div>
+        <div class="skill-tile">
+          <span class="skill-num">06</span>
+          <div class="skill-icon">🔀</div>
+          <div><div class="skill-name">RPA Migration</div><div class="skill-tag">Blueprint</div></div>
+        </div>
+        <div class="skill-tile">
+          <span class="skill-num">07</span>
+          <div class="skill-icon">⚙️</div>
+          <div><div class="skill-name">C# & .NET</div><div class="skill-tag">Integration</div></div>
+        </div>
+        <div class="skill-tile">
+          <span class="skill-num">08</span>
+          <div class="skill-icon">🏢</div>
+          <div><div class="skill-name">Enterprise Apps</div><div class="skill-tag">Automation</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="container fade-in">
+      <div class="section-eyebrow">Work History</div>
+      <h2>Professional <em>Experience</em></h2>
+      <div class="exp-layout">
+        <div class="exp-nav">
+          <a class="exp-nav-item active" data-target="e1" href="#">Accelirate '25</a>
+          <a class="exp-nav-item" data-target="e2" href="#">Accelirate '24</a>
+          <a class="exp-nav-item" data-target="e3" href="#">Sonata</a>
+          <a class="exp-nav-item" data-target="e4" href="#">Coforge</a>
+        </div>
+        <div class="exp-panel">
+          <div class="exp-entry active" id="e1">
+            <div class="exp-company">Accelirate Inc.</div>
+            <div class="exp-role">Senior Associate<br>— Automation</div>
+            <div class="exp-period">Apr 2025 — Present</div>
+            <ul class="exp-bullets">
+              <li>Leading end-to-end automation delivery across enterprise clients.</li>
+              <li>Architecting complex RPA workflows with AI and agentic capabilities.</li>
+              <li>Mentoring team members on UiPath best practices and REFramework.</li>
+            </ul>
+          </div>
+          <div class="exp-entry" id="e2">
+            <div class="exp-company">Accelirate Inc.</div>
+            <div class="exp-role">Senior Automation<br>Engineer DU</div>
+            <div class="exp-period">Jun 2024 — Mar 2025</div>
+            <ul class="exp-bullets">
+              <li>Developed and maintained Document Understanding pipelines for high-volume data extraction.</li>
+              <li>Integrated UiPath AI Center models into production automation workflows.</li>
+              <li>Collaborated with client stakeholders to define automation requirements and ROI metrics.</li>
+            </ul>
+          </div>
+          <div class="exp-entry" id="e3">
+            <div class="exp-company">Sonata Software</div>
+            <div class="exp-role">Digital Engineer</div>
+            <div class="exp-period">Jan 2022 — May 2024</div>
+            <ul class="exp-bullets">
+              <li>Delivered RPA solutions across BFSI and retail verticals using UiPath.</li>
+              <li>Spearheaded Blueprint RPA Migration projects, converting legacy automations.</li>
+              <li>Implemented process mining analyses to identify high-impact automation candidates.</li>
+            </ul>
+          </div>
+          <div class="exp-entry" id="e4">
+            <div class="exp-company">Coforge</div>
+            <div class="exp-role">Software Engineer</div>
+            <div class="exp-period">Oct 2019 — Jan 2022</div>
+            <ul class="exp-bullets">
+              <li>Built attended and unattended bots to automate repetitive back-office processes.</li>
+              <li>Developed C# integration libraries for connecting RPA bots to enterprise APIs.</li>
+              <li>Delivered 15+ automation projects across insurance and banking domains.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS -->
+  <section id="certifications">
+    <div class="container fade-in">
+      <div class="section-eyebrow">Credentials</div>
+      <h2>Certifications</h2>
+      <div class="filter-row" id="filterRow">
+        <button class="filter-chip active" data-filter="All">All</button>
+        <button class="filter-chip" data-filter="UiPath">UiPath</button>
+        <button class="filter-chip" data-filter="Blueprint">Blueprint</button>
+        <button class="filter-chip" data-filter="Microsoft">Microsoft</button>
+      </div>
+      <div class="certs-grid" id="certsGrid"></div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container fade-in">
+      <div class="contact-inner">
+        <div>
+          <div class="section-eyebrow">Let's Connect</div>
+          <div class="contact-heading">Get<br>in <span>Touch</span></div>
+        </div>
+        <div class="contact-links">
+          <a class="contact-link" href="mailto:chaitanya.dgr@gmail.com">
+            <span class="contact-link-icon">✉</span>
+            <div>
+              <div class="contact-link-label">Email</div>
+              <div class="contact-link-value">chaitanya.dgr@gmail.com</div>
+            </div>
+            <span class="contact-link-arrow">→</span>
+          </a>
+          <a class="contact-link" href="https://www.linkedin.com/in/chaitanya-doneparthi-409539139" target="_blank">
+            <span class="contact-link-icon">in</span>
+            <div>
+              <div class="contact-link-label">LinkedIn</div>
+              <div class="contact-link-value">chaitanya-doneparthi-409539139</div>
+            </div>
+            <span class="contact-link-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="container">
+  <span>© 2025 Bot Craft Labs</span>
+  <span>Built by <a href="#">Chaitanya Doneparthi</a></span>
 </footer>
 
-<a href="#" id="backToTop" class="btn btn-primary btn-lg rounded-circle"><i class="bi bi-arrow-up"></i></a>
+<a href="#" id="btt">↑</a>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    AOS.init({ duration: 800, once: true, offset: 50 });
-    
-    const backToTopBtn = document.getElementById('backToTop');
-    window.addEventListener('scroll', () => {
-        backToTopBtn.style.display = (window.scrollY > 300) ? 'flex' : 'none';
-    });
-    backToTopBtn.addEventListener('click', (e) => {
+(function(){
+  // Cursor
+  const cur = document.getElementById('cursor');
+  const trail = document.getElementById('cursor-trail');
+  let tx = 0, ty = 0;
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top = e.clientY + 'px';
+    setTimeout(() => {
+      trail.style.left = e.clientX + 'px';
+      trail.style.top = e.clientY + 'px';
+    }, 80);
+  });
+  document.querySelectorAll('a, button, .skill-tile, .cert-tile').forEach(el => {
+    el.addEventListener('mouseenter', () => cur.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => cur.classList.remove('hovering'));
+  });
+
+  // Back to top
+  const btt = document.getElementById('btt');
+  window.addEventListener('scroll', () => {
+    btt.style.display = window.scrollY > 400 ? 'flex' : 'none';
+  });
+  btt.addEventListener('click', e => { e.preventDefault(); window.scrollTo({top:0, behavior:'smooth'}); });
+
+  // Fade-in on scroll
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+  // Experience tabs
+  document.querySelectorAll('.exp-nav-item').forEach(item => {
+    item.addEventListener('click', e => {
       e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    const certifications = [
-        { name: "UiPath Certified Professional Test Automation Engineer", issued: "Mar 2025", expires: "Mar 2028", id: "137766777", skills: "UiPath", logo: "assets/uipath-logo.png", category: "UiPath" },
-        { name: "UiPath Certified Professional Specialized AI", issued: "Oct 2024", expires: "Oct 2027", id: "118990938", skills: "UiPath", logo: "assets/uipath-logo.png", category: "UiPath" },
-        { name: "UiPath Specialized AI Associate", issued: "Oct 2024", expires: "Oct 2026", id: "117592886", skills: "UiPath", logo: "assets/uipath-logo.png", category: "UiPath" },
-        { name: "UiPath Academy Test Automation Engineer", issued: "Jul 2024", expires: "Jul 2026", id: "110389095", skills: "UiPath", logo: "assets/uipath-logo.png", category: "UiPath" },
-        { name: "Blueprint RPA Migration Specialist", issued: "Apr 2024", expires: "", id: "ifllqty2lg", skills: "Blueprint · RPA Migration", logo: "assets/blueprint-logo.png", category: "Blueprint" },
-        { name: "UiPath Certified Professional Advanced RPA Developer (UiARD)", issued: "Oct 2023", expires: "", id: "84798323", skills: "UiPath", logo: "assets/uipath-logo.png", category: "UiPath" },
-        { name: "Microsoft Power Automate RPA Developer", issued: "May 2024", expires: "May 2025", id: "3256001FAAFF7992", skills: "Microsoft Power Automate", logo: "assets/microsoft-logo.png", category: "Microsoft" }
-    ];
-
-    const certListContainer = document.querySelector('.cert-list');
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const certModal = new bootstrap.Modal(document.getElementById('certModal'));
-
-    function renderCerts(filter = 'All') {
-        certListContainer.innerHTML = '';
-        const filteredCerts = (filter === 'All') ? certifications : certifications.filter(c => c.category === filter);
-        
-        filteredCerts.forEach(cert => {
-            const certCardHTML = `
-                <div class="col-md-6 col-lg-4" data-aos="zoom-in-up">
-                <div class="cert-card h-100" data-name="${cert.name}" data-issued="${cert.issued}" data-expires="${cert.expires}" data-id="${cert.id}" data-skills="${cert.skills}">
-                    <img src="${cert.logo}" alt="${cert.category}" height="40">
-                    <h5 class="mt-3">${cert.name}</h5>
-                    <p class="mb-0 small text-muted"><strong>Issued:</strong> ${cert.issued}${cert.expires ? ` · <strong>Expires:</strong> ${cert.expires}` : ''}</p>
-                </div>
-                </div>`;
-            certListContainer.innerHTML += certCardHTML;
-        });
-        addCardEventListeners();
-    }
-    
-    function addCardEventListeners() {
-        document.querySelectorAll('.cert-card, .skill-card').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const { width, height } = rect;
-                const rotateX = (y - height / 2) / 15;
-                const rotateY = (width / 2 - x) / 15;
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
-            });
-        });
-        
-        document.querySelectorAll('.exp-card').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                card.style.setProperty('--x', `${x}px`);
-                card.style.setProperty('--y', `${y}px`);
-            });
-        });
-
-        document.querySelectorAll('.cert-card').forEach(card => {
-            card.addEventListener('click', () => {
-                document.getElementById('modalName').textContent = card.dataset.name;
-                document.getElementById('modalIssued').textContent = card.dataset.issued;
-                document.getElementById('modalExpires').textContent = card.dataset.expires || 'N/A';
-                document.getElementById('modalID').textContent = card.dataset.id;
-                document.getElementById('modalSkills').textContent = card.dataset.skills;
-                certModal.show();
-            });
-        });
-    }
-
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderCerts(btn.dataset.skill)
-        });
-    });
-    
-    renderCerts();
-
-    // --- Custom Cursor ---
-    const cursorSpotlight = document.querySelector('.cursor-spotlight');
-    const interactiveElements = document.querySelectorAll('a, button, .skill-card, .exp-card, .cert-card, .filter-btn');
-
-    window.addEventListener('mousemove', e => {
-        cursorSpotlight.style.left = e.clientX + 'px';
-        cursorSpotlight.style.top = e.clientY + 'px';
-    });
-
-    interactiveElements.forEach(el => {
-        el.addEventListener('mouseenter', () => document.body.classList.add('cursor-active'));
-        el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-active'));
+      document.querySelectorAll('.exp-nav-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.exp-entry').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById(item.dataset.target).classList.add('active');
     });
   });
+
+  // Certifications
+  const certs = [
+    { name: "UiPath Certified Professional Test Automation Engineer", issued: "Mar 2025", expires: "Mar 2028", id: "137766777", category: "UiPath", status: "valid" },
+    { name: "UiPath Certified Professional Specialized AI", issued: "Oct 2024", expires: "Oct 2027", id: "118990938", category: "UiPath", status: "valid" },
+    { name: "UiPath Specialized AI Associate", issued: "Oct 2024", expires: "Oct 2026", id: "117592886", category: "UiPath", status: "valid" },
+    { name: "UiPath Academy Test Automation Engineer", issued: "Jul 2024", expires: "Jul 2026", id: "110389095", category: "UiPath", status: "valid" },
+    { name: "Blueprint RPA Migration Specialist", issued: "Apr 2024", expires: "", id: "ifllqty2lg", category: "Blueprint", status: "lifetime" },
+    { name: "UiPath Certified Professional Advanced RPA Developer (UiARD)", issued: "Oct 2023", expires: "", id: "84798323", category: "UiPath", status: "lifetime" },
+    { name: "Microsoft Power Automate RPA Developer", issued: "May 2024", expires: "May 2025", id: "3256001FAAFF7992", category: "Microsoft", status: "expired" }
+  ];
+
+  const grid = document.getElementById('certsGrid');
+
+  function renderCerts(filter) {
+    const filtered = filter === 'All' ? certs : certs.filter(c => c.category === filter);
+    grid.innerHTML = filtered.map(c => {
+      const tagLabel = c.status === 'lifetime' ? 'No Expiry' : c.status === 'expired' ? 'Expired' : 'Valid';
+      return `<div class="cert-tile">
+        <span class="cert-expires ${c.status}">${tagLabel}</span>
+        <div class="cert-logo"><span class="cert-logo-text">${c.category}</span></div>
+        <div class="cert-name">${c.name}</div>
+        <div class="cert-meta">
+          <div class="cert-date">Issued ${c.issued}${c.expires ? ' · Exp. ' + c.expires : ''}</div>
+          <div class="cert-id">#${c.id}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    // 3D tilt on cert tiles
+    grid.querySelectorAll('.cert-tile').forEach(tile => {
+      tile.addEventListener('mousemove', e => {
+        const r = tile.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        tile.style.transform = `perspective(800px) rotateX(${-y*6}deg) rotateY(${x*6}deg)`;
+      });
+      tile.addEventListener('mouseleave', () => { tile.style.transform = ''; });
+    });
+  }
+
+  document.querySelectorAll('.filter-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderCerts(btn.dataset.filter);
+    });
+  });
+
+  renderCerts('All');
+})();
 </script>
 </body>
 </html>
-
