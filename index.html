@@ -3,351 +3,626 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bot Craft Labs - Intelligent Automation</title>
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <title>Bot Craft Labs — Intelligent Automation</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --primary-color: #0d6efd;
-      --secondary-color: #6c757d;
-      --light-bg: #f8f9fa;
-      --dark-bg: #212529;
+      --ink: #0a0a0f;
+      --paper: #f4f3ef;
+      --accent: #00e5a0;
+      --accent2: #7b5cf0;
+      --mid: #1a1a2e;
+      --muted: #6b6b80;
+      --glass: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.10);
     }
 
-    body { 
-      scroll-behavior: smooth; 
-      font-family: 'Poppins', sans-serif;
-      background-color: #f0f2f5;
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--ink);
+      color: #e8e8f0;
+      overflow-x: hidden;
     }
 
-    main {
-      background: url('assets/Home1.png') no-repeat center center fixed;
-      background-size: cover;
-      padding-top: 1px; /* Fix for margin collapse */
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: 0.5;
     }
 
-    /* --- Navigation Bar --- */
-    .navbar { transition: background-color 0.4s ease-in-out; }
-    .navbar-dark .navbar-nav .nav-link { color: rgba(255,255,255,0.8); transition: color 0.3s, transform 0.3s; }
-    .navbar-dark .navbar-nav .nav-link:hover { color: #fff; transform: translateY(-2px); }
-    .navbar.scrolled { background-color: var(--dark-bg) !important; box-shadow: 0 3px 10px rgba(0,0,0,0.15); }
+    /* ─── AMBIENT GLOW BLOBS ─── */
+    .blob {
+      position: fixed; border-radius: 50%; filter: blur(100px);
+      pointer-events: none; z-index: 0;
+    }
+    .blob-1 { width: 600px; height: 600px; background: rgba(123,92,240,0.15); top: -150px; right: -150px; }
+    .blob-2 { width: 500px; height: 500px; background: rgba(0,229,160,0.10); bottom: 10%; left: -100px; }
+    .blob-3 { width: 400px; height: 400px; background: rgba(123,92,240,0.08); bottom: 30%; right: 10%; }
 
-    /* --- Hero Section --- */
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.2rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(10,10,15,0.5);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.4s;
+    }
+    nav.scrolled { background: rgba(10,10,15,0.85); }
+    .nav-brand {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.1rem; font-weight: 700;
+      color: #fff; text-decoration: none;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .nav-brand-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent); display: inline-block;
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { box-shadow: 0 0 0 0 rgba(0,229,160,0.6); }
+      50% { box-shadow: 0 0 0 6px rgba(0,229,160,0); }
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: rgba(255,255,255,0.65); text-decoration: none;
+      font-size: 0.9rem; font-weight: 500; letter-spacing: 0.02em;
+      transition: color 0.3s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0; right: 0;
+      height: 1px; background: var(--accent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s;
+    }
+    .nav-links a:hover { color: #fff; }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-toggle { display: none; background: none; border: none; cursor: pointer; color: #fff; font-size: 1.5rem; }
+
+    /* ─── HERO ─── */
     .hero {
+      position: relative; z-index: 1;
       min-height: 100vh;
-      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('assets/background.png') center/cover no-repeat fixed;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    /* Grid lines background */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+    }
+
+    .hero-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--accent); background: rgba(0,229,160,0.1);
+      border: 1px solid rgba(0,229,160,0.3);
+      padding: 0.4rem 1rem; border-radius: 100px;
+      margin-bottom: 2rem;
+      display: inline-block;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero h1 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.8s ease 0.1s both;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent), #00b4d8, var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: rgba(255,255,255,0.5);
+      max-width: 520px; margin: 0 auto 2.5rem;
+      font-weight: 300; line-height: 1.7;
+      animation: fadeUp 0.8s ease 0.2s both;
+    }
+
+    .hero-cta {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      animation: fadeUp 0.8s ease 0.3s both;
+    }
+
+    .btn-primary-custom {
+      padding: 0.85rem 2rem; border-radius: 100px;
+      background: var(--accent); color: var(--ink);
+      font-weight: 700; font-size: 0.95rem;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 0 30px rgba(0,229,160,0.3);
+    }
+    .btn-primary-custom:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 50px rgba(0,229,160,0.5);
+      color: var(--ink);
+    }
+
+    .btn-ghost {
+      padding: 0.85rem 2rem; border-radius: 100px;
+      background: transparent; color: #fff;
+      font-weight: 500; font-size: 0.95rem;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.4);
       color: #fff;
     }
-    .hero h1 { 
-      font-weight: 800; 
-      font-size: clamp(2.5rem, 5vw, 4rem); 
-      text-shadow: 0 4px 15px rgba(0,0,0,0.6);
-      animation: fadeInDown 1s ease-out;
-    }
-     .hero p {
-      font-size: clamp(1rem, 2vw, 1.25rem);
-      animation: fadeInUp 1s ease-out 0.2s;
-      animation-fill-mode: backwards;
-    }
-    .hero .btn-primary {
-      background: linear-gradient(45deg, #0d6efd, #0dcaf0); border: none; padding: 10px 28px;
-      font-weight: 500; transition: transform 0.3s, box-shadow 0.3s;
-      animation: fadeInUp 1s ease-out 0.4s;
-      animation-fill-mode: backwards;
-    }
-    .hero .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-    .scroll-down {
-      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); font-size: 2rem; color: #fff;
-      animation: bounce 2s infinite; cursor: pointer;
-    }
-    @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); } 40% { transform: translate(-50%, 10px); } 60% { transform: translate(-50%, 5px); } }
-    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* --- General Styling --- */
-    .section-title { font-weight: 700; position: relative; display: inline-block; margin-bottom: 3rem; }
-    main .section-title { color: #fff; } /* Ensures titles in main content are light */
-    .section-title::after { content: ""; display: block; width: 60px; height: 4px; background: var(--primary-color); margin: 8px auto 0; border-radius: 2px; }
+    /* Floating badge */
+    .hero-badge {
+      margin-top: 4rem;
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 0.6rem 1.2rem; border-radius: 100px;
+      font-size: 0.82rem; color: rgba(255,255,255,0.55);
+      animation: fadeUp 0.8s ease 0.5s both;
+    }
+    .hero-badge i { color: var(--accent); font-size: 1rem; }
 
-    /* --- Glassmorphism Effect --- */
-    .glass-panel {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5));
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    .scroll-cue {
+      position: absolute; bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.3);
+      font-size: 1.4rem;
+      animation: bounce 2.5s infinite;
+      cursor: pointer;
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ─── SECTION SHARED ─── */
+    section { position: relative; z-index: 1; }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.8rem;
+      display: block;
+    }
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700; letter-spacing: -0.02em;
+      color: #fff; margin-bottom: 1rem;
+    }
+    .section-desc {
+      color: rgba(255,255,255,0.45);
+      font-size: 1.05rem; font-weight: 300;
+      max-width: 480px; line-height: 1.7;
+    }
+
+    /* ─── WHAT I DO ─── */
+    .features-section {
+      padding: 8rem 2rem;
+    }
+    .features-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: start;
+    }
+    .features-left { position: sticky; top: 8rem; }
+    .features-right { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    .feat-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: 1.25rem;
+      padding: 2rem 2rem 2rem 1.75rem;
+      display: flex; gap: 1.5rem;
+      transition: background 0.4s, border-color 0.4s, transform 0.4s;
+      cursor: default;
+      position: relative; overflow: hidden;
+    }
+    .feat-card::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      transform: scaleY(0); transform-origin: top;
+      transition: transform 0.4s;
+      border-radius: 0 2px 2px 0;
+    }
+    .feat-card:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateX(6px);
+    }
+    .feat-card:hover::before { transform: scaleY(1); }
+
+    .feat-icon-wrap {
+      width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
+      display: grid; place-items: center; font-size: 1.5rem;
+      background: rgba(0,229,160,0.1); color: var(--accent);
+      border: 1px solid rgba(0,229,160,0.2);
+      transition: transform 0.4s;
+    }
+    .feat-card:hover .feat-icon-wrap { transform: rotate(8deg) scale(1.08); }
+    .feat-card:nth-child(2) .feat-icon-wrap {
+      background: rgba(123,92,240,0.1); color: var(--accent2);
+      border-color: rgba(123,92,240,0.2);
+    }
+    .feat-card:nth-child(3) .feat-icon-wrap {
+      background: rgba(0,180,216,0.1); color: #00b4d8;
+      border-color: rgba(0,180,216,0.2);
     }
 
-    .section-title-light { color: var(--dark-bg); }
-
-    /* --- Features Section with Aurora Effect --- */
-    .feature-card {
-      background: #fff; border-radius: 15px; height: 100%;
-      border: 1px solid #eee; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.4s, box-shadow 0.4s;
+    .feat-content h4 {
+      font-size: 1.05rem; font-weight: 600; color: #fff;
+      margin-bottom: 0.4rem;
     }
-    .feature-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
-    .feature-card::before {
-      content: ""; position: absolute;
-      left: var(--x); top: var(--y);
-      transform: translate(-50%, -50%);
-      width: 300px; height: 300px;
-      background: radial-gradient(circle, rgba(13, 110, 253, 0.4) 0%, rgba(13, 110, 253, 0) 70%);
+    .feat-content p { font-size: 0.9rem; color: rgba(255,255,255,0.45); line-height: 1.6; }
+
+    /* ─── STATS ─── */
+    .stats-section {
+      padding: 6rem 2rem;
+    }
+    .stats-inner {
+      max-width: 1100px; margin: 0 auto;
+    }
+    .stats-header { text-align: center; margin-bottom: 4rem; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 1.5rem;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      position: relative; overflow: hidden;
+      transition: transform 0.4s, border-color 0.4s;
+    }
+    .stat-card::after {
+      content: '';
+      position: absolute; inset: -1px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
       opacity: 0;
-      transition: opacity 0.4s ease-out;
-      pointer-events: none;
+      transition: opacity 0.4s;
+      z-index: -1;
     }
-    .feature-card:hover::before { opacity: 1; }
-    .feature-card .feature-icon { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    .feature-card:hover .feature-icon { transform: scale(1.15) rotate(10deg); }
-    .feature-icon {
-      width: 80px; height: 80px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 1.5rem;
-      color: #fff; font-size: 2.8rem;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15); border: 3px solid #fff;
-    }
-    .icon-primary { background: linear-gradient(45deg, #0d6efd, #0dcaf0); }
-    .icon-success { background: linear-gradient(45deg, #198754, #20c997); }
-    .icon-warning { background: linear-gradient(45deg, #ffc107, #fd7e14); }
+    .stat-card:hover { transform: translateY(-8px); border-color: transparent; }
+    .stat-card:hover::after { opacity: 0.15; }
 
-    /* --- Enhanced Counters Section --- */
-    .counter-section { background-color: transparent; }
-    .achievement-card {
-      background-color: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 1.5rem 1rem;
-      transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
-      border-radius: 1rem;
+    .stat-icon {
+      font-size: 2rem; margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 3.5rem; font-weight: 700;
+      color: #fff; line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .stat-label {
+      font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.4); font-weight: 500;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 3rem 2rem;
       text-align: center;
     }
-    .achievement-card:hover {
-      transform: translateY(-10px);
-      background-color: rgba(255,255,255,0.5);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    .footer-socials {
+      display: flex; justify-content: center; gap: 1.5rem;
+      margin-bottom: 2rem;
     }
-    .achievement-icon {
-      font-size: 3rem;
-      color: var(--primary-color);
-      margin-bottom: 0.5rem;
-      transition: transform 0.3s ease-in-out;
+    .footer-socials a {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: grid; place-items: center;
+      color: rgba(255,255,255,0.5); font-size: 1.1rem;
+      text-decoration: none;
+      transition: background 0.3s, color 0.3s, transform 0.3s;
     }
-    .achievement-card:hover .achievement-icon {
-        transform: scale(1.15) rotate(-8deg);
+    .footer-socials a:hover {
+      background: rgba(0,229,160,0.12);
+      color: var(--accent); border-color: rgba(0,229,160,0.3);
+      transform: translateY(-3px);
     }
-    .counter { font-size: 2.5rem; font-weight: 700; color: var(--dark-bg); }
-    .counter-text { font-size: 1rem; color: var(--secondary-color); font-weight: 600; }
+    .footer-copy {
+      font-size: 0.85rem; color: rgba(255,255,255,0.3);
+    }
+    .footer-copy span { color: rgba(255,255,255,0.5); }
 
-    /* --- Footer --- */
-    footer { background: var(--dark-bg); }
-    .footer-socials a { color: rgba(255,255,255,0.7); font-size: 1.5rem; transition: color 0.3s, transform 0.3s; }
-    .footer-socials a:hover { color: #fff; transform: translateY(-3px); }
-
+    /* ─── BACK TO TOP ─── */
     #backToTop {
-      position: fixed; bottom: 20px; right: 20px; background: var(--primary-color); color: #fff; border: none; border-radius: 50%;
-      width: 45px; height: 45px; display: none; align-items: center; justify-content: center; z-index: 1000;
-      transition: background-color 0.3s, transform 0.3s;
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 99;
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--accent); color: var(--ink);
+      border: none; cursor: pointer; font-size: 1.1rem;
+      display: none; align-items: center; justify-content: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 0 20px rgba(0,229,160,0.4);
     }
-    #backToTop:hover { background: #0b5ed7; transform: scale(1.1); }
+    #backToTop:hover { transform: scale(1.1); box-shadow: 0 0 35px rgba(0,229,160,0.6); }
+
+    /* ─── VISITOR PILL ─── */
+    .visitor-pill {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      margin-top: 1.2rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 0.4rem 1rem; border-radius: 100px;
+      font-size: 0.8rem; color: rgba(255,255,255,0.35);
+      font-family: 'Space Mono', monospace;
+    }
+    .visitor-pill i { color: var(--accent); }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    [data-reveal] {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    [data-reveal].revealed {
+      opacity: 1; transform: translateY(0);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex; flex-direction: column;
+        position: absolute; top: 100%; left: 0; right: 0;
+        background: rgba(10,10,15,0.96); backdrop-filter: blur(20px);
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .nav-toggle { display: block; }
+
+      .features-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .features-left { position: static; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .stat-num { font-size: 2.8rem; }
+    }
   </style>
 </head>
 <body>
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="index.html">🤖 Bot Craft Labs</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navMenu">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="about.html">About Author</a></li>
-          <li class="nav-item"><a class="nav-link" href="resume-builder.html">Resume Builder</a></li>
-          <li class="nav-item"><a class="nav-link" href="linkedin-qa.html">LinkedIn Q&A</a></li>
-        </ul>
-      </div>
-    </div>
+  <!-- Ambient blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="index.html" class="nav-brand">
+      <span class="nav-brand-dot"></span>
+      Bot Craft Labs
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu"><i class="bi bi-list"></i></button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="about.html">About Author</a></li>
+      <li><a href="resume-builder.html">Resume Builder</a></li>
+      <li><a href="linkedin-qa.html">LinkedIn Q&amp;A</a></li>
+    </ul>
   </nav>
 
-  <header class="hero d-flex align-items-center justify-content-center text-center">
-    <div class="container">
-      <h1 class="mb-3">Welcome to Bot Craft Labs</h1>
-      <p class="lead mb-4">Crafting Intelligent RPA Solutions with UiPath, Power Automate & Blueprint</p>
-      <p style="display: block; background-color: rgba(255, 255, 255, 0.15); backdrop-filter: blur(5px); padding: 0.5rem 1.25rem; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.2); animation: fadeInUp 1s ease-out 0.3s; animation-fill-mode: backwards; max-width: 600px; margin: 0 auto 1.5rem auto;">
-        Explore Automation Insights & Interview Q&As
-      </p>
-      <a href="linkedin-qa.html" class="btn btn-primary btn-lg">Explore Q&A</a>
+  <!-- HERO -->
+  <header class="hero">
+    <span class="hero-tag">✦ Intelligent RPA Solutions</span>
+
+    <h1>Automate the<br><em>Future of Work</em></h1>
+
+    <p class="hero-sub">
+      Crafting enterprise-grade automation with UiPath, Power Automate &amp; Blueprint — so humans can focus on what matters.
+    </p>
+
+    <div class="hero-cta">
+      <a href="linkedin-qa.html" class="btn-primary-custom">Explore Q&amp;A &rarr;</a>
+      <a href="about.html" class="btn-ghost">Meet the Author</a>
     </div>
-    <div class="scroll-down"><i class="bi bi-chevron-down"></i></div>
+
+    <div class="hero-badge">
+      <i class="bi bi-shield-check-fill"></i>
+      UiPath · Power Automate · Blueprint · AI Integration
+    </div>
+
+    <div class="scroll-cue" id="scrollCue"><i class="bi bi-chevron-down"></i></div>
   </header>
 
-  <main>
-    <section id="features" class="container py-5 my-4">
-      <h2 class="section-title text-center" data-aos="fade-up">What I Do</h2>
-      <div class="row text-center g-4">
-        <div class="col-md-4" data-aos="fade-right">
-          <div class="feature-card p-4">
-            <div class="feature-icon icon-primary"><i class="bi bi-robot"></i></div>
-            <h5>RPA Development</h5>
-            <p>Creating scalable automation solutions using UiPath, Power Automate, and Blueprint.</p>
-          </div>
-        </div>
-        <div class="col-md-4" data-aos="zoom-in">
-          <div class="feature-card p-4">
-            <div class="feature-icon icon-success"><i class="bi bi-gear-wide-connected"></i></div>
-            <h5>Process Optimization</h5>
-            <p>Analyzing and optimizing workflows for maximum efficiency and minimal manual effort.</p>
-          </div>
-        </div>
-        <div class="col-md-4" data-aos="fade-left">
-          <div class="feature-card p-4">
-            <div class="feature-icon icon-warning"><i class="bi bi-diagram-3-fill"></i></div>
-            <h5>AI Integration</h5>
-            <p>Integrating AI/ML components into automation solutions for intelligent decision-making.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+  <!-- WHAT I DO -->
+  <section class="features-section" id="features">
+    <div class="features-inner">
 
-    <div class="container my-4" data-aos="fade-up">
-      <div class="glass-panel">
-        <section class="counter-section py-5">
-          <div class="container">
-            <h2 class="section-title text-center" data-aos="fade-up" style="color: var(--dark-bg);">My Achievements</h2>
-            <div class="row text-center">
-              <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up">
-                <div class="achievement-card">
-                  <div class="achievement-icon"><i class="bi bi-stack"></i></div>
-                  <div class="counter" data-count="52">0</div>
-                  <div class="counter-text">Projects Completed</div>
-                </div>
-              </div>
-              <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="200">
-                <div class="achievement-card">
-                  <div class="achievement-icon"><i class="bi bi-people-fill"></i></div>
-                  <div class="counter" data-count="21">0</div>
-                  <div class="counter-text">Happy Clients</div>
-                </div>
-              </div>
-              <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="400">
-                <div class="achievement-card">
-                  <div class="achievement-icon"><i class="bi bi-patch-check-fill"></i></div>
-                  <div class="counter" data-count="10">0</div>
-                  <div class="counter-text">Awards & Certifications</div>
-                </div>
-              </div>
-            </div>
+      <div class="features-left" data-reveal>
+        <span class="section-label">// What I Do</span>
+        <h2 class="section-title">Building bots<br>that actually work.</h2>
+        <p class="section-desc">From discovery to deployment, I deliver automation that scales — without the technical debt.</p>
+      </div>
+
+      <div class="features-right">
+        <div class="feat-card" data-reveal style="transition-delay:0.1s">
+          <div class="feat-icon-wrap"><i class="bi bi-robot"></i></div>
+          <div class="feat-content">
+            <h4>RPA Development</h4>
+            <p>Scalable, maintainable automation built on UiPath, Power Automate, and Blueprint — from simple tasks to complex orchestration.</p>
           </div>
-        </section>
+        </div>
+
+        <div class="feat-card" data-reveal style="transition-delay:0.2s">
+          <div class="feat-icon-wrap"><i class="bi bi-gear-wide-connected"></i></div>
+          <div class="feat-content">
+            <h4>Process Optimization</h4>
+            <p>Deep process analysis to eliminate inefficiencies, map workflows, and unlock measurable ROI through strategic automation.</p>
+          </div>
+        </div>
+
+        <div class="feat-card" data-reveal style="transition-delay:0.3s">
+          <div class="feat-icon-wrap"><i class="bi bi-cpu"></i></div>
+          <div class="feat-content">
+            <h4>AI Integration</h4>
+            <p>Embedding ML models and AI decision-making into automation pipelines for next-level intelligent process automation.</p>
+          </div>
+        </div>
       </div>
     </div>
-  </main>
+  </section>
 
-  <footer class="text-center py-4 text-white">
-    <div class="container">
-      <div class="footer-socials d-flex justify-content-center gap-4 mb-3">
-          <a href="https://www.linkedin.com/in/chaitanya-doneparthi-409539139/" target="_blank" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
-          <a href="#" target="_blank" title="GitHub"><i class="bi bi-github"></i></a>
-          <a href="mailto:chaitanya.dgr@gmail.com" title="Email"><i class="bi bi-envelope-fill"></i></a>
+  <!-- ACHIEVEMENTS -->
+  <section class="stats-section">
+    <div class="stats-inner">
+      <div class="stats-header" data-reveal>
+        <span class="section-label">// Achievements</span>
+        <h2 class="section-title">Results that speak.</h2>
       </div>
-      <p class="mb-2">&copy; 2025 Bot Craft Labs | Built with Professional Expertise</p>
-      <p class="mb-0 text-white-50 small">
-        <i class="bi bi-eye-fill me-1"></i> Website Visits: <span id="visitor-counter">0</span>
-      </p>
+
+      <div class="stats-grid">
+        <div class="stat-card" data-reveal style="transition-delay:0.1s">
+          <div class="stat-icon"><i class="bi bi-stack"></i></div>
+          <div class="stat-num counter" data-count="52">0</div>
+          <div class="stat-label">Projects Completed</div>
+        </div>
+        <div class="stat-card" data-reveal style="transition-delay:0.2s">
+          <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+          <div class="stat-num counter" data-count="21">0</div>
+          <div class="stat-label">Happy Clients</div>
+        </div>
+        <div class="stat-card" data-reveal style="transition-delay:0.3s">
+          <div class="stat-icon"><i class="bi bi-patch-check-fill"></i></div>
+          <div class="stat-num counter" data-count="10">0</div>
+          <div class="stat-label">Awards &amp; Certifications</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-socials">
+      <a href="https://www.linkedin.com/in/chaitanya-doneparthi-409539139/" target="_blank" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+      <a href="#" target="_blank" title="GitHub"><i class="bi bi-github"></i></a>
+      <a href="mailto:chaitanya.dgr@gmail.com" title="Email"><i class="bi bi-envelope-fill"></i></a>
+    </div>
+    <p class="footer-copy">&copy; 2025 <span>Bot Craft Labs</span> &mdash; Built with Professional Expertise</p>
+    <div class="visitor-pill">
+      <i class="bi bi-eye-fill"></i>
+      <span id="visitor-counter">—</span> visits
     </div>
   </footer>
 
   <button id="backToTop" title="Go to top"><i class="bi bi-arrow-up"></i></button>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      AOS.init({ duration: 800, once: true, offset: 50 });
+    // ─── Nav scroll & mobile toggle
+    const navbar = document.getElementById('navbar');
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
 
-      const navbar = document.querySelector('.navbar');
-      window.addEventListener('scroll', () => {
-        navbar.classList.toggle('scrolled', window.scrollY > 50);
-      });
-
-      const counters = document.querySelectorAll('.counter');
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const counter = entry.target;
-            const target = +counter.getAttribute('data-count');
-            let count = 0;
-            const speed = 200;
-         
-            const updateCount = () => {
-              const increment = Math.ceil(target / speed);
-              if (count < target) {
-                count += increment;
-                counter.innerText = Math.min(count, target);
-                setTimeout(updateCount, 15);
-              } else {
-                counter.innerText = target;
-              }
-            };
-         
-            updateCount();
-            observer.unobserve(counter);
-          }
-        });
-      }, { threshold: 0.5 });
-      counters.forEach(counter => observer.observe(counter));
-
-      const backToTop = document.getElementById('backToTop');
-      window.addEventListener('scroll', () => {
-        backToTop.style.display = (window.scrollY > 300) ? 'flex' : 'none';
-      });
-      backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-    
-      const scrollDown = document.querySelector('.scroll-down');
-      if(scrollDown) {
-        scrollDown.addEventListener('click', () => {
-          document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
-        });
-      }
-
-      const featureCards = document.querySelectorAll('.feature-card');
-      featureCards.forEach(card => {
-        card.addEventListener('mousemove', e => {
-          const rect = card.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          card.style.setProperty('--x', `${x}px`);
-          card.style.setProperty('--y', `${y}px`);
-        });
-      });
-    
-      // --- Visitor Counter ---
-      const visitorCounter = document.getElementById('visitor-counter');
-      const namespace = 'botcraft-labs-portfolio';
-      const key = 'homepage';
-   
-      function updateVisitorCount() {
-        fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`)
-          .then(res => res.json())
-          .then(data => {
-            visitorCounter.textContent = data.count.toLocaleString();
-          })
-          .catch(error => {
-            console.error('Could not fetch visitor count:', error);
-            visitorCounter.textContent = 'N/A';
-          });
-      }
-      updateVisitorCount();
-
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+      document.getElementById('backToTop').style.display = window.scrollY > 400 ? 'flex' : 'none';
     });
+
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+
+    // ─── Scroll cue
+    document.getElementById('scrollCue')?.addEventListener('click', () => {
+      document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // ─── Back to top
+    document.getElementById('backToTop').addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // ─── Reveal on scroll
+    const reveals = document.querySelectorAll('[data-reveal]');
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('revealed');
+          revealObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    reveals.forEach(el => revealObserver.observe(el));
+
+    // ─── Counters
+    const counters = document.querySelectorAll('.counter');
+    const counterObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const target = +el.getAttribute('data-count');
+        let start = 0;
+        const duration = 1400;
+        const startTime = performance.now();
+
+        function step(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const ease = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.round(ease * target);
+          if (progress < 1) requestAnimationFrame(step);
+          else el.textContent = target;
+        }
+        requestAnimationFrame(step);
+        counterObserver.unobserve(el);
+      });
+    }, { threshold: 0.5 });
+    counters.forEach(c => counterObserver.observe(c));
+
+    // ─── Visitor counter
+    fetch('https://api.counterapi.dev/v1/botcraft-labs-portfolio/homepage/up')
+      .then(r => r.json())
+      .then(d => { document.getElementById('visitor-counter').textContent = d.count.toLocaleString(); })
+      .catch(() => { document.getElementById('visitor-counter').textContent = 'N/A'; });
   </script>
 </body>
 </html>
