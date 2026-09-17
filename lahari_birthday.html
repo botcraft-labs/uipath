@@ -278,6 +278,99 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
   75%{transform:translate(-2px,-1px) rotate(-2deg);}
 }
 
+/* ---- Photo memories gallery ---- */
+.photo-frame{
+  position:relative;
+  width:100%; max-width:280px;
+  height:300px;
+  margin:16px auto 4px;
+}
+.polaroid{
+  position:absolute; inset:0;
+  background:#fdf6ec;
+  padding:14px 14px 46px 14px;
+  border-radius:4px;
+  box-shadow:0 16px 34px rgba(0,0,0,0.45);
+  opacity:0;
+  transform:scale(0.94) rotate(0deg);
+  transition:opacity 0.7s ease, transform 0.7s ease;
+  pointer-events:none;
+}
+.polaroid.active{
+  opacity:1;
+  transform:scale(1) rotate(-2deg);
+  pointer-events:auto;
+  z-index:2;
+}
+.polaroid:nth-child(2).active{ transform:scale(1) rotate(2deg); }
+.polaroid img{
+  width:100%; height:100%;
+  object-fit:cover;
+  display:block;
+  background:linear-gradient(135deg, var(--nebula-2), var(--nebula-1));
+  animation:kenBurns 6s ease-in-out infinite alternate;
+}
+@keyframes kenBurns{
+  0%{transform:scale(1) translate(0,0);}
+  100%{transform:scale(1.12) translate(-2%,-2%);}
+}
+.polaroid-caption{
+  position:absolute; left:0; right:0; bottom:10px;
+  text-align:center;
+  font-family:'Cormorant Garamond', serif;
+  font-style:italic;
+  font-size:0.95rem;
+  color:#3a2e1f;
+}
+.polaroid.photo-missing img{ display:none; }
+.polaroid.photo-missing::before{
+  content:'📷 add your photo here';
+  position:absolute; inset:14px 14px 46px 14px;
+  display:flex; align-items:center; justify-content:center;
+  text-align:center; font-size:0.85rem; color:rgba(58,46,31,0.55);
+  background:rgba(0,0,0,0.05); border-radius:4px;
+}
+.photo-nav{
+  display:flex; align-items:center; justify-content:center; gap:16px;
+  margin:10px 0 4px;
+}
+.photo-arrow{
+  background:rgba(253,246,236,0.1);
+  border:1px solid rgba(244,201,93,0.35);
+  color:var(--cream);
+  width:34px; height:34px; border-radius:50%;
+  font-size:1.2rem; line-height:1;
+  cursor:pointer;
+  transition:transform 0.25s ease, background 0.25s ease;
+}
+.photo-arrow:hover{ background:rgba(244,201,93,0.2); transform:scale(1.1); }
+.photo-dots{ display:flex; gap:6px; }
+.photo-dots .pd{
+  width:6px; height:6px; border-radius:50%;
+  background:rgba(253,246,236,0.3);
+  transition:all 0.3s ease;
+}
+.photo-dots .pd.on{ background:var(--starlight-gold); width:16px; border-radius:4px; }
+
+/* ---- Music toggle ---- */
+.music-toggle{
+  position:fixed; top:16px; right:16px; z-index:50;
+  width:42px; height:42px; border-radius:50%;
+  background:rgba(253,246,236,0.1);
+  border:1px solid rgba(244,201,93,0.35);
+  backdrop-filter:blur(8px);
+  color:var(--cream); font-size:1.1rem;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:transform 0.25s ease, background 0.25s ease;
+}
+.music-toggle:hover{ transform:scale(1.08); background:rgba(244,201,93,0.2); }
+.music-toggle.playing{ animation:musicPulse 1.6s ease-in-out infinite; }
+@keyframes musicPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(244,201,93,0.4);}
+  50%{box-shadow:0 0 0 8px rgba(244,201,93,0);}
+}
+
 /* ---- Screen 4: scratch card ---- */
 .scratch-wrap{position:relative; width:100%; max-width:340px; height:150px; margin:14px auto 8px; border-radius:14px; overflow:hidden; box-shadow:0 10px 26px rgba(0,0,0,0.35);}
 .scratch-msg{
@@ -384,6 +477,11 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
 <canvas id="fireworks"></canvas>
 <div class="balloons" id="balloons"></div>
 
+<audio id="bgMusic" loop preload="auto">
+  <source src="music/happy-birthday.mp3" type="audio/mpeg">
+</audio>
+<button class="music-toggle" id="musicToggle" onclick="toggleMusic()" aria-label="Toggle music">🔈</button>
+
 <div class="scene">
   <div class="card">
 
@@ -392,11 +490,11 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
       <div class="eyebrow">A little something, for a great friend</div>
       <h1>For My Cutest Angel, Lahari</h1>
       <p>Before the world wakes up, I wanted to be the first to wish my favorite friend.</p>
-      <div class="envelope-wrap" onclick="nextScreen('screen1','screenLove')">
+      <div class="envelope-wrap" onclick="startMusic(); nextScreen('screen1','screenLove')">
         <div class="envelope"><div class="seal">✦</div></div>
       </div>
       <p style="font-size:0.8rem; opacity:0.7;">tap the envelope to open</p>
-      <div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
     </div>
 
     <!-- SCREEN 1.5: Are we best friends? -->
@@ -410,7 +508,7 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
         <button class="btn love-yes" id="btnYes" onclick="handleYes()">Yes 🤝</button>
         <button class="btn love-no" id="btnNo">No</button>
       </div>
-      <div class="dots"><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <div class="dots"><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
     </div>
 
     <!-- SCREEN 2: Birthday + live counter -->
@@ -426,7 +524,7 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
       <div class="ticker">and counting — <span id="liveSeconds">0</span> seconds of you, today</div>
       <div class="friend-badge">🤝 Friends since <span class="highlight">February 2023</span> · <span id="friendYears">0</span> years of chaos, laughs, and good memories</div>
       <button class="btn" onclick="nextScreen('screen2','screen3')">See what the stars say ✦</button>
-      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
     </div>
 
 
@@ -450,7 +548,7 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
       </div>
       <p style="margin-top:14px;">Thoughtful, warm, and quietly the most reliable person in any room. No wonder you make such a great friend.</p>
       <button class="btn" onclick="nextScreen('screen3','screenSmile')">One more surprise 🎁</button>
-      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
     </div>
 
     <!-- SCREEN 4: Smile compliments -->
@@ -463,7 +561,31 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
       </div>
       <div class="smile-counter"><span id="smileIndex">1</span> / <span id="smileTotal">1</span></div>
       <button class="btn" id="smileNextBtn" onclick="nextSmile()">Another one ✦</button>
-      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+
+    <!-- SCREEN: Photo memories -->
+    <div id="screenPhotos" class="screen">
+      <div class="eyebrow">A few of my favorites</div>
+      <h1>Our Little Gallery</h1>
+      <p style="margin-top:-6px;">Some of the moments I keep coming back to.</p>
+      <div class="photo-frame" id="photoFrame">
+        <div class="polaroid" id="polaroid1">
+          <img id="photoImg1" src="" alt="" onerror="this.parentElement.classList.add('photo-missing')">
+          <div class="polaroid-caption" id="photoCaption1"></div>
+        </div>
+        <div class="polaroid" id="polaroid2">
+          <img id="photoImg2" src="" alt="" onerror="this.parentElement.classList.add('photo-missing')">
+          <div class="polaroid-caption" id="photoCaption2"></div>
+        </div>
+      </div>
+      <div class="photo-nav">
+        <button class="photo-arrow" onclick="prevPhoto()" aria-label="Previous photo">‹</button>
+        <div class="photo-dots" id="photoDots"></div>
+        <button class="photo-arrow" onclick="nextPhoto()" aria-label="Next photo">›</button>
+      </div>
+      <button class="btn" onclick="nextScreen('screenPhotos','screen4')">Continue →</button>
+      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
     </div>
 
     <!-- SCREEN 5: Scratch card -->
@@ -477,7 +599,7 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
       </div>
       <div class="scratch-hint">scratch the gold to reveal it fully</div>
       <button class="btn" id="scratchNextBtn" onclick="nextScreen('screen4','screen5')" disabled>Continue to the quiz →</button>
-      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
+      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
     </div>
 
     <!-- SCREEN 6: Quiz -->
@@ -492,7 +614,7 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
       </div>
       <p id="feedback"></p>
       <button id="next-q-btn" class="btn" style="display:none;" onclick="nextQuestion()">Next Question →</button>
-      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div></div>
+      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div></div>
     </div>
 
     <!-- SCREEN 7: Final -->
@@ -510,6 +632,36 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
 </div>
 
 <script>
+/* ---------------- Music ---------------- */
+const bgMusic = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('musicToggle');
+let musicStarted = false;
+function startMusic(){
+  if(musicStarted) return;
+  musicStarted = true;
+  bgMusic.volume = 0.55;
+  bgMusic.play().then(() => {
+    musicBtn.textContent = '🔊';
+    musicBtn.classList.add('playing');
+  }).catch(() => {
+    // autoplay blocked or file missing — toggle button still lets her start it manually
+    musicBtn.textContent = '🔈';
+  });
+}
+function toggleMusic(){
+  if(!musicStarted){ startMusic(); return; }
+  if(bgMusic.paused){
+    bgMusic.play().then(() => {
+      musicBtn.textContent = '🔊';
+      musicBtn.classList.add('playing');
+    }).catch(() => {});
+  } else {
+    bgMusic.pause();
+    musicBtn.textContent = '🔈';
+    musicBtn.classList.remove('playing');
+  }
+}
+
 /* ---------------- Starfield background ---------------- */
 const starCanvas = document.getElementById('stars');
 const sctx = starCanvas.getContext('2d');
@@ -549,6 +701,7 @@ function nextScreen(hideId, showId){
     if(showId === 'screenLove') initLove();
     if(showId === 'screen2') teaseBirthdayCelebration();
     if(showId === 'screenSmile') initSmile();
+    if(showId === 'screenPhotos') initPhotos();
     if(showId === 'screen4') initScratch();
     if(showId === 'screen5') loadQuestion();
     if(showId === 'screen6') launchFireworks();
@@ -717,11 +870,79 @@ function nextSmile(){
     document.getElementById('smileIndex').textContent = smileIdx + 1;
     if(smileIdx === smileCompliments.length - 1){
       document.getElementById('smileNextBtn').textContent = 'Okay, one more surprise →';
-      document.getElementById('smileNextBtn').onclick = () => nextScreen('screenSmile','screen4');
+      document.getElementById('smileNextBtn').onclick = () => nextScreen('screenSmile','screenPhotos');
     }
   } else {
-    nextScreen('screenSmile','screen4');
+    nextScreen('screenSmile','screenPhotos');
   }
+}
+
+/* ---------------- Photo memories gallery ---------------- */
+/* Edit this list to match the images you add to your GitHub Pages "photos/" folder. */
+const photos = [
+  { src: 'photos/1.jpg', caption: 'One of my favorite days' },
+  { src: 'photos/2.jpg', caption: 'That trip we still talk about' },
+  { src: 'photos/3.jpg', caption: 'This smile, obviously' },
+  { src: 'photos/4.jpg', caption: 'Just us being us' }
+];
+let photoIdx = 0;
+let frontIsOne = true;
+let photoTimer = null;
+let photosInited = false;
+
+function renderPhotoDots(){
+  const dotsEl = document.getElementById('photoDots');
+  dotsEl.innerHTML = '';
+  photos.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'pd' + (i === photoIdx ? ' on' : '');
+    dotsEl.appendChild(d);
+  });
+}
+
+function showPhoto(index, animate){
+  const frontNum = frontIsOne ? 1 : 2;
+  const backNum = frontIsOne ? 2 : 1;
+  const frontEl = document.getElementById('polaroid' + frontNum);
+  const backEl = document.getElementById('polaroid' + backNum);
+  const backImg = document.getElementById('photoImg' + backNum);
+  const backCap = document.getElementById('photoCaption' + backNum);
+
+  backEl.classList.remove('photo-missing');
+  backImg.src = photos[index].src;
+  backImg.alt = photos[index].caption || '';
+  backCap.textContent = photos[index].caption || '';
+
+  requestAnimationFrame(() => {
+    backEl.classList.add('active');
+    frontEl.classList.remove('active');
+  });
+
+  frontIsOne = !frontIsOne;
+  photoIdx = index;
+  renderPhotoDots();
+}
+
+function nextPhoto(){
+  showPhoto((photoIdx + 1) % photos.length);
+  restartPhotoTimer();
+}
+function prevPhoto(){
+  showPhoto((photoIdx - 1 + photos.length) % photos.length);
+  restartPhotoTimer();
+}
+function restartPhotoTimer(){
+  if(photoTimer) clearInterval(photoTimer);
+  photoTimer = setInterval(() => {
+    showPhoto((photoIdx + 1) % photos.length);
+  }, 4500);
+}
+
+function initPhotos(){
+  if(photosInited) return;
+  photosInited = true;
+  showPhoto(0);
+  restartPhotoTimer();
 }
 
 /* ---------------- Scratch card ---------------- */
