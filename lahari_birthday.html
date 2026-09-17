@@ -504,7 +504,7 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
       <div class="eyebrow">A little something, for a great friend</div>
       <h1>For My Cutest Angel, Lahari</h1>
       <p>Before the world wakes up, I wanted to be the first to wish my favorite friend.</p>
-      <div class="envelope-wrap" onclick="startMusic(); nextScreen('screen1','screenLove')">
+      <div class="envelope-wrap" onclick="nextScreen('screen1','screenLove')">
         <div class="envelope"><div class="seal">✦</div></div>
       </div>
       <p style="font-size:0.8rem; opacity:0.7;">tap the envelope to open</p>
@@ -927,7 +927,10 @@ const photos = [
   { src: 'photos/1.jpg', caption: 'One of my favorite days' },
   { src: 'photos/2.jpg', caption: 'That trip we still talk about' },
   { src: 'photos/3.jpg', caption: 'This smile, obviously' },
-  { src: 'photos/4.jpg', caption: 'Just us being us' }
+  { src: 'photos/4.jpg', caption: 'Just us being us' },
+  { src: 'photos/5.jpg', caption: 'A moment I keep coming back to' },
+  { src: 'photos/6.jpg', caption: 'Good times, good people' },
+  { src: 'photos/7.jpg', caption: 'One more for the memory book' }
 ];
 let photoIdx = 0;
 let frontIsOne = true;
@@ -1227,6 +1230,7 @@ function launchFireworks(){
   launchBalloons();
   launchConfettiRain();
   buildBanner();
+  startMusic();
 }
 
 /* ---------------- Balloons ---------------- */
