@@ -295,9 +295,10 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
 }
 .polaroid img{
   width:100%; height:100%;
-  object-fit:cover;
+  object-fit:contain;
+  object-position:center;
   display:block;
-  background:linear-gradient(135deg, var(--nebula-2), var(--nebula-1));
+  background:#fdf6ec;
   opacity:0;
   transition:opacity 0.5s ease;
   animation:kenBurns 6s ease-in-out infinite alternate;
@@ -305,7 +306,7 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
 .polaroid img.loaded{ opacity:1; }
 @keyframes kenBurns{
   0%{transform:scale(1) translate(0,0);}
-  100%{transform:scale(1.12) translate(-2%,-2%);}
+  100%{transform:scale(1.06) translate(0,0);}
 }
 .polaroid-caption{
   position:absolute; left:0; right:0; bottom:10px;
@@ -914,7 +915,7 @@ function nextSmile(){
 /* Edit this list to match the images you add to your GitHub Pages "photos/" folder.
    Filenames are case-sensitive on GitHub Pages, so "1.jpg" will NOT match "1.JPG". */
 const photos = [
-  { src: 'photos/8.jpg', caption: 'This smile, obviously' },
+  { src: 'photos/1.jpg', caption: 'This smile, obviously' },
   { src: 'photos/2.jpg', caption: 'The style, obviously' },
   { src: 'photos/3.jpg', caption: 'The Cutest cat' },
   { src: 'photos/4.jpg', caption: 'Just us being us' },
