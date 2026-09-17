@@ -291,25 +291,18 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
   padding:14px 14px 46px 14px;
   border-radius:4px;
   box-shadow:0 16px 34px rgba(0,0,0,0.45);
-  opacity:0;
-  transform:scale(0.94) rotate(0deg);
-  transition:opacity 0.7s ease, transform 0.7s ease;
-  pointer-events:none;
+  transform:rotate(-1.5deg);
 }
-.polaroid.active{
-  opacity:1;
-  transform:scale(1) rotate(-2deg);
-  pointer-events:auto;
-  z-index:2;
-}
-.polaroid:nth-child(2).active{ transform:scale(1) rotate(2deg); }
 .polaroid img{
   width:100%; height:100%;
   object-fit:cover;
   display:block;
   background:linear-gradient(135deg, var(--nebula-2), var(--nebula-1));
+  opacity:0;
+  transition:opacity 0.5s ease;
   animation:kenBurns 6s ease-in-out infinite alternate;
 }
+.polaroid img.loaded{ opacity:1; }
 @keyframes kenBurns{
   0%{transform:scale(1) translate(0,0);}
   100%{transform:scale(1.12) translate(-2%,-2%);}
@@ -344,7 +337,7 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
   transition:transform 0.25s ease, background 0.25s ease;
 }
 .photo-arrow:hover{ background:rgba(244,201,93,0.2); transform:scale(1.1); }
-.photo-dots{ display:flex; gap:6px; }
+.photo-dots{ display:flex; gap:6px; flex-wrap:wrap; justify-content:center; max-width:160px; }
 .photo-dots .pd{
   width:6px; height:6px; border-radius:50%;
   background:rgba(253,246,236,0.3);
@@ -584,13 +577,9 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
       <h1>Our Little Gallery</h1>
       <p style="margin-top:-6px;">Some of the moments I keep coming back to.</p>
       <div class="photo-frame" id="photoFrame">
-        <div class="polaroid" id="polaroid1">
-          <img id="photoImg1" src="" alt="" onerror="this.parentElement.classList.add('photo-missing')">
-          <div class="polaroid-caption" id="photoCaption1"></div>
-        </div>
-        <div class="polaroid" id="polaroid2">
-          <img id="photoImg2" src="" alt="" onerror="this.parentElement.classList.add('photo-missing')">
-          <div class="polaroid-caption" id="photoCaption2"></div>
+        <div class="polaroid" id="polaroidSingle">
+          <img id="photoImg" src="" alt="" onerror="handlePhotoError()" onload="handlePhotoLoad()">
+          <div class="polaroid-caption" id="photoCaption"></div>
         </div>
       </div>
       <div class="photo-nav">
@@ -922,7 +911,8 @@ function nextSmile(){
 }
 
 /* ---------------- Photo memories gallery ---------------- */
-/* Edit this list to match the images you add to your GitHub Pages "photos/" folder. */
+/* Edit this list to match the images you add to your GitHub Pages "photos/" folder.
+   Filenames are case-sensitive on GitHub Pages, so "1.jpg" will NOT match "1.JPG". */
 const photos = [
   { src: 'photos/1.jpg', caption: 'One of my favorite days' },
   { src: 'photos/2.jpg', caption: 'That trip we still talk about' },
@@ -933,7 +923,6 @@ const photos = [
   { src: 'photos/7.jpg', caption: 'One more for the memory book' }
 ];
 let photoIdx = 0;
-let frontIsOne = true;
 let photoTimer = null;
 let photosInited = false;
 
@@ -947,42 +936,40 @@ function renderPhotoDots(){
   });
 }
 
-function showPhoto(index, animate){
-  const frontNum = frontIsOne ? 1 : 2;
-  const backNum = frontIsOne ? 2 : 1;
-  const frontEl = document.getElementById('polaroid' + frontNum);
-  const backEl = document.getElementById('polaroid' + backNum);
-  const backImg = document.getElementById('photoImg' + backNum);
-  const backCap = document.getElementById('photoCaption' + backNum);
+function handlePhotoLoad(){
+  document.getElementById('polaroidSingle').classList.remove('photo-missing');
+  document.getElementById('photoImg').classList.add('loaded');
+}
+function handlePhotoError(){
+  document.getElementById('polaroidSingle').classList.add('photo-missing');
+  document.getElementById('photoImg').classList.remove('loaded');
+}
 
-  backEl.classList.remove('photo-missing');
-  backImg.src = photos[index].src;
-  backImg.alt = photos[index].caption || '';
-  backCap.textContent = photos[index].caption || '';
-
-  requestAnimationFrame(() => {
-    backEl.classList.add('active');
-    frontEl.classList.remove('active');
-  });
-
-  frontIsOne = !frontIsOne;
-  photoIdx = index;
+function showPhoto(index){
+  photoIdx = ((index % photos.length) + photos.length) % photos.length;
+  const img = document.getElementById('photoImg');
+  const cap = document.getElementById('photoCaption');
+  img.classList.remove('loaded');
+  // slight delay so the fade-out is visible before the new image pops in
+  setTimeout(() => {
+    img.src = photos[photoIdx].src;
+    img.alt = photos[photoIdx].caption || '';
+    cap.textContent = photos[photoIdx].caption || '';
+  }, 120);
   renderPhotoDots();
 }
 
 function nextPhoto(){
-  showPhoto((photoIdx + 1) % photos.length);
+  showPhoto(photoIdx + 1);
   restartPhotoTimer();
 }
 function prevPhoto(){
-  showPhoto((photoIdx - 1 + photos.length) % photos.length);
+  showPhoto(photoIdx - 1);
   restartPhotoTimer();
 }
 function restartPhotoTimer(){
   if(photoTimer) clearInterval(photoTimer);
-  photoTimer = setInterval(() => {
-    showPhoto((photoIdx + 1) % photos.length);
-  }, 4500);
+  photoTimer = setInterval(() => showPhoto(photoIdx + 1), 4500);
 }
 
 function initPhotos(){
