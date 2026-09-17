@@ -85,6 +85,15 @@ body{
   border-radius:22px;
   padding:44px 34px;
   box-shadow:0 20px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+  transition:box-shadow 0.6s ease, border-color 0.6s ease;
+}
+.card.finale{
+  border-color:rgba(244,201,93,0.55);
+  animation:finaleGlow 2.6s ease-in-out infinite;
+}
+@keyframes finaleGlow{
+  0%,100%{ box-shadow:0 20px 60px rgba(0,0,0,0.45), 0 0 30px rgba(244,201,93,0.25), inset 0 1px 0 rgba(255,255,255,0.06); }
+  50%{ box-shadow:0 20px 70px rgba(0,0,0,0.45), 0 0 55px rgba(255,111,165,0.35), inset 0 1px 0 rgba(255,255,255,0.08); }
 }
 
 .screen{display:none;}
@@ -464,6 +473,12 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
 }
 .cake{font-size:3.2rem; margin-bottom:6px; animation:floatSlow 3.5s ease-in-out infinite;}
 @keyframes floatSlow{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.finale-divider{
+  font-size:0.9rem; letter-spacing:0.3em; color:var(--starlight-gold);
+  opacity:0.7; margin:8px 0 2px;
+  animation:dividerPulse 2s ease-in-out infinite;
+}
+@keyframes dividerPulse{0%,100%{opacity:0.45;}50%{opacity:0.9;}}
 
 @media (max-width:420px){
   h1{font-size:2.1rem;}
@@ -629,6 +644,7 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
       <p>There were never any wrong answers, because everything about you already is right.</p>
       <p>Wishing the happiest birthday to one of my <span class="highlight">best friends</span>, my <span class="highlight">Lahari</span> — this <span class="highlight">19th of September, 2026</span>. May 30 be your softest, brightest year yet.</p>
       <p style="font-style:italic; opacity:0.9;">Friends since Feb 2023, and I'm grateful for every bit of it. And for the record — your smile is still one of my favorite things. Happy Birthday, my friend. ✦</p>
+      <div class="finale-divider">✦ ⋆ ✦</div>
       <div style="font-size:1.6rem; letter-spacing:0.15em; margin-top:6px;">🎈🎉💖🎉🎈</div>
     </div>
 
@@ -738,7 +754,7 @@ function nextScreen(hideId, showId){
     if(showId === 'screenPhotos') initPhotos();
     if(showId === 'screen4') initScratch();
     if(showId === 'screen5') loadQuestion();
-    if(showId === 'screen6') launchFireworks();
+    if(showId === 'screen6') { launchFireworks(); document.querySelector('.card').classList.add('finale'); }
   }, 120);
 }
 
@@ -1128,24 +1144,30 @@ function nextQuestion(){
 const fwCanvas = document.getElementById('fireworks');
 const fctx = fwCanvas.getContext('2d');
 let fireworkParticles = [];
+let rockets = [];
 let fwRunning = false;
 
 function resizeFw(){ fwCanvas.width = window.innerWidth; fwCanvas.height = window.innerHeight; }
 resizeFw();
 window.addEventListener('resize', resizeFw);
 
-function spawnBurst(x,y,count){
-  const colors = ['#f4c95d','#ff6fa5','#fdf6ec','#ffa3c4','#c48bd9','#8fe3c0'];
+const fwColors = ['#f4c95d','#ff6fa5','#fdf6ec','#ffa3c4','#c48bd9','#8fe3c0','#7db8ff'];
+
+function spawnBurst(x,y,count,forcedColor){
   const n = count || 40;
+  const ringColor = forcedColor || fwColors[Math.floor(Math.random()*fwColors.length)];
+  // soft flash at the burst point for extra sparkle
+  fireworkParticles.push({ x, y, vx:0, vy:0, life:18, maxLife:18, color:'#fffbe8', flash:true, size:34 });
   for(let i=0;i<n;i++){
-    const angle = (Math.PI*2*i)/n;
-    const speed = 1.5 + Math.random()*2.5;
+    const angle = (Math.PI*2*i)/n + Math.random()*0.15;
+    const speed = 1.4 + Math.random()*3.2;
+    const life = 55 + Math.random()*30;
     fireworkParticles.push({
-      x,y,
+      x, y, px:x, py:y,
       vx: Math.cos(angle)*speed,
       vy: Math.sin(angle)*speed,
-      life: 60 + Math.random()*20,
-      color: colors[Math.floor(Math.random()*colors.length)]
+      life, maxLife:life,
+      color: Math.random() > 0.75 ? fwColors[Math.floor(Math.random()*fwColors.length)] : ringColor
     });
   }
 }
@@ -1156,7 +1178,7 @@ function crackleBurst(x,y){
   const popInterval = setInterval(() => {
     const ox = x + (Math.random()-0.5)*90;
     const oy = y + (Math.random()-0.5)*60;
-    spawnBurst(ox, oy, 14);
+    spawnBurst(ox, oy, 16);
     pops++;
     if(pops >= 5) clearInterval(popInterval);
   }, 90);
@@ -1167,19 +1189,85 @@ function crackleBurst(x,y){
   }
 }
 
+/* a rocket that actually rises into the sky, trailing sparks, then bursts at its peak */
+function launchRocket(x, targetY, color){
+  rockets.push({
+    x, y: fwCanvas.height + 10,
+    targetY,
+    vy: -(6.5 + Math.random()*2.5),
+    color: color || fwColors[Math.floor(Math.random()*fwColors.length)],
+    trailTick: 0
+  });
+  if(!fwRunning){
+    fwRunning = true;
+    requestAnimationFrame(fwLoop);
+  }
+}
+
 function fwLoop(){
   fctx.clearRect(0,0,fwCanvas.width, fwCanvas.height);
-  fireworkParticles.forEach(p => {
-    p.x += p.vx; p.y += p.vy; p.vy += 0.03; p.life--;
-    fctx.globalAlpha = Math.max(p.life/80, 0);
-    fctx.fillStyle = p.color;
+  fctx.globalCompositeOperation = 'lighter';
+
+  // rising rockets with a spark trail
+  rockets.forEach(r => {
+    r.y += r.vy;
+    r.vy *= 0.995;
+    r.trailTick++;
+    if(r.trailTick % 2 === 0){
+      fireworkParticles.push({
+        x:r.x + (Math.random()-0.5)*3, y:r.y,
+        vx:(Math.random()-0.5)*0.3, vy:0.6,
+        life:22, maxLife:22, color:r.color, trail:true
+      });
+    }
     fctx.beginPath();
-    fctx.arc(p.x, p.y, 2, 0, Math.PI*2);
+    fctx.fillStyle = '#fffbe8';
+    fctx.shadowColor = r.color;
+    fctx.shadowBlur = 10;
+    fctx.arc(r.x, r.y, 2.4, 0, Math.PI*2);
     fctx.fill();
+    fctx.shadowBlur = 0;
   });
+  rockets.forEach(r => {
+    if(r.y <= r.targetY){
+      spawnBurst(r.x, r.y, 50, r.color);
+      if(Math.random() > 0.5) crackleBurst(r.x, r.y + 20);
+    }
+  });
+  rockets = rockets.filter(r => r.y > r.targetY);
+
+  // particles: bursts, flashes, and trails
+  fireworkParticles.forEach(p => {
+    p.px = p.x; p.py = p.y;
+    p.x += p.vx; p.y += p.vy;
+    if(!p.trail && !p.flash) p.vy += 0.028;
+    p.life--;
+
+    const t = Math.max(p.life / p.maxLife, 0);
+    fctx.globalAlpha = p.flash ? t * 0.5 : t;
+
+    if(p.flash){
+      const grad = fctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+      grad.addColorStop(0, p.color);
+      grad.addColorStop(1, 'rgba(255,255,255,0)');
+      fctx.fillStyle = grad;
+      fctx.beginPath();
+      fctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+      fctx.fill();
+    } else {
+      fctx.strokeStyle = p.color;
+      fctx.lineWidth = p.trail ? 1.4 : 2;
+      fctx.beginPath();
+      fctx.moveTo(p.px, p.py);
+      fctx.lineTo(p.x, p.y);
+      fctx.stroke();
+    }
+  });
+
   fctx.globalAlpha = 1;
+  fctx.globalCompositeOperation = 'source-over';
   fireworkParticles = fireworkParticles.filter(p => p.life > 0);
-  if(fwRunning || fireworkParticles.length){
+  if(fwRunning || fireworkParticles.length || rockets.length){
     requestAnimationFrame(fwLoop);
   }
 }
@@ -1197,24 +1285,30 @@ function launchFireworks(){
   requestAnimationFrame(fwLoop);
   let bursts = 0;
   fwInterval = setInterval(() => {
+    // classic radial bursts scattered across the upper sky
     spawnBurst(
       fwCanvas.width * (0.15 + Math.random()*0.7),
-      fwCanvas.height * (0.15 + Math.random()*0.45),
+      fwCanvas.height * (0.15 + Math.random()*0.4),
       55
     );
-    // every third burst, throw in a rapid sky-cracker string too
+    // true rising rockets, launched from below, bursting high in the sky
+    launchRocket(
+      fwCanvas.width * (0.2 + Math.random()*0.6),
+      fwCanvas.height * (0.12 + Math.random()*0.25)
+    );
+    // every third round, throw in a rapid sky-cracker string too
     if(bursts % 3 === 1){
       crackleBurst(
         fwCanvas.width * (0.2 + Math.random()*0.6),
-        fwCanvas.height * (0.35 + Math.random()*0.3)
+        fwCanvas.height * (0.3 + Math.random()*0.3)
       );
     }
     bursts++;
-    if(bursts >= 11){
+    if(bursts >= 12){
       clearInterval(fwInterval);
       fwRunning = false;
     }
-  }, 450);
+  }, 480);
   launchBalloons();
   launchConfettiRain();
   buildBanner();
