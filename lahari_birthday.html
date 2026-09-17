@@ -352,6 +352,20 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
 }
 .photo-dots .pd.on{ background:var(--starlight-gold); width:16px; border-radius:4px; }
 
+/* ---- Cursor star shower ---- */
+.cursor-star{
+  position:fixed;
+  z-index:40;
+  pointer-events:none;
+  will-change:transform, opacity;
+  animation:starShower 0.9s ease-out forwards;
+}
+@keyframes starShower{
+  0%{ transform:translate(-50%,-50%) scale(0) rotate(0deg); opacity:1; }
+  30%{ transform:translate(-50%,-50%) scale(1) rotate(60deg); opacity:1; }
+  100%{ transform:translate(-50%, 30px) scale(0.3) rotate(180deg); opacity:0; }
+}
+
 /* ---- Music toggle ---- */
 .music-toggle{
   position:fixed; top:16px; right:16px; z-index:50;
@@ -532,7 +546,7 @@ p{font-size:1.02rem; line-height:1.65; margin-bottom:16px; color:rgba(253,246,23
     <div id="screen3" class="screen">
       <div class="eyebrow">Written in the sky</div>
       <h1>Your Constellation</h1>
-      <p>Every Virgo born under an August sky carries a little quiet magic. Here's yours.</p>
+      <p>Every Virgo born under a September sky carries a little quiet magic. Here's yours.</p>
       <div class="const-wrap">
         <svg viewBox="0 0 300 180">
           <polyline class="const-line" points="30,140 70,100 110,110 150,60 190,75 230,40 260,55"></polyline>
@@ -661,6 +675,36 @@ function toggleMusic(){
     musicBtn.classList.remove('playing');
   }
 }
+
+/* ---------------- Cursor star shower ---------------- */
+const starGlyphs = ['✦', '✧', '⋆', '✨', '★'];
+let lastStarTime = 0;
+function spawnCursorStar(x, y){
+  const now = Date.now();
+  if(now - lastStarTime < 45) return; // throttle so it stays light on performance
+  lastStarTime = now;
+
+  const star = document.createElement('div');
+  star.className = 'cursor-star';
+  star.textContent = starGlyphs[Math.floor(Math.random() * starGlyphs.length)];
+  star.style.left = x + 'px';
+  star.style.top = y + 'px';
+  const size = 0.55 + Math.random() * 0.7;
+  star.style.fontSize = size + 'rem';
+  star.style.color = Math.random() > 0.5 ? 'var(--starlight-gold)' : 'var(--aurora-pink-soft)';
+  star.style.textShadow = '0 0 8px currentColor';
+  document.body.appendChild(star);
+  setTimeout(() => star.remove(), 950);
+}
+
+window.addEventListener('mousemove', (e) => {
+  spawnCursorStar(e.clientX, e.clientY);
+});
+window.addEventListener('touchmove', (e) => {
+  if(e.touches && e.touches.length){
+    spawnCursorStar(e.touches[0].clientX, e.touches[0].clientY);
+  }
+}, { passive: true });
 
 /* ---------------- Starfield background ---------------- */
 const starCanvas = document.getElementById('stars');
